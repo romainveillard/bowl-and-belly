@@ -1,0 +1,210 @@
+# Bowl & Belly — design doc
+
+Nov 22, 2026 · @Romain Veillard
+
+## Overview
+
+A self-hosted, open-source (MIT) web app to track what each pet eats, in calories, against a daily target, alongside its weight. It replaces PetFeed Tracker, which falls short in four ways:
+
+- It always asks which pet, even with only one.
+- Food is free text, retyped every time, with no calories.
+- "Repeat" only copies the last entry, not the one you tapped.
+- Entries aren't grouped by day, and the only overview is entries per day, which is meaningless for frequent small feeds.
+
+Design principles that follow from that:
+
+- **Logging is the hot path.** A typical feed is: open the form, tap a recent food (grams prefilled), adjust, save.
+- **Calories, not counts.** Every day view leads with kcal eaten against the target.
+- **History stays true.** Calorie values and targets are snapshotted, so later edits don't silently rewrite the past unless you ask them to.
+- **Small and boring to run.** One container, one SQLite file, one volume.
+
+## Scope
+
+The MVP covers profiles, food stock, feed logging with leftovers, weight, and insights. Everything else is a later slice.
+
+**In the MVP**
+
+- **Pets:** name, type, photo, birth date, neutered status, activity level, goal, calculated or manual daily target.
+- **Weight log:** per-pet entries, display precision of 0.1 or 0.01 kg.
+- **Foods and stock:** brand, name, photo, kcal, food type, pet type, optional portion size, running stock in grams or portions, archiving.
+- **Feed logging:** recents-first food picker, prefilled amount, "log again" on any entry, leftovers.
+- **Timeline:** entries grouped by day, kcal vs target per day.
+- **Insights:** intake vs target by day, week and month; weight chart with rolling average.
+- **Settings:** time zone, day start time, pet types, food types, language, scheduled backups (opt-in), backup download.
+- **Ops:** optional single password, opt-in scheduled backups, amd64 and arm64 images.
+
+**Later:** see the last section.
+
+## Domain decisions
+
+### Daily calorie target
+
+Targets are a per-pet history, not a per-entry value, so days with no entries still have a target and past days keep the target that applied then. For cats and dogs the target is calculated from resting energy requirement (RER), with weight in kg:
+
+```latex
+\mathrm{RER} = 70 \times \mathrm{weight}^{0.75}
+```
+
+The daily target is RER times a factor from the 2021 AAHA Nutrition and Weight Management Guidelines ([Box 1](https://www.AAHA.org/globalassets/02-guidelines/2021-nutrition-and-weight-management/resourcepdfs/nutritiongl_box1.pdf)). AAHA gives ranges, so the app uses the low end for normal activity (AAHA notes indoor and sedentary pets may need less) and the high end for active pets. Factors live in code, keyed by the pet type's `system_key`, and the first matching row wins, top to bottom:
+
+| Case | Cat | Dog |
+| --- | --- | --- |
+| Growth (under 12 months) | 2.5 | 3.0 under 4 months, 2.0 from 4 months |
+| Goal: lose weight (RER at target weight) | 0.8 | 1.0 |
+| Activity: inactive / obese-prone | 1.0 | 1.1 |
+| Intact adult, active | 1.6 | 1.8 |
+| Intact adult, normal | 1.4 | 1.6 |
+| Neutered adult, active | 1.4 | 1.6 |
+| Neutered adult, normal | 1.2 | 1.4 |
+
+- `activity_level` is `'inactive' | 'normal' | 'active'`. The dog inactive factor is the midpoint of AAHA's 1.0–1.2.
+- A weight-gain goal uses the adult factor applied to RER at target weight; AAHA gives no separate gain factor.
+- Pregnancy, lactation and working dogs are out of scope and use the manual override. Large-breed dogs keep growing past 12 months, which also needs the override.
+
+* Changing neutered status, activity, goal or the manual override inserts a new target row effective from today.
+* A weigh-in never recalculates silently. The app offers "Update target from new weight?" so scale noise doesn't make the target jitter.
+* Custom pet types have no formula: the target is manual, and the target line is hidden if none is set.
+
+### Leftovers
+
+A feed entry has an optional leftover in grams; eaten = served − leftover. Whether the leftover goes back into stock defaults from the food type (dry: returned; wet: binned) and can be overridden per entry. Leftovers are usually found at the next feed, so when the previous entry for that pet is a food whose type returns leftovers, the log form shows an optional "Left over from 14:30?" field. Leftovers can also be added from the timeline.
+
+### Stock and portions
+
+Stock is a running total stored in grams for every food. Each food has a stock unit: grams (shown as kg/g) or portions (shown as e.g. "8 pouches + 45g open", and restocked as "+12 pouches"). Portion-counted foods require a portion name and weight. Logging is always in grams, with an optional grams/portions toggle on the amount input. Logging, editing and deleting a feed entry each adjust stock by the difference.
+
+Deleting an entry returns its net amount to stock: served minus any leftover already returned. A delete means "logged by mistake", so the food never left the bag. If food was really served and binned, the entry should be edited (leftover not returned), not deleted.
+
+### Editing a food's calories
+
+Each feed entry snapshots the food's kcal/kg. Editing kcal asks whether to update existing logs: all of them (misread label), those since a date (recipe change), or none. Foods in use are archived, never deleted.
+
+The backfill runs in the same transaction as the food edit: `UPDATE feed_entry SET kcal_per_kg = ? WHERE food_id = ?`, plus `AND fed_at >= ?` for "since a date", where that date means the start of that app day (time zone and day start applied). Edits apply in the order they are saved, so a later edit simply overwrites any range it overlaps. For example, "all logs → 3,500" followed by "since 1 March → 3,600" leaves earlier entries at 3,500 and later ones at 3,600.
+
+### Days and time zones
+
+Timestamps are stored in UTC. One app-wide IANA time zone (e.g. Europe/London) and a "day starts at" time (default 00:00, configurable to e.g. 03:00) decide which day an entry belongs to. Per-entry time zones are out of scope.
+
+### Weights and birth dates
+
+Weights are stored as integer grams and displayed in kg at the pet's chosen precision (0.1 or 0.01). Birth date is stored with a precision flag (exact, year, estimated); entering an age produces an estimated date, shown as "about 6".
+
+## Data model
+
+Eight tables in SQLite, accessed through Drizzle. Only fields an MVP screen reads or writes are included.
+
+```sql
+settings      (time_zone, day_starts_at,
+               backup_enabled, backup_frequency,                  -- 'daily' | 'weekly'
+               backup_weekday NULL, backup_time, backup_keep)                          -- single row
+
+pet_type      (id, name NULL, system_key NULL, archived_at)       -- 'cat' | 'dog'
+food_type     (id, name NULL, system_key NULL,                    -- 'wet' | 'dry'
+               leftover_returns_to_stock, archived_at)
+
+pet           (id, name, pet_type_id, photo,
+               birth_date, birth_date_precision,                  -- 'exact' | 'year' | 'estimated'
+               neutered, activity_level,
+               goal, target_weight_g NULL,                        -- 'maintain' | 'lose' | 'gain'
+               weight_decimals, archived_at)                      -- 1 | 2
+pet_target    (id, pet_id, effective_from, kcal_per_day,
+               source)                                            -- 'calculated' | 'manual'
+weight_entry  (id, pet_id, measured_at, weight_g)
+
+food          (id, brand, name, photo, pet_type_id, food_type_id,
+               kcal_per_kg,
+               portion_name NULL, portion_g NULL,
+               stock_unit, stock_g,                               -- 'g' | 'portion'
+               archived_at)
+feed_entry    (id, pet_id, food_id, fed_at,                       -- UTC
+               served_g, leftover_g NULL,
+               leftover_returned_to_stock,
+               kcal_per_kg)                                       -- snapshot
+```
+
+- **`system_key`:** non-null marks a seeded row. It makes the row read-only, selects the built-in formula (pet types), and gives the translation key for its label, so `name` is only set on custom rows (`CHECK (system_key IS NOT NULL OR name IS NOT NULL)`).
+- **Enums:** fixed sets are `text` columns typed with Drizzle's `enum` option plus explicit `CHECK` constraints, since Drizzle's option alone isn't enforced by SQLite. User-extensible lists are lookup tables.
+- **Derived, not stored:** kcal eaten (served − leftover, × snapshot kcal/kg), daily totals, current age and life stage.
+- **Images:** resized on upload to about 800px WebP and stored as blobs, so the database is the whole backup.
+- **Stock audit trail:** none in the MVP; stock is a mutated total. A purchases table arrives with cost tracking.
+
+## Screens and UX
+
+Seven screens, mobile-first, installable as a PWA. The pet switcher appears only when there is more than one pet, and defaults to the last pet used.
+
+| Screen | What it does |
+| --- | --- |
+| Today (home) | Header with kcal so far vs target; today's entries; a prominent Log button. |
+| Log feed (bottom sheet) | Recents-first food picker with wet/dry badge, brand on a muted second line, last amount for that pet; search and type filter chips below. Grams prefilled, g/portion toggle, time defaults to now. Shows the "left over from last feed?" field when relevant. |
+| History | Entries grouped by day. Day header shows kcal vs target; tapping it expands a breakdown per food type (grams and kcal). Every entry has "Log again" (same food and amount, time now), edit and add-leftover actions. |
+| Insights | Day / week / month toggle. Intake bars with the target line (week and month show average daily kcal). Weight chart stacked below on the same time axis, raw points plus rolling average. |
+| Pets | Profile, weight log, target history; "Update target from new weight?" prompt after a weigh-in. |
+| Stock | Foods with stock level in their own unit; quick restock; edit and archive. Editing kcal triggers the "update existing logs?" choice. |
+| Settings | Time zone, day start time, pet types, food types, language, scheduled backups (opt-in), backup download. |
+
+## Translations
+
+The app is translation-ready from the first commit and ships in English and French; further languages come from contributors. Retrofitting string extraction later means touching every component, whereas doing it from the start costs almost nothing.
+
+- **Library:** i18next with react-i18next, the most familiar choice for open-source contributors, using ICU message format for plurals ("1 pouch", "8 pouches").
+- **Formatting:** numbers, dates and units go through `Intl`, so French users see "4,2 kg" and their own date order.
+- **Seeded rows:** cat, dog, wet and dry are labelled through their `system_key` translation keys. User-entered names (pets, foods, custom types) are never translated.
+- **API:** returns error codes and machine values, never user-facing sentences, so all wording lives in the frontend.
+- **Language choice:** browser language by default, overridable per device (stored in the browser), since household members may want different languages and there are no user accounts.
+
+## Architecture
+
+One Docker container serves both the API and the built frontend, with a single volume holding the SQLite file.
+
+| Layer | Choice |
+| --- | --- |
+| Backend | Node with Hono (via its Node adapter), TypeScript, Zod validation; the frontend calls it through Hono's typed RPC client |
+| Database | SQLite via Drizzle ORM and migrations |
+| Frontend | React SPA built with Vite, TanStack Query, Recharts (chart export via a small SVG-to-PNG helper), served as static files by the backend |
+| PWA | Web app manifest and service worker for install; online-only, no offline sync |
+| Images | amd64 and arm64, built with `docker buildx` on GitHub Actions native runners, published to GHCR |
+| Licence | MIT |
+
+- **Auth:** optional single password via an environment variable; unset means no auth. The README warns against exposing an unprotected instance. Behind Cloudflare Access, a long session duration avoids the installed PWA hitting expired-session redirects, and the app shows a "session expired, reopen" state when it does.
+- **Backups:** opt-in in Settings and off by default, with a schedule (daily, or weekly on a chosen weekday, at a chosen time) and a number of copies to keep (default 7). Each run uses `VACUUM INTO` to write a consistent copy into the volume (a plain copy of a live SQLite file isn't safe). The "Download backup" button in Settings works whether or not scheduled backups are on. Off-box copies are the operator's job, e.g. the Pi pulling the latest file from OCI.
+- **Deployment target:** OCI Ampere VM (arm64) behind a Cloudflare Tunnel.
+
+## Name and branding
+
+The app is called **Bowl & Belly**, in English for every language.
+
+- **Slug:** `bowl-and-belly` wherever the ampersand isn't allowed: GitHub repo, GHCR image (`ghcr.io/<owner>/bowl-and-belly`), package name, domain.
+- **PWA `short_name`:** "Bowl & Belly" (12 characters), so no shorter variant is needed.
+- **Logo:** concept E, a rabbit, a cat and a dog peeking over an orange bowl, each in its own peach shade. Concept F (the same pets as navy silhouettes) is kept as an alternative; the dark-mode logo is still to be decided.
+- **Typefaces:** Outfit SemiBold for the wordmark, Inter for UI text.
+
+| Role | Colour |
+| --- | --- |
+| Ink (text, eyes, F silhouettes) | `#1F2A44` |
+| Secondary text | `#4A5468` |
+| Bowl | `#F08A4B` |
+| Bowl rim | `#CE7741` |
+| Cat | `#FFC9A3` |
+| Rabbit | `#F6D4BB` |
+| Dog / dog ears | `#F2B48A` / `#D99A70` |
+| Light tile (F icon) | `#FFF3E8` |
+
+**Icons**
+
+| Use | Asset |
+| --- | --- |
+| Browser tab favicon (16 px) | Simplified mark: the cat alone over the bowl, E colours, no tile |
+| 32 px favicon, bookmarks, PWA (192 and 512 px, plus a maskable 512) | Full E app icon: the trio on a navy rounded tile |
+| README banner | E lockup: mark plus wordmark |
+
+## Later slices
+
+**Later slices**
+
+1. **Cost tracking:** a purchases table (quantity, optional price in minor units), cost per kg from the last priced purchase, snapshot on each feed entry, currency setting.
+2. **Export:** CSV of feeds and weights for the vet, plus the Insights charts as images.
+3. **Units:** lb support as an app setting.
+4. **Multiple users:** households, "who fed".
+5. **Treats:** quick logging of treats and other calories.
+6. **Alerts:** low stock, missed feeds, weight change, as in-app banners first and notifications later.
+7. **Import:** CSV import in the same documented format as the export, so data round-trips between instances. Converting data from other apps into that format is up to the user.

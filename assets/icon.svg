@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" role="img"><title>Bowl &amp; Belly</title>
+<rect width="200" height="200" rx="45" fill="#1F2A44"/>
+<g transform="translate(26.30 16.72) scale(0.737)">
+<rect x="44" y="52" width="11" height="42" rx="5.5" transform="rotate(-10 49 92)" fill="#F6D4BB"/>
+<rect x="60" y="50" width="11" height="44" rx="5.5" transform="rotate(9 65 92)" fill="#F6D4BB"/>
+<circle cx="58" cy="104" r="22" fill="#F6D4BB"/>
+<circle cx="51" cy="102" r="3.5" fill="#1F2A44"/><circle cx="65" cy="102" r="3.5" fill="#1F2A44"/>
+<circle cx="144" cy="104" r="24" fill="#F2B48A"/>
+<ellipse cx="124" cy="104" rx="8" ry="16" transform="rotate(20 124 104)" fill="#D99A70"/>
+<ellipse cx="164" cy="104" rx="8" ry="16" transform="rotate(-20 164 104)" fill="#D99A70"/>
+<circle cx="137" cy="101" r="3.5" fill="#1F2A44"/><circle cx="151" cy="101" r="3.5" fill="#1F2A44"/>
+<polygon points="78,84 82,58 98,72" fill="#FFC9A3" stroke="#FFC9A3" stroke-width="8" stroke-linejoin="round"/>
+<polygon points="122,84 118,58 102,72" fill="#FFC9A3" stroke="#FFC9A3" stroke-width="8" stroke-linejoin="round"/>
+<circle cx="100" cy="100" r="28" fill="#FFC9A3"/>
+<circle cx="91" cy="97" r="3.5" fill="#1F2A44"/><circle cx="109" cy="97" r="3.5" fill="#1F2A44"/>
+<path d="M28 120 H172 Q168 176 100 176 Q32 176 28 120 Z" fill="#F08A4B"/>
+<rect x="20" y="110" width="160" height="16" rx="8" fill="#CE7741"/>
+</g>
+</svg>
