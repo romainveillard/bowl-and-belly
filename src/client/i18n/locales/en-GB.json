@@ -166,5 +166,22 @@
   },
   "form": {
     "thingsToFix": "{count, plural, one {# thing to fix before saving:} other {# things to fix before saving:}}"
+  },
+  "today": {
+    "settings": "Settings",
+    "welcomeTitle": "Welcome to Bowl & Belly",
+    "welcomeBody": "Add your pet first. We’ll work out their daily calorie target, then you log what they eat.",
+    "addFirstPet": "Add your first pet",
+    "gettingStarted": "Getting started",
+    "stepPet": "Add your pet",
+    "stepFood": "Add a food",
+    "stepDone": "Done:",
+    "caloriesToday": "Calories today",
+    "caloriesLabel": "Today’s calories",
+    "noFeeds": "No feeds yet today",
+    "addFoodTitle": "Add a food to start logging",
+    "addFoodBody": "Enter it once with the calories from the label. After that, logging a feed is a tap.",
+    "addFoodBodyDesktop": "Enter it once with the calories from the label. After that, logging a feed is a click.",
+    "addFood": "Add food"
   }
 }

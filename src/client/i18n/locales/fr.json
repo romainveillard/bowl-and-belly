@@ -166,5 +166,22 @@
   },
   "form": {
     "thingsToFix": "{count, plural, one {# point à corriger avant d’enregistrer :} other {# points à corriger avant d’enregistrer :}}"
+  },
+  "today": {
+    "settings": "Réglages",
+    "welcomeTitle": "Bienvenue dans Bowl & Belly",
+    "welcomeBody": "Ajoutez d’abord votre animal. Nous calculerons son objectif calorique quotidien, puis vous noterez ce qu’il mange.",
+    "addFirstPet": "Ajouter votre premier animal",
+    "gettingStarted": "Pour commencer",
+    "stepPet": "Ajouter votre animal",
+    "stepFood": "Ajouter un aliment",
+    "stepDone": "Fait :",
+    "caloriesToday": "Calories du jour",
+    "caloriesLabel": "Calories du jour",
+    "noFeeds": "Aucun repas aujourd’hui pour l’instant",
+    "addFoodTitle": "Ajoutez un aliment pour commencer",
+    "addFoodBody": "Saisissez-le une fois avec les calories de l’étiquette. Ensuite, noter un repas se fait d’un geste.",
+    "addFoodBodyDesktop": "Saisissez-le une fois avec les calories de l’étiquette. Ensuite, noter un repas se fait d’un clic.",
+    "addFood": "Ajouter un aliment"
   }
 }

@@ -160,6 +160,14 @@ Seven screens, mobile-first, installable as a PWA. A bottom bar holds five tabs 
 | Stock | Foods with stock level in their own unit; quick restock; add, edit and archive (the food form follows "Stock and portions" above). Editing kcal triggers the "update existing logs?" choice. |
 | Settings | Time zone, day start time, pet types, food types, language, scheduled backups (opt-in), backup download. |
 
+### First run
+
+Until there is at least one pet and one food, Today guides the set-up instead of showing its normal layout, and Log feed (and Log weight on desktop) stays hidden.
+
+- **No pets:** a welcome card with "Add your first pet", which opens the Add pet form, and a "Getting started" checklist (add your pet, add a food). History and Insights show a short version of the same message.
+- **A pet but no foods:** the normal calories card (0 / target, "No feeds yet today") and an "Add a food to start logging" card with the checklist, its first step ticked. "Add food" opens the Add food form.
+- **Once both exist,** Today switches to its normal layout and the checklist goes away for good.
+
 ### Feed rows
 
 Used on Today and History. A food-type tile on the left (blue drop for wet, peach kibbles for dry), the food name with "14:30 · 20 g · 4 g left" underneath, and kcal on the right. Nothing wraps: long names end with "…".

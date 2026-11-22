@@ -127,3 +127,17 @@ export async function uploadPhoto(photo: File): Promise<number> {
   }
   return (await response.json()).id;
 }
+
+/** How many foods are in use; none means the first-run steps are not finished. */
+export function useFoodCount() {
+  return useQuery({
+    queryKey: ["foods", "count"],
+    queryFn: async () => {
+      const response = await api.api.foods.count.$get();
+      if (!response.ok) {
+        throw new Error("Could not count foods");
+      }
+      return response.json();
+    },
+  });
+}

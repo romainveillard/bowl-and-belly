@@ -148,9 +148,31 @@ export function ChevronRightIcon(props: IconProps) {
   );
 }
 
-export function LogoMark() {
+export function CheckIcon(props: IconProps) {
   return (
-    <svg width="44" height="36" viewBox="16 42 168 140" aria-hidden="true">
+    <Icon {...props}>
+      <path d="M20 6L9 17l-5-5" />
+    </Icon>
+  );
+}
+
+export function BowlIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M3 11h18a9 7 0 0 1-18 0z" />
+      <path d="M8 7c0-1.5 1-2 2-2M14 7c0-1.5 1-2 2-2" />
+    </Icon>
+  );
+}
+
+export function LogoMark({ width = 44 }: { width?: number }) {
+  return (
+    <svg
+      width={width}
+      height={Math.round((width * 140) / 168)}
+      viewBox="16 42 168 140"
+      aria-hidden="true"
+    >
       <rect
         x="44"
         y="52"

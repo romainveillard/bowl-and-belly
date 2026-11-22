@@ -4,6 +4,7 @@ import { BottomNav, Sidebar } from "./components/Navigation.js";
 import { ArchivedPetsScreen } from "./screens/ArchivedPetsScreen.js";
 import { PetFormScreen } from "./screens/PetFormScreen.js";
 import { PetsScreen } from "./screens/PetsScreen.js";
+import { TodayScreen } from "./screens/TodayScreen.js";
 
 // Forms take the whole phone screen, with their own action bar in place of the tabs.
 function Shell({ bottomNav = true }: { bottomNav?: boolean }) {
@@ -19,11 +20,7 @@ function Shell({ bottomNav = true }: { bottomNav?: boolean }) {
 }
 
 // Stands in for each tab until its screen is built.
-function ScreenTitle({
-  label,
-}: {
-  label: "today" | "history" | "insights" | "stock" | "settings";
-}) {
+function ScreenTitle({ label }: { label: "history" | "insights" | "stock" | "settings" }) {
   const { t } = useTranslation();
 
   return (
@@ -39,7 +36,7 @@ export function App() {
   return (
     <Routes>
       <Route element={<Shell />}>
-        <Route index element={<ScreenTitle label="today" />} />
+        <Route index element={<TodayScreen />} />
         <Route path="history" element={<ScreenTitle label="history" />} />
         <Route path="insights" element={<ScreenTitle label="insights" />} />
         <Route path="stock" element={<ScreenTitle label="stock" />} />
