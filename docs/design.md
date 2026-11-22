@@ -63,8 +63,10 @@ The daily target is RER times a factor from the 2021 AAHA Nutrition and Weight M
 - Growing pets are always fed for their current weight: the growth case comes first, so a weight goal only takes effect from 12 months. Age is counted in completed calendar months from the birth date.
 - Pregnancy, lactation and working dogs are out of scope and use the manual override. Large-breed dogs keep growing past 12 months, which also needs the override.
 
-* Changing neutered status, activity, goal or the manual override inserts a new target row effective from today.
-* A weigh-in never recalculates silently. The app offers "Update target from new weight?" so scale noise doesn't make the target jitter.
+* Changing neutered status, activity, goal, target weight, birth date, pet type or the manual override inserts a new target row effective from today. A second change the same day replaces that day's row, and a change that leaves the target as it was adds nothing.
+* A target the user set is never recalculated: it stays until they go back to the suggested value.
+* A weigh-in never recalculates silently. The app offers "Update target from new weight?" so scale noise doesn't make the target jitter. The same goes for a pet reaching 4 or 12 months.
+* Editing the current weight on the pet form is the exception: it logs a weigh-in and updates a calculated target at once, because the form shows the new suggestion before saving.
 * Custom pet types have no formula: the target is manual, and the target line is hidden if none is set.
 
 ### Leftovers
@@ -96,7 +98,7 @@ Timestamps are stored in UTC. One app-wide IANA time zone (e.g. Europe/London) a
 
 ### Weights and birth dates
 
-Weights are stored as integer grams. The weight field accepts up to two decimals (kg), and there is no precision setting: each reading is shown as entered, with trailing zeros stripped but at least one decimal (4.52 kg, 4.5 kg, 4.0 kg). Derived values (rolling average, chart axis, pets list) always show one decimal. Birth date is stored with a precision flag (exact, year, estimated); entering an age produces an estimated date, shown as "about 6".
+Weights are stored as integer grams. The weight field accepts up to two decimals (kg), and there is no precision setting: each reading is shown as entered, with trailing zeros stripped but at least one decimal (4.52 kg, 4.5 kg, 4.0 kg). Derived values (rolling average, chart axis, pets list) always show one decimal. Birth date is stored with a precision flag (exact, year, estimated); entering an age produces an estimated date, shown as "about 6". A birth year is stored as 1 January, so the age reads as this year minus the birth year, and is also shown with "about". Under a year old, the age is shown in months.
 
 ## Data model
 
@@ -141,6 +143,7 @@ feed_entry    (id, pet_id, food_id, fed_at,                       -- UTC
 - **Seeded rows:** cat, dog, wet, dry and the single settings row (`CHECK (id = 1)`) are inserted by start-up code, not by a migration, and only when missing. Restarting never resets settings. The time zone starts as the server's (`TZ`), which is UTC in the container unless set.
 - **Dates and times:** instants (`fed_at`, `measured_at`, `archived_at`) are integer milliseconds in UTC. Calendar values (`birth_date`, `effective_from`) are `YYYY-MM-DD` text, and times of day are `HH:MM` text.
 - **Targets:** a pet has at most one target row per app day; a second change the same day replaces it. Any goal other than maintain requires `target_weight_g`.
+- **Unused photos:** a photo is uploaded before its form is saved, so an abandoned form leaves one behind. Photos that no pet or food uses are deleted at start-up.
 - **Stock audit trail:** none in the MVP; stock is a mutated total. A purchases table arrives with cost tracking.
 
 ## Screens and UX
@@ -174,6 +177,17 @@ Used on Today and History. A food-type tile on the left (blue drop for wet, peac
 - **Log weight** is a sheet with weight and date (default today), showing the last reading.
 - **After a weigh-in**, if the suggested target differs, a dialog compares current and suggested targets with "Update to …" and "Keep …". It applies from today; past days keep their target.
 - **Set my own target** is a sheet with a kcal/day field and a way back to the suggested value. It also applies from today.
+- **Current weight** is optional on the form. Without it, or without a target weight when the goal needs one, there is no suggestion yet.
+- **The target explanation** on the profile names the species ("for an inactive cat", "for a growing puppy") and says "since today" for a target set today.
+- **First run:** with no pets, the Pets tab shows "Add your first pet" in place of the list and the floating button.
+- **Archive pet** asks for confirmation. Archived pets keep their history, leave the pet switcher, and are listed on their own page, reached from a link under the pets list, where each can be restored.
+
+### Forms, dialogs and snackbars
+
+- **Validation:** Save stays enabled, since a disabled button doesn't say what's wrong. A failed save shows a summary at the top ("2 things to fix before saving: name and current weight."), a message under each invalid field, and moves focus to the first. Fields are then re-validated on blur. Invalid fields carry `aria-invalid` and `aria-describedby`.
+- **Snackbar:** one shared component, navy with white text and an optional action (Undo for deletes, none for target changes), shown for about 5 seconds. On a phone it spans the width above the bottom bar; on desktop it sits at the bottom centre of the content column, clear of the floating buttons.
+- **Sheets and dialogs:** a sheet rises from the bottom on a phone and is a dialog near the top of the page on desktop. A confirmation is a centred dialog.
+- **Desktop:** from 860 px the tabs move to a sidebar with Settings and the version at its foot, and Pets shows the list and the selected profile side by side.
 
 ## UI design
 
