@@ -15,7 +15,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api": "http://localhost:3000",
+      // The trailing slash keeps the client's own /api.ts module out of the proxy.
+      "/api/": "http://localhost:3000",
     },
   },
 });
