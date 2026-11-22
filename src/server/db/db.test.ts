@@ -1,7 +1,11 @@
+import { mkdtempSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import Database from "better-sqlite3";
 import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { openDatabase } from "./open.js";
-import { foodType, pet, petType, settings } from "./schema.js";
+import { foodType, pet, petTarget, petType, settings } from "./schema.js";
 import { seed } from "./seed.js";
 
 describe("seed", () => {
@@ -95,5 +99,33 @@ describe("constraints", () => {
       db.update(settings).set({ backupFrequency: "weekly" }).where(eq(settings.id, 1)).run(),
     ).toThrow(/CHECK constraint failed: settings_weekly_has_weekday/);
     db.update(settings).set({ backupFrequency: "weekly", backupWeekday: 7 }).run();
+  });
+});
+
+describe("migrations", () => {
+  it("rebuild a table that other rows point at without losing them", () => {
+    // A database as the first release left it, with a pet that has a target.
+    const file = path.join(mkdtempSync(path.join(tmpdir(), "bowl-and-belly-")), "test.db");
+    const firstMigrationAt = /"when": (\d+)/.exec(
+      readFileSync("drizzle/meta/_journal.json", "utf8"),
+    )?.[1];
+    const old = new Database(file);
+    old.exec(readFileSync("drizzle/0000_initial_schema.sql", "utf8"));
+    old.exec(`
+      CREATE TABLE __drizzle_migrations (id SERIAL PRIMARY KEY, hash text NOT NULL, created_at numeric);
+      INSERT INTO __drizzle_migrations (hash, created_at) VALUES ('', ${firstMigrationAt});
+      INSERT INTO pet_type (system_key) VALUES ('cat');
+      INSERT INTO pet (name, pet_type_id, birth_date, birth_date_precision, neutered, activity_level, goal)
+        VALUES ('Miso', 1, '2020-05-01', 'exact', 1, 'normal', 'maintain');
+      INSERT INTO pet_target (pet_id, effective_from, kcal_per_day, source)
+        VALUES (1, '2026-11-01', 238, 'calculated');
+    `);
+    old.close();
+
+    const db = openDatabase(file);
+
+    expect(db.select({ name: pet.name }).from(pet).all()).toEqual([{ name: "Miso" }]);
+    expect(db.select().from(petTarget).all()).toHaveLength(1);
+    expect(() => db.delete(pet).run()).toThrow(/FOREIGN KEY constraint failed/);
   });
 });

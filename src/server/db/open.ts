@@ -9,10 +9,19 @@ export type Db = BetterSQLite3Database<typeof schema> & { $client: Database.Data
 export function openDatabase(filename: string): Db {
   const sqlite = new Database(filename);
   sqlite.pragma("journal_mode = WAL");
-  sqlite.pragma("foreign_keys = ON");
 
   const db = drizzle(sqlite, { schema, casing: "snake_case" });
+
+  // Drizzle Kit rebuilds a table to change it, which only works with foreign
+  // keys off, and the PRAGMA in its SQL is ignored inside the migrator's
+  // transaction. So enforcement is switched around the migrations instead.
+  sqlite.pragma("foreign_keys = OFF");
   migrate(db, { migrationsFolder: "drizzle" });
+  sqlite.pragma("foreign_keys = ON");
+  if (sqlite.prepare("PRAGMA foreign_key_check").all().length > 0) {
+    throw new Error("Migrations left broken foreign keys");
+  }
+
   seed(db);
 
   return db;
