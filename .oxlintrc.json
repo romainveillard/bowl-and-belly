@@ -6,7 +6,9 @@
     "suspicious": "error"
   },
   "rules": {
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "import/no-unassigned-import": "off",
+    "import/no-named-as-default-member": "off"
   },
   "options": {
     "typeAware": true
