@@ -98,10 +98,10 @@ Weights are stored as integer grams and displayed in kg at the pet's chosen prec
 
 ## Data model
 
-Eight tables in SQLite, accessed through Drizzle. Only fields an MVP screen reads or writes are included.
+Nine tables in SQLite, accessed through Drizzle. Only fields an MVP screen reads or writes are included.
 
 ```sql
-settings      (time_zone, day_starts_at,
+settings      (id, time_zone, day_starts_at,                      -- 'HH:MM'
                backup_enabled, backup_frequency,                  -- 'daily' | 'weekly'
                backup_weekday NULL, backup_time, backup_keep)                          -- single row
 
@@ -109,16 +109,19 @@ pet_type      (id, name NULL, system_key NULL, archived_at)       -- 'cat' | 'do
 food_type     (id, name NULL, system_key NULL,                    -- 'wet' | 'dry'
                leftover_returns_to_stock, archived_at)
 
-pet           (id, name, pet_type_id, photo,
+image         (id, data)                                          -- WebP blob
+
+pet           (id, name, pet_type_id, photo_id NULL,
                birth_date, birth_date_precision,                  -- 'exact' | 'year' | 'estimated'
                neutered, activity_level,
                goal, target_weight_g NULL,                        -- 'maintain' | 'lose' | 'gain'
                weight_decimals, archived_at)                      -- 1 | 2
-pet_target    (id, pet_id, effective_from, kcal_per_day,
+pet_target    (id, pet_id, effective_from, kcal_per_day,          -- app day, unique per pet
                source)                                            -- 'calculated' | 'manual'
 weight_entry  (id, pet_id, measured_at, weight_g)
 
-food          (id, brand, name, photo, pet_type_id, food_type_id,
+food          (id, brand NULL, name, photo_id NULL,
+               pet_type_id NULL, food_type_id,                    -- no pet type: suits any pet
                kcal_per_kg,
                portion_name NULL, portion_g NULL,
                stock_unit, stock_g,                               -- 'g' | 'portion'
@@ -132,7 +135,10 @@ feed_entry    (id, pet_id, food_id, fed_at,                       -- UTC
 - **`system_key`:** non-null marks a seeded row. It makes the row read-only, selects the built-in formula (pet types), and gives the translation key for its label, so `name` is only set on custom rows (`CHECK (system_key IS NOT NULL OR name IS NOT NULL)`).
 - **Enums:** fixed sets are `text` columns typed with Drizzle's `enum` option plus explicit `CHECK` constraints, since Drizzle's option alone isn't enforced by SQLite. User-extensible lists are lookup tables.
 - **Derived, not stored:** kcal eaten (served − leftover, × snapshot kcal/kg), daily totals, current age and life stage.
-- **Images:** resized on upload to about 800px WebP and stored as blobs, so the database is the whole backup.
+- **Images:** resized on upload to about 800px WebP and stored as blobs, so the database is the whole backup. They live in their own `image` table, referenced by `photo_id`, so that listing pets or foods never loads a blob.
+- **Seeded rows:** cat, dog, wet, dry and the single settings row (`CHECK (id = 1)`) are inserted by start-up code, not by a migration, and only when missing. Restarting never resets settings. The time zone starts as the server's (`TZ`), which is UTC in the container unless set.
+- **Dates and times:** instants (`fed_at`, `measured_at`, `archived_at`) are integer milliseconds in UTC. Calendar values (`birth_date`, `effective_from`) are `YYYY-MM-DD` text, and times of day are `HH:MM` text.
+- **Targets:** a pet has at most one target row per app day; a second change the same day replaces it. Any goal other than maintain requires `target_weight_g`.
 - **Stock audit trail:** none in the MVP; stock is a mutated total. A purchases table arrives with cost tracking.
 
 ## Screens and UX
