@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2024", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "tsBuildInfoFile": "dist/tsconfig.client.tsbuildinfo"
+  },
+  "include": ["src/client", "src/shared"],
+  "references": [{ "path": "./tsconfig.server.json" }]
+}
