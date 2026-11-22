@@ -2,6 +2,7 @@ import Database from "better-sqlite3";
 import { drizzle, type BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import * as schema from "./schema.js";
+import { removeUnusedImages } from "./images.js";
 import { seed } from "./seed.js";
 
 export type Db = BetterSQLite3Database<typeof schema> & { $client: Database.Database };
@@ -26,6 +27,7 @@ export function openDatabase(filename: string): Db {
   }
 
   seed(db);
+  removeUnusedImages(db);
 
   return db;
 }

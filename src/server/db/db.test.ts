@@ -5,7 +5,8 @@ import Database from "better-sqlite3";
 import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { openDatabase } from "./open.js";
-import { foodType, pet, petTarget, petType, settings } from "./schema.js";
+import { removeUnusedImages } from "./images.js";
+import { food, foodType, image, pet, petTarget, petType, settings } from "./schema.js";
 import { seed } from "./seed.js";
 
 describe("seed", () => {
@@ -127,5 +128,32 @@ describe("migrations", () => {
     expect(db.select({ name: pet.name }).from(pet).all()).toEqual([{ name: "Miso" }]);
     expect(db.select().from(petTarget).all()).toHaveLength(1);
     expect(() => db.delete(pet).run()).toThrow(/FOREIGN KEY constraint failed/);
+  });
+});
+
+describe("removeUnusedImages", () => {
+  it("drops only the photos that no pet or food uses", () => {
+    const db = openDatabase(":memory:");
+    const data = Buffer.from("photo");
+    db.insert(image).values([{ data }, { data }, { data }]).run();
+    db.insert(pet)
+      .values({
+        name: "Miso",
+        petTypeId: 1,
+        photoId: 1,
+        birthDate: "2020-05-01",
+        birthDatePrecision: "exact",
+        neutered: true,
+        activityLevel: "normal",
+        goal: "maintain",
+      })
+      .run();
+    db.insert(food)
+      .values({ name: "Salmon kibbles", foodTypeId: 2, kcalPerKg: 3700, photoId: 3 })
+      .run();
+
+    removeUnusedImages(db);
+
+    expect(db.select({ id: image.id }).from(image).all()).toEqual([{ id: 1 }, { id: 3 }]);
   });
 });
