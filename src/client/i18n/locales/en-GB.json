@@ -6,7 +6,8 @@
     "insights": "Insights",
     "stock": "Stock",
     "pets": "Pets",
-    "settings": "Settings"
+    "settings": "Settings",
+    "version": "Version {version}"
   },
   "action": {
     "close": "Close",
@@ -40,7 +41,20 @@
       "maintain": "maintain weight",
       "lose": "lose weight",
       "gain": "gain weight"
-    }
+    },
+    "emptyTitle": "Add your first pet",
+    "emptyBody": "Bowl & Belly works out a daily calorie target for each pet, then tracks what they eat against it.",
+    "archive": "Archive pet",
+    "archiveTitle": "Archive {name}?",
+    "archiveBody": "Their feeds, weights and targets are kept. They’ll disappear from the pet switcher, and you can restore them any time from Archived pets on the Pets tab.",
+    "archiveBodyDesktop": "Their feeds, weights and targets are kept. They’ll disappear from the pet switcher, and you can restore them any time from Archived pets.",
+    "archiveConfirm": "Archive",
+    "archivedLink": "Archived pets ({count})",
+    "archivedTitle": "Archived pets",
+    "archivedHint": "History is kept. Restore a pet to log for them again.",
+    "archivedRow": "{type} · archived {date}",
+    "restore": "Restore",
+    "restoreNamed": "Restore {name}"
   },
   "target": {
     "title": "Daily target",
@@ -48,9 +62,9 @@
     "perDaySuggested": "kcal / day, suggested",
     "setOwn": "Set my own target",
     "setOwnHint": "For a vet’s recommendation or special diet.",
-    "calculatedSince": "Calculated since {date}.",
-    "calculatedSinceHow": "Calculated since {date}: resting needs of {resting} kcal × {factor} for {profile}.",
-    "manualSince": "Set by you since {date}.",
+    "calculatedSince": "Calculated {since}.",
+    "calculatedSinceHow": "Calculated {since}: resting needs of {resting} kcal × {factor} for {profile}.",
+    "manualSince": "Set by you {since}.",
     "none": "No daily target yet.",
     "profile": {
       "adultNeuteredNormal": "a neutered adult with normal activity",
@@ -76,7 +90,9 @@
     "useSuggested": "Use the suggested {kcal} kcal",
     "basedOnTargetLose": "Based on the target weight while losing weight.",
     "basedOnTargetGain": "Based on the target weight while gaining weight.",
-    "needsWeight": "Add a weight to see a suggestion."
+    "needsWeight": "Add a weight to see a suggestion.",
+    "sinceToday": "Since today",
+    "changed": "Daily target now {kcal} kcal from today"
   },
   "weight": {
     "title": "Weight",
@@ -113,6 +129,31 @@
     "maintain": "Maintain",
     "lose": "Lose",
     "gain": "Gain",
-    "save": "Save pet"
+    "save": "Save pet",
+    "errors": {
+      "name": "Enter a name",
+      "birthDate": "Enter a birth date, today or earlier",
+      "birthYear": "Enter a birth year",
+      "age": "Enter an age above 0",
+      "targetWeight": "Enter a target weight above 0 kg",
+      "weight": "Enter a weight above 0 kg",
+      "ownTarget": "Enter a target above 0 kcal"
+    },
+    "errorNames": {
+      "name": "name",
+      "birthDate": "birth date",
+      "birthYear": "birth year",
+      "age": "age",
+      "targetWeight": "target weight",
+      "weight": "current weight",
+      "ownTarget": "daily target"
+    }
+  },
+  "date": {
+    "since": "since {date}",
+    "sinceToday": "since today"
+  },
+  "form": {
+    "thingsToFix": "{count, plural, one {# thing to fix before saving:} other {# things to fix before saving:}}"
   }
 }

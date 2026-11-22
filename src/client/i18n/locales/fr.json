@@ -6,7 +6,8 @@
     "insights": "Tendances",
     "stock": "Stock",
     "pets": "Animaux",
-    "settings": "Réglages"
+    "settings": "Réglages",
+    "version": "Version {version}"
   },
   "action": {
     "close": "Fermer",
@@ -40,7 +41,20 @@
       "maintain": "maintenir le poids",
       "lose": "perdre du poids",
       "gain": "prendre du poids"
-    }
+    },
+    "emptyTitle": "Ajoutez votre premier animal",
+    "emptyBody": "Bowl & Belly calcule un objectif calorique quotidien pour chaque animal, puis suit ce qu’il mange par rapport à cet objectif.",
+    "archive": "Archiver l’animal",
+    "archiveTitle": "Archiver {name} ?",
+    "archiveBody": "Ses repas, ses pesées et ses objectifs sont conservés. Il disparaîtra du sélecteur d’animal, et vous pourrez le restaurer à tout moment depuis Animaux archivés, dans l’onglet Animaux.",
+    "archiveBodyDesktop": "Ses repas, ses pesées et ses objectifs sont conservés. Il disparaîtra du sélecteur d’animal, et vous pourrez le restaurer à tout moment depuis Animaux archivés.",
+    "archiveConfirm": "Archiver",
+    "archivedLink": "Animaux archivés ({count})",
+    "archivedTitle": "Animaux archivés",
+    "archivedHint": "L’historique est conservé. Restaurez un animal pour enregistrer à nouveau ses repas.",
+    "archivedRow": "{type} · archivé le {date}",
+    "restore": "Restaurer",
+    "restoreNamed": "Restaurer {name}"
   },
   "target": {
     "title": "Objectif quotidien",
@@ -48,9 +62,9 @@
     "perDaySuggested": "kcal / jour, suggéré",
     "setOwn": "Définir mon propre objectif",
     "setOwnHint": "Pour une recommandation du vétérinaire ou un régime particulier.",
-    "calculatedSince": "Calculé depuis le {date}.",
-    "calculatedSinceHow": "Calculé depuis le {date} : besoins au repos de {resting} kcal × {factor} pour {profile}.",
-    "manualSince": "Défini par vous depuis le {date}.",
+    "calculatedSince": "Calculé {since}.",
+    "calculatedSinceHow": "Calculé {since} : besoins au repos de {resting} kcal × {factor} pour {profile}.",
+    "manualSince": "Défini par vous {since}.",
     "none": "Pas encore d’objectif quotidien.",
     "profile": {
       "adultNeuteredNormal": "un adulte stérilisé à l’activité normale",
@@ -76,7 +90,9 @@
     "useSuggested": "Utiliser les {kcal} kcal suggérés",
     "basedOnTargetLose": "D’après le poids cible, pendant la perte de poids.",
     "basedOnTargetGain": "D’après le poids cible, pendant la prise de poids.",
-    "needsWeight": "Ajoutez un poids pour voir une suggestion."
+    "needsWeight": "Ajoutez un poids pour voir une suggestion.",
+    "sinceToday": "Depuis aujourd’hui",
+    "changed": "Objectif quotidien désormais de {kcal} kcal à partir d’aujourd’hui"
   },
   "weight": {
     "title": "Poids",
@@ -113,6 +129,31 @@
     "maintain": "Maintenir",
     "lose": "Perdre",
     "gain": "Prendre",
-    "save": "Enregistrer l’animal"
+    "save": "Enregistrer l’animal",
+    "errors": {
+      "name": "Saisissez un nom",
+      "birthDate": "Saisissez une date de naissance, aujourd’hui ou avant",
+      "birthYear": "Saisissez une année de naissance",
+      "age": "Saisissez un âge supérieur à 0",
+      "targetWeight": "Saisissez un poids cible supérieur à 0 kg",
+      "weight": "Saisissez un poids supérieur à 0 kg",
+      "ownTarget": "Saisissez un objectif supérieur à 0 kcal"
+    },
+    "errorNames": {
+      "name": "nom",
+      "birthDate": "date de naissance",
+      "birthYear": "année de naissance",
+      "age": "âge",
+      "targetWeight": "poids cible",
+      "weight": "poids actuel",
+      "ownTarget": "objectif quotidien"
+    }
+  },
+  "date": {
+    "since": "depuis le {date}",
+    "sinceToday": "depuis aujourd’hui"
+  },
+  "form": {
+    "thingsToFix": "{count, plural, one {# point à corriger avant d’enregistrer :} other {# points à corriger avant d’enregistrer :}}"
   }
 }

@@ -48,7 +48,10 @@ export function usePetTypes() {
   });
 }
 
-/** Creates the pet, or updates it when `id` is given. Resolves to the pet's id. */
+/**
+ * Creates the pet, or updates it when `id` is given. Resolves to the pet's id
+ * and, after an update, to the new daily target if the edit changed it.
+ */
 export function useSavePet(id: number | undefined) {
   const queryClient = useQueryClient();
 
@@ -59,13 +62,41 @@ export function useSavePet(id: number | undefined) {
         if (!response.ok) {
           throw new Error("Could not create the pet");
         }
-        return (await response.json()).id;
+        return { id: (await response.json()).id, targetKcal: null };
       }
       const response = await pets[":id"].$put({ param: { id: String(id) }, json });
       if (!response.ok) {
         throw new Error("Could not update the pet");
       }
-      return id;
+      return { id, targetKcal: (await response.json()).targetKcal };
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["pets"] }),
+  });
+}
+
+export function useArchivedPets() {
+  return useQuery({
+    queryKey: ["pets", "archived"],
+    queryFn: async () => {
+      const response = await pets.archived.$get();
+      if (!response.ok) {
+        throw new Error("Could not load archived pets");
+      }
+      return response.json();
+    },
+  });
+}
+
+/** Archives a pet, or restores an archived one. */
+export function useSetArchived(action: "archive" | "restore") {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const response = await pets[":id"][action].$post({ param: { id: String(id) } });
+      if (!response.ok) {
+        throw new Error(`Could not ${action} the pet`);
+      }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["pets"] }),
   });

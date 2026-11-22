@@ -3,11 +3,18 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { ACTIVITY_LEVELS, GOALS } from "../../shared/enums.js";
 import { ageInMonths, explainTarget } from "../../shared/target.js";
-import { BackIcon, CameraIcon, ChevronDownIcon, CloseIcon } from "../components/icons.js";
+import {
+  AlertIcon,
+  BackIcon,
+  CameraIcon,
+  ChevronDownIcon,
+  CloseIcon,
+} from "../components/icons.js";
 import { button } from "../components/ui/button.js";
 import { Card, CardHeading } from "../components/ui/Card.js";
 import { Field, inputClass } from "../components/ui/Field.js";
 import { Segmented } from "../components/ui/Segmented.js";
+import { useSnackbar } from "../components/ui/Snackbar.js";
 import { Switch } from "../components/ui/Switch.js";
 import { parsePositive, petTypeLabel } from "../lib/format.js";
 import {
@@ -70,9 +77,9 @@ function birthDateOf(form: FormState, today: string, original: PetDetail | undef
   }
   if (form.ageMode === "year") {
     const year = Number(form.birthYear);
-    // Mid-year, so the age is never more than six months out.
-    const date = `${form.birthYear}-07-01`;
-    return Number.isInteger(year) && year > 1900 && `${year}-01-01` <= today ? date : null;
+    // 1 January, so the age reads as this year minus the birth year.
+    const date = `${year}-01-01`;
+    return Number.isInteger(year) && year > 1900 && date <= today ? date : null;
   }
   const years = parsePositive(form.ageYears);
   if (years === null) {
@@ -90,13 +97,30 @@ function birthDateOf(form: FormState, today: string, original: PetDetail | undef
   return born.toISOString().slice(0, 10);
 }
 
+type FieldName = "name" | "birth" | "targetWeight" | "weight" | "ownTarget";
+type ErrorKey =
+  | "name"
+  | "birthDate"
+  | "birthYear"
+  | "age"
+  | "targetWeight"
+  | "weight"
+  | "ownTarget";
+
+/** Top to bottom on the form: the first invalid one takes focus. */
+const FIELD_ORDER: FieldName[] = ["name", "birth", "targetWeight", "weight", "ownTarget"];
+const BIRTH_ERROR = { exact: "birthDate", year: "birthYear", estimated: "age" } as const;
+
 function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { data: petTypes } = usePetTypes();
   const save = useSavePet(pet?.id);
   const fileInput = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState(() => initialState(pet));
+  const [shown, setShown] = useState<ReadonlyMap<FieldName, ErrorKey>>(new Map());
+  const [attempted, setAttempted] = useState(false);
+  const showSnackbar = useSnackbar();
   const set = <Key extends keyof FormState>(key: Key, value: FormState[Key]) =>
     setForm((current) => ({ ...current, [key]: value }));
 
@@ -127,37 +151,79 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
   const closeLink = pet ? `/pets/${pet.id}` : "/pets";
   const title = pet ? t("pets.edit") : t("pets.add");
 
-  const body: PetBody | null =
-    form.name.trim() !== "" &&
-    petTypeId !== null &&
-    birthDate !== null &&
-    (!hasWeightGoal || targetWeightKg !== null) &&
-    (form.weight.trim() === "" || weightKg !== null) &&
-    (!form.ownTarget || ownKcal !== null)
-      ? {
-          name: form.name,
-          petTypeId,
-          photoId: form.photoId,
-          birthDate,
-          birthDatePrecision: form.ageMode,
-          neutered: form.neutered,
-          activityLevel: form.activityLevel,
-          goal: form.goal,
-          targetWeightG:
-            hasWeightGoal && targetWeightKg !== null ? Math.round(targetWeightKg * 1000) : null,
-          weightG: weightKg === null ? null : Math.round(weightKg * 1000),
-          manualTargetKcal: ownTarget && ownKcal !== null ? Math.round(ownKcal) : null,
+  const problems = new Map<FieldName, ErrorKey>();
+  if (form.name.trim() === "") {
+    problems.set("name", "name");
+  }
+  if (birthDate === null) {
+    problems.set("birth", BIRTH_ERROR[form.ageMode]);
+  }
+  if (hasWeightGoal && targetWeightKg === null) {
+    problems.set("targetWeight", "targetWeight");
+  }
+  if (form.weight.trim() !== "" && weightKg === null) {
+    problems.set("weight", "weight");
+  }
+  // A custom type may be left without a target; an own target switched on may not.
+  if (ownTarget && ownKcal === null && (systemKey !== null || form.ownTargetKcal.trim() !== "")) {
+    problems.set("ownTarget", "ownTarget");
+  }
+
+  const errorFor = (field: FieldName) => {
+    const error = shown.get(field);
+    return error && t(`petForm.errors.${error}`);
+  };
+  // After a failed save, each field is checked again as the user leaves it.
+  const recheck = (field: FieldName) => () => {
+    if (attempted) {
+      setShown((current) => {
+        const next = new Map(current);
+        const problem = problems.get(field);
+        if (problem) {
+          next.set(field, problem);
+        } else {
+          next.delete(field);
         }
-      : null;
+        return next;
+      });
+    }
+  };
+  const shownInOrder = FIELD_ORDER.flatMap((field) => shown.get(field) ?? []);
 
   const submit = () => {
-    if (body) {
-      save.mutate(body, { onSuccess: (id) => navigate(`/pets/${id}`) });
+    const [firstInvalid] = problems.keys();
+    if (firstInvalid || petTypeId === null || birthDate === null) {
+      setShown(problems);
+      setAttempted(true);
+      document.getElementById(`pet-${firstInvalid}`)?.focus();
+      return;
     }
+    const body: PetBody = {
+      name: form.name,
+      petTypeId,
+      photoId: form.photoId,
+      birthDate,
+      birthDatePrecision: form.ageMode,
+      neutered: form.neutered,
+      activityLevel: form.activityLevel,
+      goal: form.goal,
+      targetWeightG:
+        hasWeightGoal && targetWeightKg !== null ? Math.round(targetWeightKg * 1000) : null,
+      weightG: weightKg === null ? null : Math.round(weightKg * 1000),
+      manualTargetKcal: ownTarget && ownKcal !== null ? Math.round(ownKcal) : null,
+    };
+    save.mutate(body, {
+      onSuccess: (saved) => {
+        void navigate(`/pets/${saved.id}`);
+        if (saved.targetKcal !== null) {
+          showSnackbar(t("target.changed", { kcal: saved.targetKcal }));
+        }
+      },
+    });
   };
 
   const saveButton = (className: string) => (
-    <button type="button" className={className} disabled={!body || save.isPending} onClick={submit}>
+    <button type="button" className={className} disabled={save.isPending} onClick={submit}>
       {t("petForm.save")}
     </button>
   );
@@ -179,6 +245,24 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
           {title}
         </h1>
       </header>
+
+      {shownInOrder.length > 0 && (
+        <div
+          role="alert"
+          className="mx-5 mb-3.5 flex items-start gap-2.5 rounded-xl bg-danger-soft px-3.5 py-3 text-sm leading-5 text-danger-strong desktop:m-0 desktop:px-4 desktop:py-3.5 desktop:text-[15px] desktop:leading-[22px]"
+        >
+          <span className="flex-none">
+            <AlertIcon size={20} />
+          </span>
+          <span>
+            <strong>{t("form.thingsToFix", { count: shownInOrder.length })}</strong>{" "}
+            {new Intl.ListFormat(i18n.language, { type: "conjunction" }).format(
+              shownInOrder.map((error) => t(`petForm.errorNames.${error}`)),
+            )}
+            .
+          </span>
+        </div>
+      )}
 
       <div className="grid flex-1 content-start gap-3.5 px-5 pt-1 pb-4 desktop:grid-cols-2 desktop:items-start desktop:gap-6 desktop:p-0">
         <div className="flex min-w-0 flex-col gap-3.5 desktop:gap-6">
@@ -219,7 +303,10 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             </div>
             <div className="flex flex-col gap-3.5 desktop:grid desktop:grid-cols-2 desktop:gap-4">
               <Field
+                id="pet-name"
                 label={t("petForm.name")}
+                error={errorFor("name")}
+                onBlur={recheck("name")}
                 value={form.name}
                 onChange={(name) => set("name", name)}
               />
@@ -263,6 +350,9 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             />
             {form.ageMode === "exact" && (
               <Field
+                id="pet-birth"
+                error={errorFor("birth")}
+                onBlur={recheck("birth")}
                 label={t("petForm.birthDate")}
                 type="date"
                 max={today}
@@ -272,6 +362,9 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             )}
             {form.ageMode === "year" && (
               <Field
+                id="pet-birth"
+                error={errorFor("birth")}
+                onBlur={recheck("birth")}
                 label={t("petForm.birthYear")}
                 inputMode="numeric"
                 value={form.birthYear}
@@ -280,6 +373,9 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             )}
             {form.ageMode === "estimated" && (
               <Field
+                id="pet-birth"
+                error={errorFor("birth")}
+                onBlur={recheck("birth")}
                 label={t("petForm.age")}
                 inputMode="decimal"
                 suffix={t("petForm.years")}
@@ -317,6 +413,9 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             />
             {hasWeightGoal && (
               <Field
+                id="pet-targetWeight"
+                error={errorFor("targetWeight")}
+                onBlur={recheck("targetWeight")}
                 label={t("weight.target")}
                 inputMode="decimal"
                 suffix={t("weight.kg")}
@@ -329,6 +428,9 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
           <Card>
             <CardHeading title={t("weight.title")} />
             <Field
+              id="pet-weight"
+              error={errorFor("weight")}
+              onBlur={recheck("weight")}
               label={t("weight.current")}
               inputMode="decimal"
               suffix={t("weight.kg")}
@@ -380,6 +482,9 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             )}
             {ownTarget && (
               <Field
+                id="pet-ownTarget"
+                error={errorFor("ownTarget")}
+                onBlur={recheck("ownTarget")}
                 label={t("target.field")}
                 inputMode="numeric"
                 suffix="kcal"
