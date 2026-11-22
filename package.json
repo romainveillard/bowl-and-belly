@@ -1,0 +1,16 @@
+{
+  "name": "bowl-and-belly",
+  "version": "0.0.0",
+  "description": "Self-hosted PWA for tracking pets' food intake and weight",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {},
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "typescript": "^7.0.2"
+  }
+}
