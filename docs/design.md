@@ -59,6 +59,8 @@ The daily target is RER times a factor from the 2021 AAHA Nutrition and Weight M
 
 - `activity_level` is `'inactive' | 'normal' | 'active'`. The dog inactive factor is the midpoint of AAHA's 1.0–1.2.
 - A weight-gain goal uses the adult factor applied to RER at target weight; AAHA gives no separate gain factor.
+- Otherwise RER uses the latest weigh-in. Until the weight a case needs is known (no weigh-in yet, or no target weight), there is no calculated target.
+- Growing pets are always fed for their current weight: the growth case comes first, so a weight goal only takes effect from 12 months. Age is counted in completed calendar months from the birth date.
 - Pregnancy, lactation and working dogs are out of scope and use the manual override. Large-breed dogs keep growing past 12 months, which also needs the override.
 
 * Changing neutered status, activity, goal or the manual override inserts a new target row effective from today.
