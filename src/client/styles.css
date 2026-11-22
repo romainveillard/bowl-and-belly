@@ -21,6 +21,9 @@
   --color-wet: #ddebff;
   --color-dry: #fce4cc;
 
+  /* From this width the sidebar replaces the bottom bar. */
+  --breakpoint-desktop: 860px;
+
   --font-sans: "Inter Variable", system-ui, sans-serif;
   --font-display: "Outfit", system-ui, sans-serif;
 
