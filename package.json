@@ -12,7 +12,8 @@
     "typecheck": "tsc -p tsconfig.server.json --noEmit",
     "lint": "oxlint",
     "format": "oxfmt",
-    "format:check": "oxfmt --check"
+    "format:check": "oxfmt --check",
+    "test": "vitest run"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.11",
@@ -24,7 +25,8 @@
     "oxlint": "1.94.0",
     "oxlint-tsgolint": "7.0.2008",
     "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.1"
   },
   "engines": {
     "node": ">=24"
