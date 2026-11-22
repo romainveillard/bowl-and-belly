@@ -82,6 +82,23 @@ export const petsRoutes = new Hono()
 
     return c.json({ today: day, pets, archivedCount: archived?.count ?? 0 });
   })
+  .get("/archived", (c) =>
+    c.json(
+      db
+        .select({
+          id: pet.id,
+          name: pet.name,
+          type: petTypeLabel,
+          photoId: pet.photoId,
+          archivedAt: pet.archivedAt,
+        })
+        .from(pet)
+        .innerJoin(petType, eq(pet.petTypeId, petType.id))
+        .where(isNotNull(pet.archivedAt))
+        .orderBy(desc(pet.archivedAt))
+        .all(),
+    ),
+  )
   .get("/:id", validate("param", idParam), (c) => {
     const { id } = c.req.valid("param");
     const row = db
@@ -185,4 +202,14 @@ export const petsRoutes = new Hono()
       .returning({ id: pet.id })
       .get();
     return archived ? c.body(null, 204) : c.json({ code: "not_found" as const }, 404);
+  })
+  .post("/:id/restore", validate("param", idParam), (c) => {
+    const { id } = c.req.valid("param");
+    const restored = db
+      .update(pet)
+      .set({ archivedAt: null })
+      .where(and(eq(pet.id, id), isNotNull(pet.archivedAt)))
+      .returning({ id: pet.id })
+      .get();
+    return restored ? c.body(null, 204) : c.json({ code: "not_found" as const }, 404);
   });
