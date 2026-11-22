@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="10 24 180 180" role="img"><title>Bowl &amp; Belly</title>
+<polygon points="74,86 80,52 98,70" fill="#FFC9A3" stroke="#FFC9A3" stroke-width="10" stroke-linejoin="round"/>
+<polygon points="126,86 120,52 102,70" fill="#FFC9A3" stroke="#FFC9A3" stroke-width="10" stroke-linejoin="round"/>
+<circle cx="100" cy="104" r="34" fill="#FFC9A3"/>
+<circle cx="88" cy="100" r="5.5" fill="#1F2A44"/><circle cx="112" cy="100" r="5.5" fill="#1F2A44"/>
+<path d="M24 122 H176 Q172 182 100 182 Q28 182 24 122 Z" fill="#F08A4B"/>
+<rect x="16" y="112" width="168" height="18" rx="9" fill="#CE7741"/>
+</svg>
