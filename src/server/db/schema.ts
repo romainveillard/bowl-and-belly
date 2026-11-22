@@ -111,7 +111,6 @@ export const pet = sqliteTable(
     activityLevel: text({ enum: ACTIVITY_LEVELS }).notNull(),
     goal: text({ enum: GOALS }).notNull(),
     targetWeightG: integer(),
-    weightDecimals: integer().notNull().default(1),
     archivedAt: archivedAt(),
   },
   (t) => [
@@ -124,7 +123,6 @@ export const pet = sqliteTable(
       "pet_goal_has_target_weight",
       sql`${t.goal} = 'maintain' OR ${t.targetWeightG} IS NOT NULL`,
     ),
-    check("pet_weight_decimals", sql`${t.weightDecimals} IN (1, 2)`),
   ],
 );
 
