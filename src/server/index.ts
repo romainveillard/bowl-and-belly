@@ -2,7 +2,7 @@ import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono, type Context } from "hono";
 import { app } from "./app.js";
-import { sqlite } from "./db/client.js";
+import { db } from "./db/client.js";
 
 const clientDir = "dist/client";
 
@@ -31,7 +31,7 @@ const server = serve({ fetch: web.fetch, port }, (info) => {
 for (const signal of ["SIGINT", "SIGTERM"] as const) {
   process.on(signal, () => {
     server.close(() => {
-      sqlite.close();
+      db.$client.close();
       process.exit(0);
     });
   });

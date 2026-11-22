@@ -15,6 +15,7 @@ ENV NODE_ENV=production PORT=3000 DATA_DIR=/data
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
+COPY drizzle ./drizzle
 COPY package.json ./
 RUN mkdir /data && chown node:node /data
 USER node
