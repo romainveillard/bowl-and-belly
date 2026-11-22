@@ -25,7 +25,7 @@ The MVP covers profiles, food stock, feed logging with leftovers, weight, and in
 **In the MVP**
 
 - **Pets:** name, type, photo, birth date, neutered status, activity level, goal, calculated or manual daily target.
-- **Weight log:** per-pet entries, display precision of 0.1 or 0.01 kg.
+- **Weight log:** per-pet entries, entered with up to two decimals.
 - **Foods and stock:** brand, name, photo, kcal, food type, pet type, optional portion size, running stock in grams or portions, archiving.
 - **Feed logging:** recents-first food picker, prefilled amount, "log again" on any entry, leftovers.
 - **Timeline:** entries grouped by day, kcal vs target per day.
@@ -96,7 +96,7 @@ Timestamps are stored in UTC. One app-wide IANA time zone (e.g. Europe/London) a
 
 ### Weights and birth dates
 
-Weights are stored as integer grams and displayed in kg at the pet's chosen precision (0.1 or 0.01). Birth date is stored with a precision flag (exact, year, estimated); entering an age produces an estimated date, shown as "about 6".
+Weights are stored as integer grams. The weight field accepts up to two decimals (kg), and there is no precision setting: each reading is shown as entered, with trailing zeros stripped but at least one decimal (4.52 kg, 4.5 kg, 4.0 kg). Derived values (rolling average, chart axis, pets list) always show one decimal. Birth date is stored with a precision flag (exact, year, estimated); entering an age produces an estimated date, shown as "about 6".
 
 ## Data model
 
@@ -117,7 +117,7 @@ pet           (id, name, pet_type_id, photo_id NULL,
                birth_date, birth_date_precision,                  -- 'exact' | 'year' | 'estimated'
                neutered, activity_level,
                goal, target_weight_g NULL,                        -- 'maintain' | 'lose' | 'gain'
-               weight_decimals, archived_at)                      -- 1 | 2
+               archived_at)
 pet_target    (id, pet_id, effective_from, kcal_per_day,          -- app day, unique per pet
                source)                                            -- 'calculated' | 'manual'
 weight_entry  (id, pet_id, measured_at, weight_g)
@@ -145,7 +145,7 @@ feed_entry    (id, pet_id, food_id, fed_at,                       -- UTC
 
 ## Screens and UX
 
-Seven screens, mobile-first, installable as a PWA. A bottom bar holds five tabs (Today, History, Insights, Stock, Pets); Settings opens from a gear icon on Today. The pet switcher appears only when there is more than one pet, and defaults to the last pet used.
+Seven screens, mobile-first, installable as a PWA. A bottom bar holds five tabs (Today, History, Insights, Stock, Pets); Settings opens from a gear icon on Today. Each tab's main action (Log feed, Add pet, Add food) is a floating button in the same spot, bottom right above the bar. Pet-specific screens (Today, Insights, Log feed) show a pet chip with photo and name; with two or more pets, tapping it opens the pet switcher sheet (each pet with today's kcal, plus "Manage pets"), and the choice carries across screens. With one pet the chip is not tappable. The last pet used is the default.
 
 | Screen | What it does |
 | --- | --- |
@@ -153,7 +153,7 @@ Seven screens, mobile-first, installable as a PWA. A bottom bar holds five tabs 
 | Log feed (bottom sheet) | Recents-first food picker with wet/dry badge, brand on a muted second line, and stock left in the food's own unit ("8 pouches left"); search and type filter chips above. Grams prefilled with the last amount for that pet and food, g/portion toggle, time defaults to now. Shows the "left over from last feed?" prompt when relevant: two lines at most, and leaving it empty means nothing was left. |
 | History | Entries grouped by day. Day header shows kcal vs target; tapping it expands a breakdown per food type (grams and kcal). Entries use the feed row style (see Feed rows below). |
 | Insights | Day / week / month toggle. Intake bars with the target line (week and month show average daily kcal). Weight chart stacked below on the same time axis, raw points plus rolling average. |
-| Pets | Profile, weight log, target history; "Update target from new weight?" prompt after a weigh-in. |
+| Pets | List of pet cards (photo, type, age, weight, today's kcal vs target), archived pets link, and Add pet. The profile shows the daily target with how it was calculated and "Set my own target", weight with a sparkline, recent weigh-ins and Log weight, target history, and Archive pet. See "Pet forms and target prompts" below. |
 | Stock | Foods with stock level in their own unit; quick restock; add, edit and archive (the food form follows "Stock and portions" above). Editing kcal triggers the "update existing logs?" choice. |
 | Settings | Time zone, day start time, pet types, food types, language, scheduled backups (opt-in), backup download. |
 
@@ -166,11 +166,21 @@ Used on Today and History. A food-type tile on the left (blue drop for wet, peac
 - **Delete** shows an undo snackbar above the bottom bar for about 5 seconds, naming the entry ("07:30 · Salmon kibbles · 20 g"). One snackbar at a time: a new delete makes the previous one final. Undo restores the entry, the day's total and the stock.
 - **Discoverability:** the first time Today shows entries, the top row peeks a few pixels to reveal the swipe colours, then settles back. No hint text.
 
+### Pet forms and target prompts
+
+- **Add and edit pet** share one form: details (photo, name, type), age (birth date, year or age; an age is saved as an estimate), health and goal, current weight, and daily target. Neutered is a Yes/No choice. Choosing Lose or Gain reveals a target weight field, and the suggestion then uses it.
+- **Daily target** on the form shows the live suggestion, with a "Set my own target" switch for a manual value. Custom pet types have no suggestion and only offer the manual value.
+- **Saving an edit that changes the target** (neutered, activity, goal, target weight) shows a snackbar such as "Daily target now 238 kcal from today".
+- **Log weight** is a sheet with weight and date (default today), showing the last reading.
+- **After a weigh-in**, if the suggested target differs, a dialog compares current and suggested targets with "Update to …" and "Keep …". It applies from today; past days keep their target.
+- **Set my own target** is a sheet with a kcal/day field and a way back to the suggested value. It also applies from today.
+
 ## UI design
 
 - **Components:** Tailwind CSS with shadcn/ui. Colour tokens use shadcn's names, so they drop straight into its theme.
 - **Colours:** foreground `#1F2A44`, primary `#F08A4B`, primary-strong `#CE7741`, accent `#FFC9A3`, accent-soft `#FFE6D4`, background `#F6F7F9`, card `#FFFFFF`, muted `#EEF0F4`, border `#E3E6EC`, muted-foreground `#5B6478`, success `#2F7D53`, warning `#9A6412`, danger `#B93A32`.
 - **Primary buttons** use navy text on orange (about 5.3:1). White on the brand orange fails contrast.
+- **Controls:** switches only turn a feature on or off (portions, own target). Facts and choices (neutered, activity, goal, units) use segmented controls or chips.
 - **Type:** Outfit SemiBold for headings and figures (tabular numbers), Inter for everything else. Both fonts are bundled with the app, so nothing is fetched from a font service. 4 px spacing grid, touch targets at least 44 px, radii from 8 px (inputs) to 24 px (sheet tops).
 - **Charts:** intake bars in primary, days over target in primary-strong, today's partial bar in accent and left out of averages, target as a dashed navy line; weight as faint raw points with a primary rolling-average line.
 - **Dark mode** is out of scope for the MVP, but every colour is a token so it can be added later.
