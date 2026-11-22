@@ -11,4 +11,4 @@ export const sqlite: Database.Database = new Database(path.join(dataDir, "bowl-a
 sqlite.pragma("journal_mode = WAL");
 sqlite.pragma("foreign_keys = ON");
 
-export const db = drizzle(sqlite, { schema });
+export const db = drizzle(sqlite, { schema, casing: "snake_case" });

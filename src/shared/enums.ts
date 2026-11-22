@@ -1,0 +1,8 @@
+export const PET_TYPE_KEYS = ["cat", "dog"] as const;
+export const FOOD_TYPE_KEYS = ["wet", "dry"] as const;
+export const BIRTH_DATE_PRECISIONS = ["exact", "year", "estimated"] as const;
+export const ACTIVITY_LEVELS = ["inactive", "normal", "active"] as const;
+export const GOALS = ["maintain", "lose", "gain"] as const;
+export const TARGET_SOURCES = ["calculated", "manual"] as const;
+export const STOCK_UNITS = ["g", "portion"] as const;
+export const BACKUP_FREQUENCIES = ["daily", "weekly"] as const;
