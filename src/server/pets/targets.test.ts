@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { openDatabase } from "../db/open.js";
 import { pet, petTarget, petType, weightEntry } from "../db/schema.js";
-import { setTarget, suggestedKcal, syncCalculatedTarget, targetOn } from "./targets.js";
+import { chooseTarget, suggestedKcal, targetOn } from "./targets.js";
 
 // A neutered adult cat with normal activity: 238 kcal at 4 kg, 277 once active.
 function catWeighing(weightG: number | null) {
@@ -28,11 +28,11 @@ function catWeighing(weightG: number | null) {
   return { db, id };
 }
 
-describe("syncCalculatedTarget", () => {
+describe("chooseTarget", () => {
   it("starts the target history from the pet's profile", () => {
     const { db, id } = catWeighing(4000);
 
-    expect(syncCalculatedTarget(db, id, "2026-11-10")).toBe(238);
+    expect(chooseTarget(db, id, "2026-11-10", null)).toBe(238);
     expect(targetOn(db, id, "2026-11-10")).toEqual({
       effectiveFrom: "2026-11-10",
       kcalPerDay: 238,
@@ -42,19 +42,19 @@ describe("syncCalculatedTarget", () => {
 
   it("keeps the old target on earlier days when the profile changes", () => {
     const { db, id } = catWeighing(4000);
-    syncCalculatedTarget(db, id, "2026-11-10");
+    chooseTarget(db, id, "2026-11-10", null);
     db.update(pet).set({ activityLevel: "active" }).run();
 
-    expect(syncCalculatedTarget(db, id, "2026-11-20")).toBe(277);
+    expect(chooseTarget(db, id, "2026-11-20", null)).toBe(277);
     expect(targetOn(db, id, "2026-11-19")?.kcalPerDay).toBe(238);
     expect(targetOn(db, id, "2026-11-20")?.kcalPerDay).toBe(277);
   });
 
   it("replaces the day's row when the profile changes twice in a day", () => {
     const { db, id } = catWeighing(4000);
-    syncCalculatedTarget(db, id, "2026-11-10");
+    chooseTarget(db, id, "2026-11-10", null);
     db.update(pet).set({ activityLevel: "active" }).run();
-    syncCalculatedTarget(db, id, "2026-11-10");
+    chooseTarget(db, id, "2026-11-10", null);
 
     expect(db.select().from(petTarget).all()).toMatchObject([
       { effectiveFrom: "2026-11-10", kcalPerDay: 277 },
@@ -63,25 +63,29 @@ describe("syncCalculatedTarget", () => {
 
   it("adds nothing to the history when the result is unchanged", () => {
     const { db, id } = catWeighing(4000);
-    syncCalculatedTarget(db, id, "2026-11-10");
+    chooseTarget(db, id, "2026-11-10", null);
 
-    expect(syncCalculatedTarget(db, id, "2026-11-20")).toBeNull();
+    expect(chooseTarget(db, id, "2026-11-20", null)).toBeNull();
     expect(db.select().from(petTarget).all()).toHaveLength(1);
   });
 
-  it("leaves a target the user set alone", () => {
+  it("keeps a target the user set when the profile changes, until they go back to the formula", () => {
     const { db, id } = catWeighing(4000);
-    setTarget(db, id, "2026-11-10", 250, "manual");
+    expect(chooseTarget(db, id, "2026-11-10", 250)).toBe(250);
     db.update(pet).set({ activityLevel: "active" }).run();
 
-    expect(syncCalculatedTarget(db, id, "2026-11-20")).toBeNull();
+    expect(chooseTarget(db, id, "2026-11-20", 250)).toBeNull();
+    expect(db.select().from(petTarget).all()).toHaveLength(1);
+
+    expect(chooseTarget(db, id, "2026-11-21", null)).toBe(277);
     expect(targetOn(db, id, "2026-11-20")).toMatchObject({ kcalPerDay: 250, source: "manual" });
+    expect(targetOn(db, id, "2026-11-21")).toMatchObject({ kcalPerDay: 277, source: "calculated" });
   });
 
   it("sets no target while the weight is unknown", () => {
     const { db, id } = catWeighing(null);
 
-    expect(syncCalculatedTarget(db, id, "2026-11-10")).toBeNull();
+    expect(chooseTarget(db, id, "2026-11-10", null)).toBeNull();
     expect(targetOn(db, id, "2026-11-10")).toBeUndefined();
   });
 });

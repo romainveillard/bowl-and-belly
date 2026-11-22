@@ -79,18 +79,25 @@ export function setTarget(
 }
 
 /**
- * Brings a calculated target in line with the pet's profile. A target the
- * user set stays theirs. Returns the new value when the target changed.
+ * Applies the user's choice from `day` on: their own value, or the formula's
+ * when `manualKcal` is null. Nothing is written when that is already the
+ * target, so the history only gains a row when something changed. Returns the
+ * new kcal value if it differs from the one in force before.
  */
-export function syncCalculatedTarget(db: DbOrTx, petId: number, day: string): number | null {
-  const current = targetOn(db, petId, day);
-  if (current?.source === "manual") {
+export function chooseTarget(
+  db: DbOrTx,
+  petId: number,
+  day: string,
+  manualKcal: number | null,
+): number | null {
+  const before = targetOn(db, petId, day);
+  const source = manualKcal === null ? "calculated" : "manual";
+  const kcalPerDay = manualKcal ?? suggestedKcal(db, petId, day);
+  if (kcalPerDay === null) {
     return null;
   }
-  const kcalPerDay = suggestedKcal(db, petId, day);
-  if (kcalPerDay === null || kcalPerDay === current?.kcalPerDay) {
-    return null;
+  if (before?.source !== source || before.kcalPerDay !== kcalPerDay) {
+    setTarget(db, petId, day, kcalPerDay, source);
   }
-  setTarget(db, petId, day, kcalPerDay, "calculated");
-  return kcalPerDay;
+  return kcalPerDay === before?.kcalPerDay ? null : kcalPerDay;
 }
