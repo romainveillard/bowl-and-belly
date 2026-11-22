@@ -10,5 +10,10 @@
     "tsBuildInfoFile": "dist/tsconfig.client.tsbuildinfo"
   },
   "include": ["src/client", "src/shared"],
-  "references": [{ "path": "./tsconfig.server.json" }]
+  "references": [
+    {
+      "path": "./tsconfig.server.json"
+    }
+  ],
+  "exclude": ["src/**/*.test.ts"]
 }
