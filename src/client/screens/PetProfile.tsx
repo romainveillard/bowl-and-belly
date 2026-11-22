@@ -1,20 +1,22 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { explainTarget } from "../../shared/target.js";
 import { BackIcon, EditIcon } from "../components/icons.js";
 import { PetAvatar } from "../components/PetAvatar.js";
 import { button } from "../components/ui/button.js";
 import { Card, CardHeading } from "../components/ui/Card.js";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog.js";
 import {
   addDays,
   formatAge,
   formatDay,
   formatKg,
   formatReadingKg,
+  formatSince,
   petTypeLabel,
 } from "../lib/format.js";
-import { usePet, type PetDetail } from "../lib/pets.js";
+import { usePet, useSetArchived, type PetDetail } from "../lib/pets.js";
 import { ManualTargetSheet } from "./ManualTargetSheet.js";
 
 function suggestionFor(pet: PetDetail) {
@@ -81,12 +83,16 @@ export function PetProfile({ petId }: { petId: number }) {
   const locale = i18n.language;
   const { data: pet } = usePet(petId);
   const [settingTarget, setSettingTarget] = useState(false);
+  const [archiving, setArchiving] = useState(false);
+  const archive = useSetArchived("archive");
+  const navigate = useNavigate();
 
   if (!pet) {
     return null;
   }
 
   const day = (value: string | Date) => formatDay(value, pet.today, locale);
+  const since = (value: string) => formatSince(value, pet.today, locale, t);
   const target = pet.targets[0];
   const suggestion = suggestionFor(pet);
   const latest = pet.weights[0];
@@ -100,7 +106,7 @@ export function PetProfile({ petId }: { petId: number }) {
 
   let targetNote = t("target.none");
   if (target?.source === "manual") {
-    targetNote = t("target.manualSince", { date: day(target.effectiveFrom) });
+    targetNote = t("target.manualSince", { since: since(target.effectiveFrom) });
   } else if (target && suggestion?.kcalPerDay === target.kcalPerDay) {
     let profile: string;
     if (suggestion.basis === "adult") {
@@ -114,13 +120,13 @@ export function PetProfile({ petId }: { petId: number }) {
       profile = t("target.profile.atTargetWeight", { profile });
     }
     targetNote = t("target.calculatedSinceHow", {
-      date: day(target.effectiveFrom),
+      since: since(target.effectiveFrom),
       resting: suggestion.restingKcal,
       factor: new Intl.NumberFormat(locale).format(suggestion.factor),
       profile,
     });
   } else if (target) {
-    targetNote = t("target.calculatedSince", { date: day(target.effectiveFrom) });
+    targetNote = t("target.calculatedSince", { since: since(target.effectiveFrom) });
   }
 
   const editLink = `/pets/${pet.id}/edit`;
@@ -225,7 +231,9 @@ export function PetProfile({ petId }: { petId: number }) {
                         from: day(row.effectiveFrom),
                         to: day(addDays(next.effectiveFrom, -1)),
                       })
-                    : t("target.since", { date: day(row.effectiveFrom) }),
+                    : row.effectiveFrom === pet.today
+                      ? t("target.sinceToday")
+                      : t("target.since", { date: day(row.effectiveFrom) }),
                   note: t(`target.${row.source}`),
                   value: t("target.kcal", { kcal: row.kcalPerDay }),
                 };
@@ -233,7 +241,29 @@ export function PetProfile({ petId }: { petId: number }) {
             />
           </Card>
         )}
+
+        <button
+          type="button"
+          className={`${button.dangerGhost} self-center desktop:self-start`}
+          onClick={() => setArchiving(true)}
+        >
+          {t("pets.archive")}
+        </button>
       </div>
+
+      <ConfirmDialog
+        open={archiving}
+        onOpenChange={setArchiving}
+        title={t("pets.archiveTitle", { name: pet.name })}
+        description={
+          <>
+            <span className="desktop:hidden">{t("pets.archiveBody")}</span>
+            <span className="hidden desktop:inline">{t("pets.archiveBodyDesktop")}</span>
+          </>
+        }
+        confirmLabel={t("pets.archiveConfirm")}
+        onConfirm={() => archive.mutate(pet.id, { onSuccess: () => navigate("/pets") })}
+      />
 
       {settingTarget && (
         <ManualTargetSheet

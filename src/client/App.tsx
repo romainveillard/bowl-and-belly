@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Outlet, Route, Routes } from "react-router";
 import { BottomNav, Sidebar } from "./components/Navigation.js";
+import { ArchivedPetsScreen } from "./screens/ArchivedPetsScreen.js";
 import { PetFormScreen } from "./screens/PetFormScreen.js";
 import { PetsScreen } from "./screens/PetsScreen.js";
 
@@ -43,6 +44,7 @@ export function App() {
         <Route path="insights" element={<ScreenTitle label="insights" />} />
         <Route path="stock" element={<ScreenTitle label="stock" />} />
         <Route path="pets" element={<PetsScreen />} />
+        <Route path="pets/archived" element={<ArchivedPetsScreen />} />
         <Route path="pets/:petId" element={<PetsScreen />} />
         <Route path="settings" element={<ScreenTitle label="settings" />} />
       </Route>

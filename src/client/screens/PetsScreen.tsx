@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
-import { PlusIcon } from "../components/icons.js";
+import { ChevronRightIcon, PetsIcon, PlusIcon } from "../components/icons.js";
 import { PetAvatar } from "../components/PetAvatar.js";
 import { TargetProgress } from "../components/TargetProgress.js";
 import { button } from "../components/ui/button.js";
@@ -20,6 +20,50 @@ export function PetsScreen() {
 
   if (!data) {
     return null;
+  }
+
+  const archivedLink = data.archivedCount > 0 && (
+    <Link
+      to="/pets/archived"
+      className="flex min-h-11 items-center justify-between px-1 text-sm text-muted-foreground"
+    >
+      {t("pets.archivedLink", { count: data.archivedCount })}
+      <ChevronRightIcon size={18} />
+    </Link>
+  );
+
+  if (data.pets.length === 0) {
+    return (
+      <div className="flex min-h-[calc(100dvh-68px-env(safe-area-inset-bottom))] flex-col desktop:min-h-0 desktop:gap-6">
+        <header className="px-5 pt-5 pb-3 desktop:p-0">
+          <h1 className="font-display text-display font-semibold desktop:text-[34px] desktop:leading-10">
+            {t("nav.pets")}
+          </h1>
+        </header>
+        <section className="flex flex-1 flex-col items-center justify-center gap-3.5 px-8 pb-10 text-center desktop:flex-none desktop:rounded-[14px] desktop:bg-card desktop:px-8 desktop:py-20 desktop:inset-ring desktop:inset-ring-border">
+          <span
+            aria-hidden="true"
+            className="flex size-24 flex-none items-center justify-center rounded-full bg-accent-soft text-primary-strong desktop:size-28"
+          >
+            <PetsIcon size={48} />
+          </span>
+          <h2 className="mt-2 font-display text-2xl font-semibold desktop:text-[28px]">
+            {t("pets.emptyTitle")}
+          </h2>
+          <p className="max-w-[300px] text-[15px] leading-[22px] text-muted-foreground desktop:max-w-[420px] desktop:text-base desktop:leading-6">
+            {t("pets.emptyBody")}
+          </p>
+          <Link
+            to="/pets/new"
+            className={`${button.floating} mt-2 h-[52px] shadow-none desktop:px-[26px]`}
+          >
+            <PlusIcon size={20} />
+            {t("pets.add")}
+          </Link>
+        </section>
+        <div className="px-5 desktop:p-0">{archivedLink}</div>
+      </div>
+    );
   }
 
   const openId = params.petId === undefined ? undefined : Number(params.petId);
@@ -85,6 +129,7 @@ export function PetsScreen() {
               </Link>
             );
           })}
+          {archivedLink}
         </div>
 
         {selectedId !== undefined && (
