@@ -71,7 +71,14 @@ A feed entry has an optional leftover in grams; eaten = served − leftover. Whe
 
 ### Stock and portions
 
-Stock is a running total stored in grams for every food. Each food has a stock unit: grams (shown as kg/g) or portions (shown as e.g. "8 pouches + 45g open", and restocked as "+12 pouches"). Portion-counted foods require a portion name and weight. Logging is always in grams, with an optional grams/portions toggle on the amount input. Logging, editing and deleting a feed entry each adjust stock by the difference.
+Stock is a running total stored in grams for every food. Each food has a stock unit: grams (shown as kg/g) or portions (shown as e.g. "8 pouches + 45g open", and restocked as "+12 pouches").
+
+- **Portions are opt-in per food.** A switch on the food form turns them on (off by default) and reveals the portion name and weight. Dry food never has portions: its section is hidden and its stock is always in grams. Every other food type, including custom ones, can use them.
+- **Portion names** are picked from chips (Pouch, Tin, Tray) or typed after choosing Other. The suggested names come from the translation files; the chosen name is stored as plain text in the user's language.
+- **Entering stock** for gram-counted foods has a g/kg toggle, since bags are labelled in kg. It only changes the input; storage stays in grams.
+- **Calories** are entered per 100 g or per kg, as printed on the label, and stored as kcal/kg.
+
+Logging is always in grams, with an optional grams/portions toggle on the amount input for portion-counted foods. Logging, editing and deleting a feed entry each adjust stock by the difference.
 
 Deleting an entry returns its net amount to stock: served minus any leftover already returned. A delete means "logged by mistake", so the food never left the bag. If food was really served and binned, the entry should be edited (leftover not returned), not deleted.
 
@@ -130,17 +137,35 @@ feed_entry    (id, pet_id, food_id, fed_at,                       -- UTC
 
 ## Screens and UX
 
-Seven screens, mobile-first, installable as a PWA. The pet switcher appears only when there is more than one pet, and defaults to the last pet used.
+Seven screens, mobile-first, installable as a PWA. A bottom bar holds five tabs (Today, History, Insights, Stock, Pets); Settings opens from a gear icon on Today. The pet switcher appears only when there is more than one pet, and defaults to the last pet used.
 
 | Screen | What it does |
 | --- | --- |
-| Today (home) | Header with kcal so far vs target; today's entries; a prominent Log button. |
-| Log feed (bottom sheet) | Recents-first food picker with wet/dry badge, brand on a muted second line, last amount for that pet; search and type filter chips below. Grams prefilled, g/portion toggle, time defaults to now. Shows the "left over from last feed?" field when relevant. |
-| History | Entries grouped by day. Day header shows kcal vs target; tapping it expands a breakdown per food type (grams and kcal). Every entry has "Log again" (same food and amount, time now), edit and add-leftover actions. |
+| Today (home) | Card with kcal so far vs target, a progress bar and the wet/dry split; today's entries in the feed row style below; a floating "Log feed" button above the bottom bar. |
+| Log feed (bottom sheet) | Recents-first food picker with wet/dry badge, brand on a muted second line, and stock left in the food's own unit ("8 pouches left"); search and type filter chips above. Grams prefilled with the last amount for that pet and food, g/portion toggle, time defaults to now. Shows the "left over from last feed?" prompt when relevant: two lines at most, and leaving it empty means nothing was left. |
+| History | Entries grouped by day. Day header shows kcal vs target; tapping it expands a breakdown per food type (grams and kcal). Entries use the feed row style (see Feed rows below). |
 | Insights | Day / week / month toggle. Intake bars with the target line (week and month show average daily kcal). Weight chart stacked below on the same time axis, raw points plus rolling average. |
 | Pets | Profile, weight log, target history; "Update target from new weight?" prompt after a weigh-in. |
-| Stock | Foods with stock level in their own unit; quick restock; edit and archive. Editing kcal triggers the "update existing logs?" choice. |
+| Stock | Foods with stock level in their own unit; quick restock; add, edit and archive (the food form follows "Stock and portions" above). Editing kcal triggers the "update existing logs?" choice. |
 | Settings | Time zone, day start time, pet types, food types, language, scheduled backups (opt-in), backup download. |
+
+### Feed rows
+
+Used on Today and History. A food-type tile on the left (blue drop for wet, peach kibbles for dry), the food name with "14:30 · 20 g · 4 g left" underneath, and kcal on the right. Nothing wraps: long names end with "…".
+
+- **Tap** opens the entry's actions: edit, add leftover, log again (same food and amount, time now).
+- **Swipe right** logs it again; **swipe left** deletes it. Both are shortcuts for actions also in the tap menu.
+- **Delete** shows an undo snackbar above the bottom bar for about 5 seconds, naming the entry ("07:30 · Salmon kibbles · 20 g"). One snackbar at a time: a new delete makes the previous one final. Undo restores the entry, the day's total and the stock.
+- **Discoverability:** the first time Today shows entries, the top row peeks a few pixels to reveal the swipe colours, then settles back. No hint text.
+
+## UI design
+
+- **Components:** Tailwind CSS with shadcn/ui. Colour tokens use shadcn's names, so they drop straight into its theme.
+- **Colours:** foreground `#1F2A44`, primary `#F08A4B`, primary-strong `#CE7741`, accent `#FFC9A3`, accent-soft `#FFE6D4`, background `#F6F7F9`, card `#FFFFFF`, muted `#EEF0F4`, border `#E3E6EC`, muted-foreground `#5B6478`, success `#2F7D53`, warning `#9A6412`, danger `#B93A32`.
+- **Primary buttons** use navy text on orange (about 5.3:1). White on the brand orange fails contrast.
+- **Type:** Outfit SemiBold for headings and figures (tabular numbers), Inter for everything else. 4 px spacing grid, touch targets at least 44 px, radii from 8 px (inputs) to 24 px (sheet tops).
+- **Charts:** intake bars in primary, days over target in primary-strong, today's partial bar in accent and left out of averages, target as a dashed navy line; weight as faint raw points with a primary rolling-average line.
+- **Dark mode** is out of scope for the MVP, but every colour is a token so it can be added later.
 
 ## Translations
 
@@ -160,7 +185,7 @@ One Docker container serves both the API and the built frontend, with a single v
 | --- | --- |
 | Backend | Node with Hono (via its Node adapter), TypeScript, Zod validation; the frontend calls it through Hono's typed RPC client |
 | Database | SQLite via Drizzle ORM and migrations |
-| Frontend | React SPA built with Vite, TanStack Query, Recharts (chart export via a small SVG-to-PNG helper), served as static files by the backend |
+| Frontend | React SPA built with Vite, Tailwind CSS and shadcn/ui, TanStack Query, Recharts (chart export via a small SVG-to-PNG helper), served as static files by the backend |
 | PWA | Web app manifest for install; no service worker, since the app is online-only and browsers no longer need one to offer installation |
 | Images | amd64 and arm64, built with `docker buildx` on GitHub Actions native runners, published to GHCR |
 | Licence | MIT |
