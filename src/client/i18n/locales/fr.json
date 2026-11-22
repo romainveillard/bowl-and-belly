@@ -7,5 +7,112 @@
     "stock": "Stock",
     "pets": "Animaux",
     "settings": "Réglages"
+  },
+  "action": {
+    "close": "Fermer",
+    "cancel": "Annuler"
+  },
+  "petType": {
+    "cat": "Chat",
+    "dog": "Chien"
+  },
+  "age": {
+    "about": "environ {age}",
+    "months": "{count, plural, one {# mois} other {# mois}}"
+  },
+  "pets": {
+    "add": "Ajouter un animal",
+    "edit": "Modifier l’animal",
+    "editShort": "Modifier",
+    "back": "Retour aux animaux",
+    "today": "Aujourd’hui",
+    "ofTarget": "/ {target} kcal",
+    "kcal": "kcal",
+    "progress": "{percent} % de l’objectif du jour",
+    "neutered": "stérilisé",
+    "intact": "non stérilisé",
+    "activity": {
+      "inactive": "Peu actif",
+      "normal": "Activité normale",
+      "active": "Actif"
+    },
+    "goal": {
+      "maintain": "maintenir le poids",
+      "lose": "perdre du poids",
+      "gain": "prendre du poids"
+    }
+  },
+  "target": {
+    "title": "Objectif quotidien",
+    "perDay": "kcal / jour",
+    "perDaySuggested": "kcal / jour, suggéré",
+    "setOwn": "Définir mon propre objectif",
+    "setOwnHint": "Pour une recommandation du vétérinaire ou un régime particulier.",
+    "calculatedSince": "Calculé depuis le {date}.",
+    "calculatedSinceHow": "Calculé depuis le {date} : besoins au repos de {resting} kcal × {factor} pour {profile}.",
+    "manualSince": "Défini par vous depuis le {date}.",
+    "none": "Pas encore d’objectif quotidien.",
+    "profile": {
+      "adultNeuteredNormal": "un adulte stérilisé à l’activité normale",
+      "adultNeuteredActive": "un adulte stérilisé actif",
+      "adultIntactNormal": "un adulte non stérilisé à l’activité normale",
+      "adultIntactActive": "un adulte non stérilisé actif",
+      "inactive": "un adulte peu actif",
+      "lose": "une perte de poids",
+      "growth": "un animal en croissance",
+      "atTargetWeight": "{profile}, au poids cible"
+    },
+    "history": "Historique des objectifs",
+    "historyHint": "Les jours passés gardent l’objectif qui s’appliquait alors.",
+    "since": "Depuis le {date}",
+    "range": "{from} – {to}",
+    "calculated": "Calculé",
+    "manual": "Défini par vous",
+    "kcal": "{kcal} kcal",
+    "sheetSubtitle": "{name} · {kcal} kcal / jour suggérés",
+    "field": "Objectif quotidien",
+    "appliesFromToday": "S’applique à partir d’aujourd’hui. Les jours passés gardent leur objectif.",
+    "save": "Enregistrer l’objectif",
+    "useSuggested": "Utiliser les {kcal} kcal suggérés",
+    "basedOnTargetLose": "D’après le poids cible, pendant la perte de poids.",
+    "basedOnTargetGain": "D’après le poids cible, pendant la prise de poids.",
+    "needsWeight": "Ajoutez un poids pour voir une suggestion."
+  },
+  "weight": {
+    "title": "Poids",
+    "lastWeighed": "Dernière pesée le {date}",
+    "kg": "kg",
+    "reading": "{weight} kg",
+    "sparkline": "Poids lors des dernières pesées",
+    "current": "Poids actuel",
+    "target": "Poids cible"
+  },
+  "petForm": {
+    "details": "Informations",
+    "photo": "Photo",
+    "photoHint": "Facultatif. Affichée sur la pastille de l’animal et dans la liste.",
+    "name": "Nom",
+    "type": "Type",
+    "age": "Âge",
+    "ageMode": "Comment vous connaissez l’âge",
+    "birthDate": "Date de naissance",
+    "year": "Année",
+    "birthYear": "Année de naissance",
+    "years": "ans",
+    "ageHint": "Enregistré comme une estimation, affiché « environ {age} ».",
+    "health": "Santé et objectif",
+    "healthHint": "Sert à calculer l’objectif quotidien.",
+    "neutered": "Stérilisé",
+    "yes": "Oui",
+    "no": "Non",
+    "activity": "Activité",
+    "inactive": "Peu actif",
+    "normal": "Normal",
+    "active": "Actif",
+    "goal": "Objectif",
+    "maintain": "Maintenir",
+    "lose": "Perdre",
+    "gain": "Prendre",
+    "save": "Enregistrer l’animal"
   }
 }

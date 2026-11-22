@@ -7,5 +7,112 @@
     "stock": "Stock",
     "pets": "Pets",
     "settings": "Settings"
+  },
+  "action": {
+    "close": "Close",
+    "cancel": "Cancel"
+  },
+  "petType": {
+    "cat": "Cat",
+    "dog": "Dog"
+  },
+  "age": {
+    "about": "about {age}",
+    "months": "{count, plural, one {# month} other {# months}}"
+  },
+  "pets": {
+    "add": "Add pet",
+    "edit": "Edit pet",
+    "editShort": "Edit",
+    "back": "Back to pets",
+    "today": "Today",
+    "ofTarget": "/ {target} kcal",
+    "kcal": "kcal",
+    "progress": "{percent}% of today’s target",
+    "neutered": "neutered",
+    "intact": "not neutered",
+    "activity": {
+      "inactive": "Inactive",
+      "normal": "Normal activity",
+      "active": "Active"
+    },
+    "goal": {
+      "maintain": "maintain weight",
+      "lose": "lose weight",
+      "gain": "gain weight"
+    }
+  },
+  "target": {
+    "title": "Daily target",
+    "perDay": "kcal / day",
+    "perDaySuggested": "kcal / day, suggested",
+    "setOwn": "Set my own target",
+    "setOwnHint": "For a vet’s recommendation or special diet.",
+    "calculatedSince": "Calculated since {date}.",
+    "calculatedSinceHow": "Calculated since {date}: resting needs of {resting} kcal × {factor} for {profile}.",
+    "manualSince": "Set by you since {date}.",
+    "none": "No daily target yet.",
+    "profile": {
+      "adultNeuteredNormal": "a neutered adult with normal activity",
+      "adultNeuteredActive": "an active neutered adult",
+      "adultIntactNormal": "an intact adult with normal activity",
+      "adultIntactActive": "an active intact adult",
+      "inactive": "an inactive adult",
+      "lose": "weight loss",
+      "growth": "a growing pet",
+      "atTargetWeight": "{profile}, at the target weight"
+    },
+    "history": "Target history",
+    "historyHint": "Past days keep the target that applied at the time.",
+    "since": "Since {date}",
+    "range": "{from} – {to}",
+    "calculated": "Calculated",
+    "manual": "Set by you",
+    "kcal": "{kcal} kcal",
+    "sheetSubtitle": "{name} · suggested {kcal} kcal / day",
+    "field": "Daily target",
+    "appliesFromToday": "Applies from today. Past days keep their target.",
+    "save": "Save target",
+    "useSuggested": "Use the suggested {kcal} kcal",
+    "basedOnTargetLose": "Based on the target weight while losing weight.",
+    "basedOnTargetGain": "Based on the target weight while gaining weight.",
+    "needsWeight": "Add a weight to see a suggestion."
+  },
+  "weight": {
+    "title": "Weight",
+    "lastWeighed": "Last weighed {date}",
+    "kg": "kg",
+    "reading": "{weight} kg",
+    "sparkline": "Weight over the last weigh-ins",
+    "current": "Current weight",
+    "target": "Target weight"
+  },
+  "petForm": {
+    "details": "Details",
+    "photo": "Photo",
+    "photoHint": "Optional. Shown on the pet chip and in the pets list.",
+    "name": "Name",
+    "type": "Type",
+    "age": "Age",
+    "ageMode": "How you know the age",
+    "birthDate": "Birth date",
+    "year": "Year",
+    "birthYear": "Birth year",
+    "years": "years",
+    "ageHint": "Saved as an estimate, shown as “about {age}”.",
+    "health": "Health and goal",
+    "healthHint": "Used to work out the daily target.",
+    "neutered": "Neutered",
+    "yes": "Yes",
+    "no": "No",
+    "activity": "Activity",
+    "inactive": "Inactive",
+    "normal": "Normal",
+    "active": "Active",
+    "goal": "Goal",
+    "maintain": "Maintain",
+    "lose": "Lose",
+    "gain": "Gain",
+    "save": "Save pet"
   }
 }
