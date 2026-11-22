@@ -18,6 +18,8 @@
   --color-success: #2f7d53;
   --color-warning: #9a6412;
   --color-danger: #b93a32;
+  --color-danger-soft: #fbe9e7;
+  --color-danger-strong: #8e2c26;
   --color-wet: #ddebff;
   --color-dry: #fce4cc;
 
@@ -49,4 +51,23 @@ body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+}
+
+/* Phone: full width above the bottom bar. Desktop: centred on the content
+   column, clear of the floating buttons on the right. */
+.snackbar {
+  position: fixed;
+  z-index: 30;
+  left: 16px;
+  right: 16px;
+  bottom: calc(78px + env(safe-area-inset-bottom));
+}
+
+@media (width >= 860px) {
+  .snackbar {
+    right: auto;
+    bottom: 32px;
+    left: calc(248px + min(1120px, 100% - 248px) / 2);
+    transform: translateX(-50%);
+  }
 }
