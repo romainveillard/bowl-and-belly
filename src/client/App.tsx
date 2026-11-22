@@ -1,22 +1,39 @@
-import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { api } from "./api.js";
+import { Outlet, Route, Routes } from "react-router";
+import { BottomNav } from "./components/BottomNav.js";
 
-export function App() {
+function Shell() {
+  return (
+    <div className="flex min-h-dvh flex-col">
+      <div className="flex-1">
+        <Outlet />
+      </div>
+      <BottomNav />
+    </div>
+  );
+}
+
+// Stands in for each tab until its screen is built.
+function ScreenTitle({ label }: { label: "today" | "history" | "insights" | "stock" | "pets" }) {
   const { t } = useTranslation();
-  const health = useQuery({
-    queryKey: ["health"],
-    queryFn: async () => {
-      const response = await api.api.health.$get();
-      return response.json();
-    },
-  });
 
   return (
-    <main>
-      <h1>Bowl &amp; Belly</h1>
-      <p>{t("app.tagline")}</p>
-      <output>{health.data?.status}</output>
-    </main>
+    <header className="px-5 pt-5 pb-3">
+      <h1 className="font-display text-display font-semibold">{t(`nav.${label}`)}</h1>
+    </header>
+  );
+}
+
+export function App() {
+  return (
+    <Routes>
+      <Route element={<Shell />}>
+        <Route index element={<ScreenTitle label="today" />} />
+        <Route path="history" element={<ScreenTitle label="history" />} />
+        <Route path="insights" element={<ScreenTitle label="insights" />} />
+        <Route path="stock" element={<ScreenTitle label="stock" />} />
+        <Route path="pets" element={<ScreenTitle label="pets" />} />
+      </Route>
+    </Routes>
   );
 }

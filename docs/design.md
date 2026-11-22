@@ -171,7 +171,7 @@ Used on Today and History. A food-type tile on the left (blue drop for wet, peac
 - **Components:** Tailwind CSS with shadcn/ui. Colour tokens use shadcn's names, so they drop straight into its theme.
 - **Colours:** foreground `#1F2A44`, primary `#F08A4B`, primary-strong `#CE7741`, accent `#FFC9A3`, accent-soft `#FFE6D4`, background `#F6F7F9`, card `#FFFFFF`, muted `#EEF0F4`, border `#E3E6EC`, muted-foreground `#5B6478`, success `#2F7D53`, warning `#9A6412`, danger `#B93A32`.
 - **Primary buttons** use navy text on orange (about 5.3:1). White on the brand orange fails contrast.
-- **Type:** Outfit SemiBold for headings and figures (tabular numbers), Inter for everything else. 4 px spacing grid, touch targets at least 44 px, radii from 8 px (inputs) to 24 px (sheet tops).
+- **Type:** Outfit SemiBold for headings and figures (tabular numbers), Inter for everything else. Both fonts are bundled with the app, so nothing is fetched from a font service. 4 px spacing grid, touch targets at least 44 px, radii from 8 px (inputs) to 24 px (sheet tops).
 - **Charts:** intake bars in primary, days over target in primary-strong, today's partial bar in accent and left out of averages, target as a dashed navy line; weight as faint raw points with a primary rolling-average line.
 - **Dark mode** is out of scope for the MVP, but every colour is a token so it can be added later.
 
@@ -193,7 +193,7 @@ One Docker container serves both the API and the built frontend, with a single v
 | --- | --- |
 | Backend | Node with Hono (via its Node adapter), TypeScript, Zod validation; the frontend calls it through Hono's typed RPC client |
 | Database | SQLite via Drizzle ORM and migrations |
-| Frontend | React SPA built with Vite, Tailwind CSS and shadcn/ui, TanStack Query, Recharts (chart export via a small SVG-to-PNG helper), served as static files by the backend |
+| Frontend | React SPA built with Vite, React Router, Tailwind CSS and shadcn/ui, TanStack Query, Recharts (chart export via a small SVG-to-PNG helper), served as static files by the backend |
 | PWA | Web app manifest for install; no service worker, since the app is online-only and browsers no longer need one to offer installation |
 | Images | amd64 and arm64, built with `docker buildx` on GitHub Actions native runners, published to GHCR |
 | Licence | MIT |

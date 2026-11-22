@@ -1,5 +1,10 @@
 {
-  "app": {
-    "tagline": "Suivez ce que mangent vos animaux, et leur poids."
+  "nav": {
+    "label": "Principale",
+    "today": "Aujourd’hui",
+    "history": "Historique",
+    "insights": "Tendances",
+    "stock": "Stock",
+    "pets": "Animaux"
   }
 }

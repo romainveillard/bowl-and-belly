@@ -1,0 +1,49 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource/outfit/600.css";
+
+/* Tokens from the Foundations artboard. Colour names follow shadcn/ui. */
+@theme {
+  --color-*: initial;
+  --color-foreground: #1f2a44;
+  --color-primary: #f08a4b;
+  --color-primary-strong: #ce7741;
+  --color-accent: #ffc9a3;
+  --color-accent-soft: #ffe6d4;
+  --color-background: #f6f7f9;
+  --color-card: #ffffff;
+  --color-muted: #eef0f4;
+  --color-border: #e3e6ec;
+  --color-muted-foreground: #5b6478;
+  --color-success: #2f7d53;
+  --color-warning: #9a6412;
+  --color-danger: #b93a32;
+  --color-wet: #ddebff;
+  --color-dry: #fce4cc;
+
+  --font-sans: "Inter Variable", system-ui, sans-serif;
+  --font-display: "Outfit", system-ui, sans-serif;
+
+  --text-display: 32px;
+  --text-display--line-height: 38px;
+  --text-display--letter-spacing: -0.5px;
+  --text-title: 22px;
+  --text-title--line-height: 28px;
+  --text-title--letter-spacing: -0.2px;
+  --text-figure: 28px;
+  --text-figure--line-height: 32px;
+  --text-heading: 17px;
+  --text-heading--line-height: 24px;
+  --text-body: 16px;
+  --text-body--line-height: 24px;
+  --text-small: 14px;
+  --text-small--line-height: 20px;
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
