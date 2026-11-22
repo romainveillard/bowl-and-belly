@@ -7,16 +7,17 @@ Self-hosted PWA for tracking pets' food intake (calories against a daily target)
 ## Stack
 
 - Backend: Node, Hono (Node adapter), TypeScript strict, Zod validation, SQLite via Drizzle ORM.
-- Frontend: React SPA built with Vite, TanStack Query, Recharts, i18next (en, fr). Calls the API through Hono's typed RPC client.
+- Frontend: React SPA built with Vite, TanStack Query, Recharts, i18next (en-GB, fr). Calls the API through Hono's typed RPC client.
 - One container serves the API and the built frontend; one volume holds the SQLite file.
 
 ## Commands
 
-<!-- Fill in once the project is scaffolded. -->
-- Dev: `TBD`
-- Test: `TBD`
-- Lint and typecheck: `TBD`
-- Generate a migration: `TBD` (Drizzle Kit; never hand-edit generated SQL)
+- Install: `npm install`
+- Dev: `npm run dev` (API on port 3000, Vite on port 5173 proxying `/api`; open the Vite one)
+- Test: `npm test`
+- Lint and typecheck: `npm run lint`, `npm run format:check` and `npm run typecheck` (`npm run format` rewrites files)
+- Production build: `npm run build`, then `npm start`
+- Generate a migration: `npm run db:generate` (Drizzle Kit; never hand-edit generated SQL)
 
 ## Domain invariants
 

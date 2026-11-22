@@ -161,7 +161,7 @@ One Docker container serves both the API and the built frontend, with a single v
 | Backend | Node with Hono (via its Node adapter), TypeScript, Zod validation; the frontend calls it through Hono's typed RPC client |
 | Database | SQLite via Drizzle ORM and migrations |
 | Frontend | React SPA built with Vite, TanStack Query, Recharts (chart export via a small SVG-to-PNG helper), served as static files by the backend |
-| PWA | Web app manifest and service worker for install; online-only, no offline sync |
+| PWA | Web app manifest for install; no service worker, since the app is online-only and browsers no longer need one to offer installation |
 | Images | amd64 and arm64, built with `docker buildx` on GitHub Actions native runners, published to GHCR |
 | Licence | MIT |
 

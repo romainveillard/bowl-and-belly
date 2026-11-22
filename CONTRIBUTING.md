@@ -9,11 +9,14 @@ Thanks for helping out. Bowl & Belly is a small, self-hosted app, so the aim is 
 
 ## Getting set up
 
-<!-- Fill in once the project is scaffolded. -->
-- Install: `TBD`
-- Run locally: `TBD`
-- Test: `TBD`
-- Lint and typecheck: `TBD`
+You need Node 24 (see `.nvmrc`).
+
+- Install: `npm install`
+- Run locally: `npm run dev`, then open http://localhost:5173. The API runs on port 3000 and stores its SQLite file in `data/`.
+- Test: `npm test`
+- Lint and typecheck: `npm run lint`, `npm run format:check` and `npm run typecheck`. `npm run format` fixes formatting.
+- Production build: `npm run build`, then `npm start`
+- Container image: `docker build -t bowl-and-belly .` (or `podman build`)
 
 ## Making changes
 
