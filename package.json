@@ -13,14 +13,19 @@
     "lint": "oxlint",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
-    "test": "vitest run"
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.11",
+    "better-sqlite3": "^13.2.0",
+    "drizzle-orm": "^0.45.4",
     "hono": "^4.13.20"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^24.19.2",
+    "drizzle-kit": "^0.31.11",
     "oxfmt": "0.79.0",
     "oxlint": "1.94.0",
     "oxlint-tsgolint": "7.0.2008",
