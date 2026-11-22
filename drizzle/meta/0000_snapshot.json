@@ -1,0 +1,833 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "791523b8-7d87-433e-adea-3e52c919953e",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "feed_entry": {
+      "name": "feed_entry",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "pet_id": {
+          "name": "pet_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "food_id": {
+          "name": "food_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "fed_at": {
+          "name": "fed_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "served_g": {
+          "name": "served_g",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "leftover_g": {
+          "name": "leftover_g",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "leftover_returned_to_stock": {
+          "name": "leftover_returned_to_stock",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "kcal_per_kg": {
+          "name": "kcal_per_kg",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "feed_entry_pet_fed_at": {
+          "name": "feed_entry_pet_fed_at",
+          "columns": [
+            "pet_id",
+            "fed_at"
+          ],
+          "isUnique": false
+        },
+        "feed_entry_food_fed_at": {
+          "name": "feed_entry_food_fed_at",
+          "columns": [
+            "food_id",
+            "fed_at"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "feed_entry_pet_id_pet_id_fk": {
+          "name": "feed_entry_pet_id_pet_id_fk",
+          "tableFrom": "feed_entry",
+          "tableTo": "pet",
+          "columnsFrom": [
+            "pet_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "feed_entry_food_id_food_id_fk": {
+          "name": "feed_entry_food_id_food_id_fk",
+          "tableFrom": "feed_entry",
+          "tableTo": "food",
+          "columnsFrom": [
+            "food_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "feed_entry_served_g": {
+          "name": "feed_entry_served_g",
+          "value": "\"feed_entry\".\"served_g\" > 0"
+        },
+        "feed_entry_leftover_g": {
+          "name": "feed_entry_leftover_g",
+          "value": "\"feed_entry\".\"leftover_g\" BETWEEN 0 AND \"feed_entry\".\"served_g\""
+        },
+        "feed_entry_kcal_per_kg": {
+          "name": "feed_entry_kcal_per_kg",
+          "value": "\"feed_entry\".\"kcal_per_kg\" > 0"
+        }
+      }
+    },
+    "food": {
+      "name": "food",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "brand": {
+          "name": "brand",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "photo_id": {
+          "name": "photo_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "pet_type_id": {
+          "name": "pet_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "food_type_id": {
+          "name": "food_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "kcal_per_kg": {
+          "name": "kcal_per_kg",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "portion_name": {
+          "name": "portion_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "portion_g": {
+          "name": "portion_g",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "stock_unit": {
+          "name": "stock_unit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'g'"
+        },
+        "stock_g": {
+          "name": "stock_g",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "food_photo_id_image_id_fk": {
+          "name": "food_photo_id_image_id_fk",
+          "tableFrom": "food",
+          "tableTo": "image",
+          "columnsFrom": [
+            "photo_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "food_pet_type_id_pet_type_id_fk": {
+          "name": "food_pet_type_id_pet_type_id_fk",
+          "tableFrom": "food",
+          "tableTo": "pet_type",
+          "columnsFrom": [
+            "pet_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "food_food_type_id_food_type_id_fk": {
+          "name": "food_food_type_id_food_type_id_fk",
+          "tableFrom": "food",
+          "tableTo": "food_type",
+          "columnsFrom": [
+            "food_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "food_kcal_per_kg": {
+          "name": "food_kcal_per_kg",
+          "value": "\"food\".\"kcal_per_kg\" > 0"
+        },
+        "food_portion_g": {
+          "name": "food_portion_g",
+          "value": "\"food\".\"portion_g\" > 0"
+        },
+        "food_stock_unit": {
+          "name": "food_stock_unit",
+          "value": "\"food\".\"stock_unit\" IN ('g', 'portion')"
+        },
+        "food_portion_unit_has_portion": {
+          "name": "food_portion_unit_has_portion",
+          "value": "\"food\".\"stock_unit\" <> 'portion' OR (\"food\".\"portion_name\" IS NOT NULL AND \"food\".\"portion_g\" IS NOT NULL)"
+        }
+      }
+    },
+    "food_type": {
+      "name": "food_type",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "system_key": {
+          "name": "system_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "leftover_returns_to_stock": {
+          "name": "leftover_returns_to_stock",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "food_type_system_key_unique": {
+          "name": "food_type_system_key_unique",
+          "columns": [
+            "system_key"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "food_type_system_key": {
+          "name": "food_type_system_key",
+          "value": "\"food_type\".\"system_key\" IN ('wet', 'dry')"
+        },
+        "food_type_labelled": {
+          "name": "food_type_labelled",
+          "value": "\"food_type\".\"system_key\" IS NOT NULL OR \"food_type\".\"name\" IS NOT NULL"
+        }
+      }
+    },
+    "image": {
+      "name": "image",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "data": {
+          "name": "data",
+          "type": "blob",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "pet": {
+      "name": "pet",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "pet_type_id": {
+          "name": "pet_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "photo_id": {
+          "name": "photo_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "birth_date": {
+          "name": "birth_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "birth_date_precision": {
+          "name": "birth_date_precision",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "neutered": {
+          "name": "neutered",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "activity_level": {
+          "name": "activity_level",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "goal": {
+          "name": "goal",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "target_weight_g": {
+          "name": "target_weight_g",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "weight_decimals": {
+          "name": "weight_decimals",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pet_pet_type_id_pet_type_id_fk": {
+          "name": "pet_pet_type_id_pet_type_id_fk",
+          "tableFrom": "pet",
+          "tableTo": "pet_type",
+          "columnsFrom": [
+            "pet_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "pet_photo_id_image_id_fk": {
+          "name": "pet_photo_id_image_id_fk",
+          "tableFrom": "pet",
+          "tableTo": "image",
+          "columnsFrom": [
+            "photo_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "pet_birth_date": {
+          "name": "pet_birth_date",
+          "value": "\"pet\".\"birth_date\" GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]'"
+        },
+        "pet_birth_date_precision": {
+          "name": "pet_birth_date_precision",
+          "value": "\"pet\".\"birth_date_precision\" IN ('exact', 'year', 'estimated')"
+        },
+        "pet_activity_level": {
+          "name": "pet_activity_level",
+          "value": "\"pet\".\"activity_level\" IN ('inactive', 'normal', 'active')"
+        },
+        "pet_goal": {
+          "name": "pet_goal",
+          "value": "\"pet\".\"goal\" IN ('maintain', 'lose', 'gain')"
+        },
+        "pet_target_weight_g": {
+          "name": "pet_target_weight_g",
+          "value": "\"pet\".\"target_weight_g\" > 0"
+        },
+        "pet_goal_has_target_weight": {
+          "name": "pet_goal_has_target_weight",
+          "value": "\"pet\".\"goal\" = 'maintain' OR \"pet\".\"target_weight_g\" IS NOT NULL"
+        },
+        "pet_weight_decimals": {
+          "name": "pet_weight_decimals",
+          "value": "\"pet\".\"weight_decimals\" IN (1, 2)"
+        }
+      }
+    },
+    "pet_target": {
+      "name": "pet_target",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "pet_id": {
+          "name": "pet_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "effective_from": {
+          "name": "effective_from",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "kcal_per_day": {
+          "name": "kcal_per_day",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "pet_target_pet_day": {
+          "name": "pet_target_pet_day",
+          "columns": [
+            "pet_id",
+            "effective_from"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "pet_target_pet_id_pet_id_fk": {
+          "name": "pet_target_pet_id_pet_id_fk",
+          "tableFrom": "pet_target",
+          "tableTo": "pet",
+          "columnsFrom": [
+            "pet_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "pet_target_effective_from": {
+          "name": "pet_target_effective_from",
+          "value": "\"pet_target\".\"effective_from\" GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]'"
+        },
+        "pet_target_kcal_per_day": {
+          "name": "pet_target_kcal_per_day",
+          "value": "\"pet_target\".\"kcal_per_day\" > 0"
+        },
+        "pet_target_source": {
+          "name": "pet_target_source",
+          "value": "\"pet_target\".\"source\" IN ('calculated', 'manual')"
+        }
+      }
+    },
+    "pet_type": {
+      "name": "pet_type",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "system_key": {
+          "name": "system_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "pet_type_system_key_unique": {
+          "name": "pet_type_system_key_unique",
+          "columns": [
+            "system_key"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "pet_type_system_key": {
+          "name": "pet_type_system_key",
+          "value": "\"pet_type\".\"system_key\" IN ('cat', 'dog')"
+        },
+        "pet_type_labelled": {
+          "name": "pet_type_labelled",
+          "value": "\"pet_type\".\"system_key\" IS NOT NULL OR \"pet_type\".\"name\" IS NOT NULL"
+        }
+      }
+    },
+    "settings": {
+      "name": "settings",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "time_zone": {
+          "name": "time_zone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "day_starts_at": {
+          "name": "day_starts_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'00:00'"
+        },
+        "backup_enabled": {
+          "name": "backup_enabled",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "backup_frequency": {
+          "name": "backup_frequency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'daily'"
+        },
+        "backup_weekday": {
+          "name": "backup_weekday",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "backup_time": {
+          "name": "backup_time",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'03:00'"
+        },
+        "backup_keep": {
+          "name": "backup_keep",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 7
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "settings_single_row": {
+          "name": "settings_single_row",
+          "value": "\"settings\".\"id\" = 1"
+        },
+        "settings_day_starts_at": {
+          "name": "settings_day_starts_at",
+          "value": "\"settings\".\"day_starts_at\" GLOB '[0-2][0-9]:[0-5][0-9]' AND \"settings\".\"day_starts_at\" < '24'"
+        },
+        "settings_backup_frequency": {
+          "name": "settings_backup_frequency",
+          "value": "\"settings\".\"backup_frequency\" IN ('daily', 'weekly')"
+        },
+        "settings_backup_weekday": {
+          "name": "settings_backup_weekday",
+          "value": "\"settings\".\"backup_weekday\" BETWEEN 1 AND 7"
+        },
+        "settings_weekly_has_weekday": {
+          "name": "settings_weekly_has_weekday",
+          "value": "\"settings\".\"backup_frequency\" <> 'weekly' OR \"settings\".\"backup_weekday\" IS NOT NULL"
+        },
+        "settings_backup_time": {
+          "name": "settings_backup_time",
+          "value": "\"settings\".\"backup_time\" GLOB '[0-2][0-9]:[0-5][0-9]' AND \"settings\".\"backup_time\" < '24'"
+        },
+        "settings_backup_keep": {
+          "name": "settings_backup_keep",
+          "value": "\"settings\".\"backup_keep\" >= 1"
+        }
+      }
+    },
+    "weight_entry": {
+      "name": "weight_entry",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "pet_id": {
+          "name": "pet_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "measured_at": {
+          "name": "measured_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "weight_g": {
+          "name": "weight_g",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "weight_entry_pet_measured_at": {
+          "name": "weight_entry_pet_measured_at",
+          "columns": [
+            "pet_id",
+            "measured_at"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "weight_entry_pet_id_pet_id_fk": {
+          "name": "weight_entry_pet_id_pet_id_fk",
+          "tableFrom": "weight_entry",
+          "tableTo": "pet",
+          "columnsFrom": [
+            "pet_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "weight_entry_weight_g": {
+          "name": "weight_entry_weight_g",
+          "value": "\"weight_entry\".\"weight_g\" > 0"
+        }
+      }
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}
