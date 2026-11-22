@@ -67,13 +67,24 @@
     "manualSince": "Set by you {since}.",
     "none": "No daily target yet.",
     "profile": {
-      "adultNeuteredNormal": "a neutered adult with normal activity",
-      "adultNeuteredActive": "an active neutered adult",
-      "adultIntactNormal": "an intact adult with normal activity",
-      "adultIntactActive": "an active intact adult",
-      "inactive": "an inactive adult",
-      "lose": "weight loss",
-      "growth": "a growing pet",
+      "cat": {
+        "adultNeuteredNormal": "a neutered adult cat with normal activity",
+        "adultNeuteredActive": "an active, neutered adult cat",
+        "adultIntactNormal": "an intact adult cat with normal activity",
+        "adultIntactActive": "an active, intact adult cat",
+        "inactive": "an inactive cat",
+        "lose": "a cat losing weight",
+        "growth": "a growing kitten"
+      },
+      "dog": {
+        "adultNeuteredNormal": "a neutered adult dog with normal activity",
+        "adultNeuteredActive": "an active, neutered adult dog",
+        "adultIntactNormal": "an intact adult dog with normal activity",
+        "adultIntactActive": "an active, intact adult dog",
+        "inactive": "an inactive dog",
+        "lose": "a dog losing weight",
+        "growth": "a growing puppy"
+      },
       "atTargetWeight": "{profile}, at the target weight"
     },
     "history": "Target history",

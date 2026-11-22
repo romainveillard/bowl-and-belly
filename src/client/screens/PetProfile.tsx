@@ -107,14 +107,15 @@ export function PetProfile({ petId }: { petId: number }) {
   let targetNote = t("target.none");
   if (target?.source === "manual") {
     targetNote = t("target.manualSince", { since: since(target.effectiveFrom) });
-  } else if (target && suggestion?.kcalPerDay === target.kcalPerDay) {
+  } else if (target && pet.type.systemKey && suggestion?.kcalPerDay === target.kcalPerDay) {
+    const species = pet.type.systemKey;
     let profile: string;
     if (suggestion.basis === "adult") {
       const neutered = pet.neutered ? "Neutered" : "Intact";
       const activity = pet.activityLevel === "active" ? "Active" : "Normal";
-      profile = t(`target.profile.adult${neutered}${activity}`);
+      profile = t(`target.profile.${species}.adult${neutered}${activity}`);
     } else {
-      profile = t(`target.profile.${suggestion.basis}`);
+      profile = t(`target.profile.${species}.${suggestion.basis}`);
     }
     if (pet.goal !== "maintain" && suggestion.basis !== "growth") {
       profile = t("target.profile.atTargetWeight", { profile });

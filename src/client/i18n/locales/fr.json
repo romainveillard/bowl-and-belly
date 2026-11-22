@@ -67,13 +67,24 @@
     "manualSince": "Défini par vous {since}.",
     "none": "Pas encore d’objectif quotidien.",
     "profile": {
-      "adultNeuteredNormal": "un adulte stérilisé à l’activité normale",
-      "adultNeuteredActive": "un adulte stérilisé actif",
-      "adultIntactNormal": "un adulte non stérilisé à l’activité normale",
-      "adultIntactActive": "un adulte non stérilisé actif",
-      "inactive": "un adulte peu actif",
-      "lose": "une perte de poids",
-      "growth": "un animal en croissance",
+      "cat": {
+        "adultNeuteredNormal": "un chat adulte stérilisé à l’activité normale",
+        "adultNeuteredActive": "un chat adulte stérilisé et actif",
+        "adultIntactNormal": "un chat adulte non stérilisé à l’activité normale",
+        "adultIntactActive": "un chat adulte non stérilisé et actif",
+        "inactive": "un chat peu actif",
+        "lose": "un chat en perte de poids",
+        "growth": "un chaton en croissance"
+      },
+      "dog": {
+        "adultNeuteredNormal": "un chien adulte stérilisé à l’activité normale",
+        "adultNeuteredActive": "un chien adulte stérilisé et actif",
+        "adultIntactNormal": "un chien adulte non stérilisé à l’activité normale",
+        "adultIntactActive": "un chien adulte non stérilisé et actif",
+        "inactive": "un chien peu actif",
+        "lose": "un chien en perte de poids",
+        "growth": "un chiot en croissance"
+      },
       "atTargetWeight": "{profile}, au poids cible"
     },
     "history": "Historique des objectifs",
