@@ -43,12 +43,20 @@ const FACTORS = {
 
 const ADULT_FROM_MONTHS = 12;
 
+export interface TargetExplanation {
+  kcalPerDay: number;
+  restingKcal: number;
+  factor: number;
+  /** Which case of the table applied. */
+  basis: "growth" | "lose" | "inactive" | "adult";
+}
+
 /**
- * Daily kcal target, or null when the weight it depends on is not known yet.
- * The first matching case wins: growth, weight loss, inactive, then the adult
- * factors.
+ * The daily kcal target and how it was reached, or null when the weight it
+ * depends on is not known yet. The first matching case wins: growth, weight
+ * loss, inactive, then the adult factors.
  */
-export function calculateTarget(input: TargetInput): number | null {
+export function explainTarget(input: TargetInput): TargetExplanation | null {
   const factors = FACTORS[input.petType];
   const months = ageInMonths(input.birthDate, input.today);
   const growing = months < ADULT_FROM_MONTHS;
@@ -60,16 +68,30 @@ export function calculateTarget(input: TargetInput): number | null {
   }
 
   let factor: number;
+  let basis: TargetExplanation["basis"];
   if (growing) {
     factor = factors.growth(months);
+    basis = "growth";
   } else if (input.goal === "lose") {
     factor = factors.lose;
+    basis = "lose";
   } else if (input.activityLevel === "inactive") {
     factor = factors.inactive;
+    basis = "inactive";
   } else {
     factor = factors[input.neutered ? "neutered" : "intact"][input.activityLevel];
+    basis = "adult";
   }
 
   const restingEnergy = 70 * (weightG / 1000) ** 0.75;
-  return Math.round(restingEnergy * factor);
+  return {
+    kcalPerDay: Math.round(restingEnergy * factor),
+    restingKcal: Math.round(restingEnergy),
+    factor,
+    basis,
+  };
+}
+
+export function calculateTarget(input: TargetInput): number | null {
+  return explainTarget(input)?.kcalPerDay ?? null;
 }

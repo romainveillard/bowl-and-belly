@@ -6,6 +6,9 @@ import { seed } from "./seed.js";
 
 export type Db = BetterSQLite3Database<typeof schema> & { $client: Database.Database };
 
+/** A database handle or a transaction on it. */
+export type DbOrTx = Db | Parameters<Parameters<Db["transaction"]>[0]>[0];
+
 export function openDatabase(filename: string): Db {
   const sqlite = new Database(filename);
   sqlite.pragma("journal_mode = WAL");
