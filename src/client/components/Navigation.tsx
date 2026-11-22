@@ -51,7 +51,7 @@ export function Sidebar() {
   const { t } = useTranslation();
 
   return (
-    <aside className="sticky top-0 hidden h-dvh flex-col gap-1.5 border-r border-border bg-card px-4 py-6 desktop:flex">
+    <aside className="sticky top-0 hidden h-dvh flex-col gap-1.5 border-r border-border bg-card px-4 pt-6 pb-3 desktop:flex">
       <div className="flex items-center gap-2.5 px-2 pb-5">
         <LogoMark />
         <span className="font-display text-[20px] font-semibold tracking-[-0.3px]">
@@ -70,6 +70,9 @@ export function Sidebar() {
         <SettingsIcon size={20} />
         {t("nav.settings")}
       </NavLink>
+      <span className="px-3 pt-0.5 text-center text-caption text-muted-foreground">
+        {t("nav.version", { version: APP_VERSION })}
+      </span>
     </aside>
   );
 }
