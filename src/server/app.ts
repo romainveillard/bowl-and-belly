@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { db } from "./db/client.js";
+import { foodsRoutes } from "./routes/foods.js";
 import { imagesRoutes } from "./routes/images.js";
 import { petTypesRoutes } from "./routes/pet-types.js";
 import { petsRoutes } from "./routes/pets.js";
@@ -12,6 +13,7 @@ const api = new Hono()
   })
   .route("/pets", petsRoutes)
   .route("/pet-types", petTypesRoutes)
+  .route("/foods", foodsRoutes)
   .route("/images", imagesRoutes);
 
 export const app = new Hono().route("/api", api);
