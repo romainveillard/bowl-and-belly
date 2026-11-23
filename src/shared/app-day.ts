@@ -43,7 +43,7 @@ function offsetAt(instant: number, timeZone: string): number {
   return wallClock(instant, timeZone) - Math.floor(instant / 1000) * 1000;
 }
 
-function addDays(day: string, days: number): string {
+export function addDays(day: string, days: number): string {
   return new Date(Date.parse(day) + days * DAY_MS).toISOString().slice(0, 10);
 }
 
@@ -78,4 +78,17 @@ export function appDayOf(instant: Date, settings: DaySettings): string {
   }
   const next = addDays(day, 1);
   return instant >= appDayStart(next, settings) ? next : day;
+}
+
+/**
+ * The most recent instant, at or before `now`, when the clock in the app time
+ * zone read `time` ("HH:MM"). A feed logged at 00:10 for 23:50 lands on the
+ * previous evening, not in the future.
+ */
+export function latestAt(time: string, now: Date, timeZone: string): Date {
+  const midnight = { timeZone, dayStartsAt: "00:00" };
+  const at = (day: string) => appDayStart(day, { timeZone, dayStartsAt: time });
+  const today = appDayOf(now, midnight);
+  const candidate = at(today);
+  return candidate <= now ? candidate : at(addDays(today, -1));
 }

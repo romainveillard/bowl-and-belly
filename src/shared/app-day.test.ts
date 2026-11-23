@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { appDayOf, appDayStart } from "./app-day.js";
+import { appDayOf, appDayStart, latestAt } from "./app-day.js";
 
 const utc = (iso: string) => new Date(`${iso}Z`);
 
@@ -74,5 +74,23 @@ describe("appDayStart", () => {
         }
       }
     }
+  });
+});
+
+describe("latestAt", () => {
+  const now = utc("2026-11-23T00:10:00");
+
+  it("takes today's time when it has already passed", () => {
+    expect(latestAt("00:05", now, "Europe/London")).toEqual(utc("2026-11-23T00:05:00"));
+    expect(latestAt("00:10", now, "Europe/London")).toEqual(now);
+  });
+
+  it("takes yesterday's time rather than one still to come", () => {
+    expect(latestAt("23:50", now, "Europe/London")).toEqual(utc("2026-11-22T23:50:00"));
+  });
+
+  it("reads the time in the app time zone, not the server's", () => {
+    // 01:00 in Paris is midnight UTC on the 23rd.
+    expect(latestAt("01:00", now, "Europe/Paris")).toEqual(utc("2026-11-23T00:00:00"));
   });
 });
