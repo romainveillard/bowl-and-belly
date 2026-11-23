@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { BowlIcon, CheckIcon, LogoMark, PlusIcon, SettingsIcon } from "../components/icons.js";
@@ -14,6 +14,9 @@ import { useIsDesktop } from "../lib/useIsDesktop.js";
 import { useFeedSheets } from "./FeedSheets.js";
 import { AgePrompt } from "./AgePrompt.js";
 import { LogFeedSheet } from "./LogFeedSheet.js";
+
+// The charting library only loads where a chart is shown.
+const ThisWeekCard = lazy(() => import("../components/ThisWeekCard.js"));
 import { useWeightSheets } from "./WeightSheets.js";
 
 const card = "bg-card inset-ring inset-ring-border";
@@ -229,6 +232,11 @@ function TodayFeeds({ pet, today }: { pet: PetSummary; today: string }) {
         )}
       </div>
       <div className="hidden min-w-0 flex-col gap-6 desktop:flex">
+        {isDesktop && (
+          <Suspense fallback={null}>
+            <ThisWeekCard petId={pet.id} today={today} />
+          </Suspense>
+        )}
         <WeightCard petId={pet.id} />
       </div>
       {sheets.sheet}

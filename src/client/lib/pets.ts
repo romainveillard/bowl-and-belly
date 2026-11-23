@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { InferRequestType, InferResponseType } from "hono/client";
+import { explainTarget } from "../../shared/target.js";
 import { api } from "../api.js";
 
 const pets = api.api.pets;
@@ -139,5 +140,22 @@ export function useFoodCount() {
       }
       return response.json();
     },
+  });
+}
+
+/** What the formula gives for the pet as it is today, and how; null for custom types. */
+export function suggestionFor(pet: PetDetail) {
+  if (!pet.type.systemKey) {
+    return null;
+  }
+  return explainTarget({
+    petType: pet.type.systemKey,
+    birthDate: pet.birthDate,
+    today: pet.today,
+    neutered: pet.neutered,
+    activityLevel: pet.activityLevel,
+    goal: pet.goal,
+    targetWeightG: pet.targetWeightG,
+    weightG: pet.weights[0]?.weightG ?? null,
   });
 }

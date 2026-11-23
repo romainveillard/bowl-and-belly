@@ -186,7 +186,9 @@
     "addFood": "Ajouter un aliment",
     "weightCard": "Poids",
     "petProfile": "Fiche de l’animal",
-    "weightDate": "kg · {date}"
+    "weightDate": "kg · {date}",
+    "thisWeek": "Cette semaine",
+    "insightsLink": "Tendances"
   },
   "foodType": {
     "wet": "Humide",
@@ -323,7 +325,46 @@
   },
   "insights": {
     "emptyTitle": "Pas encore de tendances",
-    "emptyBody": "Ajoutez un animal pour voir ses calories par rapport à l’objectif et l’évolution de son poids."
+    "emptyBody": "Ajoutez un animal pour voir ses calories par rapport à l’objectif et l’évolution de son poids.",
+    "period": "Période",
+    "day": "Jour",
+    "week": "Semaine",
+    "month": "Mois",
+    "previousWeek": "Semaine précédente",
+    "nextWeek": "Semaine suivante",
+    "dailyAverage": "Moyenne quotidienne",
+    "fullDaysOnly": "Journées complètes seulement",
+    "target": "Objectif",
+    "targetValue": "Objectif {kcal}",
+    "noTarget": "Pas d’objectif",
+    "onOrUnder": "Objectif respecté",
+    "ofDays": "{count, plural, one {sur # jour} other {sur # jours}}",
+    "wentOver": "{days} : dépassement",
+    "noneOver": "Aucun dépassement",
+    "weight": "Poids",
+    "lastWeighed": "Dernière pesée le {date}",
+    "calories": "Calories",
+    "weightChart": "Poids",
+    "lastWeeks": "8 dernières semaines",
+    "legendDaily": "kcal par jour",
+    "legendOver": "Dépassement",
+    "legendToday": "Aujourd’hui en cours",
+    "legendTarget": "Objectif",
+    "legendReadings": "Pesées",
+    "legendAverage": "Moyenne glissante",
+    "caloriesLabel": "Calories par jour, {range}",
+    "weightLabel": "Pesées des huit dernières semaines avec une moyenne glissante",
+    "basis": {
+      "adultNeuteredNormal": "Adulte stérilisé, activité normale",
+      "adultNeuteredActive": "Adulte stérilisé, actif",
+      "adultIntactNormal": "Adulte non stérilisé, activité normale",
+      "adultIntactActive": "Adulte non stérilisé, actif",
+      "inactive": "Peu actif",
+      "lose": "Perte de poids",
+      "growth": "En croissance",
+      "calculated": "Calculé",
+      "manual": "Défini par vous"
+    }
   },
   "petChip": {
     "label": "Animal : {name}. Changer d’animal",

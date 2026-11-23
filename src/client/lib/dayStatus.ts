@@ -16,3 +16,8 @@ export function dayStatus(
     ? "onTarget"
     : null;
 }
+
+/** Over target by more than the same tolerance, so a day on target is never also over it. */
+export function isOverTarget(eatenKcal: number, targetKcal: number | null): boolean {
+  return targetKcal !== null && eatenKcal > targetKcal * (1 + ON_TARGET_TOLERANCE);
+}

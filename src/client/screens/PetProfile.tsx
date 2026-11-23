@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 import { addDays } from "../../shared/app-day.js";
-import { explainTarget } from "../../shared/target.js";
 import { BackIcon, EditIcon, PlusIcon, TrashIcon } from "../components/icons.js";
 import { PetAvatar } from "../components/PetAvatar.js";
 import { SPARKLINE_READINGS, Sparkline } from "../components/Sparkline.js";
@@ -17,26 +16,10 @@ import {
   formatSince,
   petTypeLabel,
 } from "../lib/format.js";
-import { usePet, useSetArchived, type PetDetail } from "../lib/pets.js";
+import { suggestionFor, usePet, useSetArchived } from "../lib/pets.js";
 import { AgePrompt } from "./AgePrompt.js";
 import { ManualTargetSheet } from "./ManualTargetSheet.js";
 import type { useWeightSheets } from "./WeightSheets.js";
-
-function suggestionFor(pet: PetDetail) {
-  if (!pet.type.systemKey) {
-    return null;
-  }
-  return explainTarget({
-    petType: pet.type.systemKey,
-    birthDate: pet.birthDate,
-    today: pet.today,
-    neutered: pet.neutered,
-    activityLevel: pet.activityLevel,
-    goal: pet.goal,
-    targetWeightG: pet.targetWeightG,
-    weightG: pet.weights[0]?.weightG ?? null,
-  });
-}
 
 function Rows({ rows }: { rows: { key: string; title: string; note?: string; value: string }[] }) {
   return (

@@ -3,7 +3,7 @@ interface SegmentedProps<Value extends string> {
   /** Hides the visible label when a heading already names the group. */
   hideLabel?: boolean;
   value: Value;
-  options: readonly { value: Value; label: string }[];
+  options: readonly { value: Value; label: string; disabled?: boolean }[];
   onChange: (value: Value) => void;
 }
 
@@ -24,8 +24,9 @@ export function Segmented<Value extends string>({
             key={option.value}
             type="button"
             aria-pressed={option.value === value}
+            disabled={option.disabled}
             onClick={() => onChange(option.value)}
-            className="h-9 flex-1 cursor-pointer rounded-[7px] px-3 text-sm font-medium text-muted-foreground aria-pressed:bg-card aria-pressed:font-semibold aria-pressed:text-foreground aria-pressed:shadow-[0_1px_2px_rgba(31,42,68,0.12)]"
+            className="h-9 flex-1 cursor-pointer rounded-[7px] disabled:cursor-not-allowed disabled:opacity-50 px-3 text-sm font-medium text-muted-foreground aria-pressed:bg-card aria-pressed:font-semibold aria-pressed:text-foreground aria-pressed:shadow-[0_1px_2px_rgba(31,42,68,0.12)]"
           >
             {option.label}
           </button>

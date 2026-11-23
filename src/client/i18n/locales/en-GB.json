@@ -186,7 +186,9 @@
     "addFood": "Add food",
     "weightCard": "Weight",
     "petProfile": "Pet profile",
-    "weightDate": "kg · {date}"
+    "weightDate": "kg · {date}",
+    "thisWeek": "This week",
+    "insightsLink": "Insights"
   },
   "foodType": {
     "wet": "Wet",
@@ -323,7 +325,46 @@
   },
   "insights": {
     "emptyTitle": "No insights yet",
-    "emptyBody": "Add a pet to see their calories against target and their weight over time."
+    "emptyBody": "Add a pet to see their calories against target and their weight over time.",
+    "period": "Period",
+    "day": "Day",
+    "week": "Week",
+    "month": "Month",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "dailyAverage": "Daily average",
+    "fullDaysOnly": "Full days only",
+    "target": "Target",
+    "targetValue": "Target {kcal}",
+    "noTarget": "No target",
+    "onOrUnder": "On or under target",
+    "ofDays": "{count, plural, one {of # day} other {of # days}}",
+    "wentOver": "{days} went over",
+    "noneOver": "No day went over",
+    "weight": "Weight",
+    "lastWeighed": "Last weighed {date}",
+    "calories": "Calories",
+    "weightChart": "Weight",
+    "lastWeeks": "Last 8 weeks",
+    "legendDaily": "Daily kcal",
+    "legendOver": "Over",
+    "legendToday": "Today so far",
+    "legendTarget": "Target",
+    "legendReadings": "Readings",
+    "legendAverage": "Rolling average",
+    "caloriesLabel": "Daily calories for {range}",
+    "weightLabel": "Weight readings over the last eight weeks with a rolling average",
+    "basis": {
+      "adultNeuteredNormal": "Neutered adult, normal",
+      "adultNeuteredActive": "Neutered adult, active",
+      "adultIntactNormal": "Intact adult, normal",
+      "adultIntactActive": "Intact adult, active",
+      "inactive": "Inactive",
+      "lose": "Losing weight",
+      "growth": "Growing",
+      "calculated": "Calculated",
+      "manual": "Set by you"
+    }
   },
   "petChip": {
     "label": "Pet: {name}. Change pet",

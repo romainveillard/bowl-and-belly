@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet, Route, Routes } from "react-router";
 import { EmptyState } from "./components/EmptyState.js";
@@ -13,6 +14,11 @@ import { PetsScreen } from "./screens/PetsScreen.js";
 import { StockScreen } from "./screens/StockScreen.js";
 import { TodayScreen } from "./screens/TodayScreen.js";
 
+// The charting library only loads with the screen that needs it.
+const InsightsScreen = lazy(() =>
+  import("./screens/InsightsScreen.js").then((module) => ({ default: module.InsightsScreen })),
+);
+
 // Forms take the whole phone screen, with their own action bar in place of the tabs.
 function Shell({ bottomNav = true }: { bottomNav?: boolean }) {
   return (
@@ -27,7 +33,7 @@ function Shell({ bottomNav = true }: { bottomNav?: boolean }) {
 }
 
 // Stands in for each tab until its screen is built.
-function ScreenTitle({ label }: { label: "history" | "insights" | "settings" }) {
+function ScreenTitle({ label }: { label: "settings" }) {
   const { t } = useTranslation();
 
   return (
@@ -39,8 +45,7 @@ function ScreenTitle({ label }: { label: "history" | "insights" | "settings" }) 
   );
 }
 
-// History and Insights have nothing to show before the first pet. Insights
-// gets its own screen with the insights milestone.
+// History and Insights have nothing to show before the first pet.
 function PetTab({ tab }: { tab: "history" | "insights" }) {
   const { t } = useTranslation();
   const { data: pets } = usePets();
@@ -49,7 +54,13 @@ function PetTab({ tab }: { tab: "history" | "insights" }) {
     return null;
   }
   if (pets.pets.length > 0) {
-    return tab === "history" ? <HistoryScreen /> : <ScreenTitle label={tab} />;
+    return tab === "history" ? (
+      <HistoryScreen />
+    ) : (
+      <Suspense fallback={null}>
+        <InsightsScreen />
+      </Suspense>
+    );
   }
   return (
     <EmptyState

@@ -10,7 +10,9 @@ export type AgePrompt = NonNullable<
 >;
 export type TargetPrompt = WeighInPrompt | AgePrompt;
 
-const refresh = (queryClient: QueryClient) => queryClient.invalidateQueries({ queryKey: ["pets"] });
+// Weigh-ins show on the pet and on the Insights weight chart, kept under "feeds".
+const refresh = (queryClient: QueryClient) =>
+  Promise.all(["pets", "feeds"].map((key) => queryClient.invalidateQueries({ queryKey: [key] })));
 
 /** Logs a weigh-in, or edits one when `id` is given. Resolves to the target suggestion, if any. */
 export function useSaveWeight(petId: number, id: number | undefined) {

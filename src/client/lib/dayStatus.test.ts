@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { dayStatus } from "./dayStatus.js";
+import { dayStatus, isOverTarget } from "./dayStatus.js";
 
 const today = "2026-11-22";
 
@@ -18,4 +18,10 @@ it("never judges today, which is still going", () => {
 
 it("has nothing to say without a target", () => {
   expect(dayStatus({ day: "2026-11-21", eatenKcal: 200, targetKcal: null }, today)).toBeNull();
+});
+
+it("counts a day as over target only beyond the on-target band", () => {
+  expect(isOverTarget(273, 260)).toBe(false);
+  expect(isOverTarget(274, 260)).toBe(true);
+  expect(isOverTarget(500, null)).toBe(false);
 });
