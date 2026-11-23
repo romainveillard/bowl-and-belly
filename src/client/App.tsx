@@ -1,10 +1,13 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet, Route, Routes } from "react-router";
 import { EmptyState } from "./components/EmptyState.js";
 import { HistoryIcon, InsightsIcon } from "./components/icons.js";
 import { BottomNav, Sidebar } from "./components/Navigation.js";
+import { useAccess } from "./lib/access.js";
+import { useAuth } from "./lib/auth.js";
 import { usePets } from "./lib/pets.js";
+import { LoginScreen, SessionExpiredScreen } from "./screens/AccessScreens.js";
 import { ArchivedFoodsScreen } from "./screens/ArchivedFoodsScreen.js";
 import { ArchivedPetsScreen } from "./screens/ArchivedPetsScreen.js";
 import { FoodFormScreen } from "./screens/FoodFormScreen.js";
@@ -62,28 +65,44 @@ function PetTab({ tab }: { tab: "history" | "insights" }) {
   );
 }
 
+// Login and session expiry replace the whole app, navigation included.
+function AccessGate({ children }: { children: ReactNode }) {
+  const access = useAccess();
+  const { data: auth } = useAuth();
+
+  if (access === "expired") {
+    return <SessionExpiredScreen />;
+  }
+  if (access === "login" || auth?.signedIn === false) {
+    return <LoginScreen />;
+  }
+  return auth ? children : null;
+}
+
 export function App() {
   return (
-    <Routes>
-      <Route element={<Shell />}>
-        <Route index element={<TodayScreen />} />
-        <Route path="history" element={<PetTab tab="history" />} />
-        <Route path="insights" element={<PetTab tab="insights" />} />
-        <Route path="stock" element={<StockScreen />} />
-        <Route path="stock/archived" element={<ArchivedFoodsScreen />} />
-        <Route path="pets" element={<PetsScreen />} />
-        <Route path="pets/archived" element={<ArchivedPetsScreen />} />
-        <Route path="pets/:petId" element={<PetsScreen />} />
-      </Route>
-      <Route element={<Shell bottomNav={false} />}>
-        <Route path="pets/new" element={<PetFormScreen />} />
-        <Route path="pets/:petId/edit" element={<PetFormScreen />} />
-        <Route path="stock/new" element={<FoodFormScreen />} />
-        <Route path="stock/:foodId/edit" element={<FoodFormScreen />} />
-        <Route path="settings" element={<SettingsScreen />} />
-        <Route path="settings/pet-types" element={<TypesScreen kind="pet" />} />
-        <Route path="settings/food-types" element={<TypesScreen kind="food" />} />
-      </Route>
-    </Routes>
+    <AccessGate>
+      <Routes>
+        <Route element={<Shell />}>
+          <Route index element={<TodayScreen />} />
+          <Route path="history" element={<PetTab tab="history" />} />
+          <Route path="insights" element={<PetTab tab="insights" />} />
+          <Route path="stock" element={<StockScreen />} />
+          <Route path="stock/archived" element={<ArchivedFoodsScreen />} />
+          <Route path="pets" element={<PetsScreen />} />
+          <Route path="pets/archived" element={<ArchivedPetsScreen />} />
+          <Route path="pets/:petId" element={<PetsScreen />} />
+        </Route>
+        <Route element={<Shell bottomNav={false} />}>
+          <Route path="pets/new" element={<PetFormScreen />} />
+          <Route path="pets/:petId/edit" element={<PetFormScreen />} />
+          <Route path="stock/new" element={<FoodFormScreen />} />
+          <Route path="stock/:foodId/edit" element={<FoodFormScreen />} />
+          <Route path="settings" element={<SettingsScreen />} />
+          <Route path="settings/pet-types" element={<TypesScreen kind="pet" />} />
+          <Route path="settings/food-types" element={<TypesScreen kind="food" />} />
+        </Route>
+      </Routes>
+    </AccessGate>
   );
 }

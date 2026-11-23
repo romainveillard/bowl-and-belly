@@ -578,6 +578,11 @@
       "keep": "Copies to keep",
       "download": "Download backup",
       "backUpNow": "Back up now"
+    },
+    "access": {
+      "title": "Access",
+      "hint": "Protected by a password. Logging out signs out this device only.",
+      "logOut": "Log out"
     }
   },
   "types": {
@@ -622,5 +627,21 @@
     "archivedNote": "Archived",
     "archivedOption": "{name} (archived)",
     "restoreTaken": "Another type is already called {name}. Rename that one first."
+  },
+  "login": {
+    "password": "Password",
+    "submit": "Log in",
+    "forgotten": "Forgotten it? The password is set on the server by whoever runs Bowl & Belly.",
+    "errors": {
+      "wrong_password": "That password isn’t right.",
+      "too_many_attempts": "Too many attempts. Try again in a minute."
+    }
+  },
+  "sessionExpired": {
+    "title": "Your session has expired",
+    "bodyPhone": "Close Bowl & Belly and open it again to sign back in. Nothing you saved has been lost.",
+    "bodyDesktop": "Reload the page to sign back in. Nothing you saved has been lost.",
+    "tryAgain": "Try again",
+    "reload": "Reload"
   }
 }

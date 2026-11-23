@@ -578,6 +578,11 @@
       "keep": "Copies à conserver",
       "download": "Télécharger une sauvegarde",
       "backUpNow": "Sauvegarder maintenant"
+    },
+    "access": {
+      "title": "Accès",
+      "hint": "Protégé par un mot de passe. Se déconnecter ne concerne que cet appareil.",
+      "logOut": "Se déconnecter"
     }
   },
   "types": {
@@ -622,5 +627,21 @@
     "archivedNote": "Archivé",
     "archivedOption": "{name} (archivé)",
     "restoreTaken": "Un autre type s’appelle déjà {name}. Renommez-le d’abord."
+  },
+  "login": {
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "forgotten": "Mot de passe oublié ? Il est défini sur le serveur par la personne qui gère Bowl & Belly.",
+    "errors": {
+      "wrong_password": "Ce mot de passe n’est pas le bon.",
+      "too_many_attempts": "Trop de tentatives. Réessayez dans une minute."
+    }
+  },
+  "sessionExpired": {
+    "title": "Votre session a expiré",
+    "bodyPhone": "Fermez Bowl & Belly puis rouvrez-le pour vous reconnecter. Rien de ce que vous avez enregistré n’a été perdu.",
+    "bodyDesktop": "Rechargez la page pour vous reconnecter. Rien de ce que vous avez enregistré n’a été perdu.",
+    "tryAgain": "Réessayer",
+    "reload": "Recharger"
   }
 }

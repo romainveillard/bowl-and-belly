@@ -14,6 +14,7 @@ import { Card, CardHeading } from "../components/ui/Card.js";
 import { Field, inputClass } from "../components/ui/Field.js";
 import { Segmented } from "../components/ui/Segmented.js";
 import { Switch } from "../components/ui/Switch.js";
+import { useAuth, useLogOut } from "../lib/auth.js";
 import {
   useBackUpNow,
   useSaveSettings,
@@ -137,6 +138,8 @@ function SettingsForm({ settings }: { settings: Settings }) {
   const { t, i18n } = useTranslation();
   const save = useSaveSettings();
   const backUpNow = useBackUpNow();
+  const { data: auth } = useAuth();
+  const logOut = useLogOut();
   const [saved, setSaved] = useState(() => bodyOf(settings));
   const [dayStartsAt, setDayStartsAt] = useState(settings.dayStartsAt);
   const [backupTime, setBackupTime] = useState(settings.backupTime);
@@ -391,7 +394,22 @@ function SettingsForm({ settings }: { settings: Settings }) {
         {general}
         {petsAndFood}
       </div>
-      {backups}
+      <div className="flex flex-col gap-3.5 desktop:gap-6">
+        {backups}
+        {auth?.passwordRequired && (
+          <Card>
+            <CardHeading title={t("settings.access.title")} hint={t("settings.access.hint")} />
+            <button
+              type="button"
+              className={`${button.outline} self-start`}
+              disabled={logOut.isPending}
+              onClick={() => logOut.mutate()}
+            >
+              {t("settings.access.logOut")}
+            </button>
+          </Card>
+        )}
+      </div>
       <span className="self-center text-[13px] text-muted-foreground desktop:hidden">
         {t("settings.version", { version: APP_VERSION })}
       </span>
