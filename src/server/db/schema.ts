@@ -61,6 +61,7 @@ export const settings = sqliteTable(
     ),
     check("settings_backup_time", isTime(t.backupTime)),
     check("settings_backup_keep", sql`${t.backupKeep} >= 1`),
+    check("settings_backup_error", oneOf(t.backupError, BACKUP_ERRORS)),
   ],
 );
 
