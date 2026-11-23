@@ -5,7 +5,7 @@ import { addDays } from "../../shared/app-day.js";
 import { explainTarget } from "../../shared/target.js";
 import { BackIcon, EditIcon, PlusIcon, TrashIcon } from "../components/icons.js";
 import { PetAvatar } from "../components/PetAvatar.js";
-import { Sparkline } from "../components/Sparkline.js";
+import { SPARKLINE_READINGS, Sparkline } from "../components/Sparkline.js";
 import { button } from "../components/ui/button.js";
 import { Card, CardHeading } from "../components/ui/Card.js";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog.js";
@@ -57,6 +57,9 @@ function Rows({ rows }: { rows: { key: string; title: string; note?: string; val
   );
 }
 
+/** Weigh-ins listed before "Show all", which reveals the rest in place. */
+const LATEST_READINGS = 3;
+
 export function PetProfile({
   petId,
   weightSheets,
@@ -69,6 +72,7 @@ export function PetProfile({
   const locale = i18n.language;
   const { data: pet } = usePet(petId);
   const [settingTarget, setSettingTarget] = useState(false);
+  const [showAllWeights, setShowAllWeights] = useState(false);
   const [archiving, setArchiving] = useState(false);
   const archive = useSetArchived("archive");
   const navigate = useNavigate();
@@ -191,52 +195,66 @@ export function PetProfile({
             </div>
             {pet.weights.length > 1 && (
               <Sparkline
-                weightsG={pet.weights.map((weight) => weight.weightG).toReversed()}
+                weightsG={pet.weights
+                  .slice(0, SPARKLINE_READINGS)
+                  .map((weight) => weight.weightG)
+                  .toReversed()}
                 label={t("weight.sparkline")}
               />
             )}
             {pet.weights.length > 0 && (
               <div>
-                {pet.weights.slice(0, 3).map((reading) => {
-                  const date = day(new Date(reading.measuredAt));
-                  return (
-                    <div
-                      key={reading.id}
-                      className="group relative border-t border-border first:border-t-0"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => weightSheets.openActions(reading)}
-                        className="flex min-h-12 w-full cursor-pointer items-center justify-between gap-3 text-left desktop:cursor-default"
+                {pet.weights
+                  .slice(0, showAllWeights ? undefined : LATEST_READINGS)
+                  .map((reading) => {
+                    const date = day(new Date(reading.measuredAt));
+                    return (
+                      <div
+                        key={reading.id}
+                        className="group relative border-t border-border first:border-t-0"
                       >
-                        <span className="text-[15px]">{date}</span>
-                        <span className="text-[15px] font-semibold tabular-nums">
-                          {t("weight.reading", {
-                            weight: formatReadingKg(reading.weightG, locale),
-                          })}
+                        <button
+                          type="button"
+                          onClick={() => weightSheets.openActions(reading)}
+                          className="flex min-h-12 w-full cursor-pointer items-center justify-between gap-3 text-left desktop:cursor-default"
+                        >
+                          <span className="text-[15px]">{date}</span>
+                          <span className="text-[15px] font-semibold tabular-nums">
+                            {t("weight.reading", {
+                              weight: formatReadingKg(reading.weightG, locale),
+                            })}
+                          </span>
+                        </button>
+                        <span className="absolute top-1/2 right-20 hidden -translate-y-1/2 gap-1 desktop:group-focus-within:flex desktop:group-hover:flex">
+                          <button
+                            type="button"
+                            aria-label={t("weighIn.editNamed", { date })}
+                            onClick={() => weightSheets.edit(reading)}
+                            className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-muted"
+                          >
+                            <EditIcon size={18} />
+                          </button>
+                          <button
+                            type="button"
+                            aria-label={t("weighIn.deleteNamed", { date })}
+                            onClick={() => weightSheets.remove(reading)}
+                            className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-muted text-danger"
+                          >
+                            <TrashIcon size={18} />
+                          </button>
                         </span>
-                      </button>
-                      <span className="absolute top-1/2 right-20 hidden -translate-y-1/2 gap-1 desktop:group-focus-within:flex desktop:group-hover:flex">
-                        <button
-                          type="button"
-                          aria-label={t("weighIn.editNamed", { date })}
-                          onClick={() => weightSheets.edit(reading)}
-                          className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-muted"
-                        >
-                          <EditIcon size={18} />
-                        </button>
-                        <button
-                          type="button"
-                          aria-label={t("weighIn.deleteNamed", { date })}
-                          onClick={() => weightSheets.remove(reading)}
-                          className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-muted text-danger"
-                        >
-                          <TrashIcon size={18} />
-                        </button>
-                      </span>
-                    </div>
-                  );
-                })}
+                      </div>
+                    );
+                  })}
+                {!showAllWeights && pet.weights.length > LATEST_READINGS && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllWeights(true)}
+                    className="flex min-h-11 w-full cursor-pointer items-center border-t border-border text-sm font-semibold"
+                  >
+                    {t("weight.showAll", { count: pet.weights.length })}
+                  </button>
+                )}
               </div>
             )}
             <button

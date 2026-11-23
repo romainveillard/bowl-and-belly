@@ -112,7 +112,8 @@
     "reading": "{weight} kg",
     "sparkline": "Weight over the last weigh-ins",
     "current": "Current weight",
-    "target": "Target weight"
+    "target": "Target weight",
+    "showAll": "Show all ({count})"
   },
   "petForm": {
     "details": "Details",

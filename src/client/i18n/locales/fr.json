@@ -112,7 +112,8 @@
     "reading": "{weight} kg",
     "sparkline": "Poids lors des dernières pesées",
     "current": "Poids actuel",
-    "target": "Poids cible"
+    "target": "Poids cible",
+    "showAll": "Tout afficher ({count})"
   },
   "petForm": {
     "details": "Informations",

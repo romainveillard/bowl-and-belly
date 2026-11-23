@@ -130,7 +130,6 @@ export const petsRoutes = new Hono()
       .from(weightEntry)
       .where(eq(weightEntry.petId, id))
       .orderBy(desc(weightEntry.measuredAt), desc(weightEntry.id))
-      .limit(6)
       .all();
     const targets = db
       .select({

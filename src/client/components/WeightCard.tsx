@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { formatDay, formatKg } from "../lib/format.js";
 import { usePet } from "../lib/pets.js";
-import { Sparkline } from "./Sparkline.js";
+import { SPARKLINE_READINGS, Sparkline } from "./Sparkline.js";
 
 /** The selected pet's latest weight on desktop Today, linking to its profile. */
 export function WeightCard({ petId }: { petId: number }) {
@@ -33,7 +33,10 @@ export function WeightCard({ petId }: { petId: number }) {
       </span>
       {pet.weights.length > 1 && (
         <Sparkline
-          weightsG={pet.weights.map((reading) => reading.weightG).toReversed()}
+          weightsG={pet.weights
+            .slice(0, SPARKLINE_READINGS)
+            .map((reading) => reading.weightG)
+            .toReversed()}
           label={t("weight.sparkline")}
         />
       )}

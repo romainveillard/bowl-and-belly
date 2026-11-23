@@ -1,3 +1,6 @@
+/** How many of the latest readings a sparkline shows. */
+export const SPARKLINE_READINGS = 6;
+
 /** Weight readings, oldest first, as a small line with dots. Full charts are on Insights. */
 export function Sparkline({ weightsG, label }: { weightsG: number[]; label: string }) {
   const low = Math.min(...weightsG);
