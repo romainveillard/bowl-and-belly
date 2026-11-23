@@ -74,10 +74,12 @@ There's no restore button: you replace the database file while the app is stoppe
 
 1. Stop the app: `docker compose stop bowl-and-belly`
 2. If the backup is on your computer rather than in the volume, copy it in: `docker compose cp ./bowl-and-belly-2026-11-23.db bowl-and-belly:/data/backups/`
-3. Put it in place of the database, and remove the old database's journal files:
+3. Copy the current database aside first, so you can go back to it, then put the backup in its place and remove the old database's journal files:
 
    ```sh
    docker compose run --rm --no-deps --entrypoint sh bowl-and-belly -c '
+     mkdir -p /data/before-restore &&
+     cp /data/bowl-and-belly.db* /data/before-restore/ &&
      cp /data/backups/bowl-and-belly-2026-11-23.db /data/bowl-and-belly.db &&
      rm -f /data/bowl-and-belly.db-wal /data/bowl-and-belly.db-shm'
    ```
