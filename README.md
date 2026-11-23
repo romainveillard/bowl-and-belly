@@ -58,6 +58,8 @@ Tags: `latest` and `x.y.z` / `x.y` follow releases; `edge` follows the main bran
 
 With a password set, the app's data is only served to devices that have logged in. A login lasts a year and is renewed whenever the app is used, so a phone that opens it regularly stays signed in. Changing the password signs every device out. Wrong passwords are slowed down and limited to ten a minute.
 
+<!-- Screenshot: the login page, on a phone and on desktop. The public demo has no password, so this is the only place visitors see it. -->
+
 If you put Cloudflare Access (or another login proxy) in front of the app, give it a long session duration too. When that outer session runs out, the app can't renew it itself: it shows a "Your session has expired" page asking you to reopen or reload it.
 
 ## Backups
