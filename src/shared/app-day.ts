@@ -80,6 +80,13 @@ export function appDayOf(instant: Date, settings: DaySettings): string {
   return instant >= appDayStart(next, settings) ? next : day;
 }
 
+/** The same day of the month `months` later, for a "YYYY-MM-01" month start. */
+export function addMonths(monthStart: string, months: number): string {
+  const date = new Date(`${monthStart}T00:00:00Z`);
+  date.setUTCMonth(date.getUTCMonth() + months);
+  return date.toISOString().slice(0, 10);
+}
+
 /** The instant the clock in `timeZone` read `time` ("HH:MM") on `date` ("YYYY-MM-DD"). */
 export function instantAt(date: string, time: string, timeZone: string): Date {
   return appDayStart(date, { timeZone, dayStartsAt: time });

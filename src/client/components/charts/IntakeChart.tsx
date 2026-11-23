@@ -55,24 +55,37 @@ export function IntakeChart({
   label,
   height = 176,
   legend = true,
+  axis = "weekday",
 }: {
   days: DayIntake[];
   today: string;
   label: string;
   height?: number;
   legend?: boolean;
+  /** Weekday names for a week; day numbers, one week apart, for a month. */
+  axis?: "weekday" | "monthDay";
 }) {
   const { t, i18n } = useTranslation();
   const weekday = new Intl.DateTimeFormat(i18n.language, { weekday: "short", timeZone: "UTC" });
-  const data = days.map((day) => ({
-    ...day,
-    label: weekday.format(new Date(`${day.day}T00:00:00Z`)),
-    kcal: day.fed ? day.eatenKcal : null,
-  }));
+  const top = Math.max(...days.map((day) => Math.max(day.eatenKcal, day.targetKcal ?? 0)), 1);
+  // Days still to come show as short grey stubs, so the month keeps its shape.
+  const stub = top * 0.02;
+  const data = days.map((day) => {
+    const dayOfMonth = Number(day.day.slice(8));
+    return {
+      ...day,
+      label:
+        axis === "weekday"
+          ? weekday.format(new Date(`${day.day}T00:00:00Z`))
+          : (dayOfMonth - 1) % 7 === 0
+            ? String(dayOfMonth)
+            : "",
+      kcal: day.day > today ? stub : day.fed ? day.eatenKcal : null,
+    };
+  });
   const targets = new Set(days.map((day) => day.targetKcal));
   const [onlyTarget] = targets;
   const steadyTarget = targets.size === 1 && onlyTarget !== null && onlyTarget !== undefined;
-  const top = Math.max(...days.map((day) => Math.max(day.eatenKcal, day.targetKcal ?? 0)), 1);
 
   return (
     <div className="flex flex-col gap-3">
@@ -84,18 +97,26 @@ export function IntakeChart({
               tickLine={false}
               axisLine={{ stroke: colours.axis }}
               tick={{ fontSize: 11, fill: colours.muted }}
+              interval={0}
             />
             <YAxis hide domain={[0, Math.ceil(top * 1.12)]} />
-            <Bar dataKey="kcal" radius={5} maxBarSize={30} isAnimationActive={false}>
+            <Bar
+              dataKey="kcal"
+              radius={axis === "weekday" ? 5 : 2}
+              maxBarSize={30}
+              isAnimationActive={false}
+            >
               {data.map((day) => (
                 <Cell
                   key={day.day}
                   fill={
-                    day.day === today
-                      ? colours.today
-                      : isOverTarget(day.eatenKcal, day.targetKcal)
-                        ? colours.over
-                        : colours.primary
+                    day.day > today
+                      ? colours.axis
+                      : day.day === today
+                        ? colours.today
+                        : isOverTarget(day.eatenKcal, day.targetKcal)
+                          ? colours.over
+                          : colours.primary
                   }
                 />
               ))}

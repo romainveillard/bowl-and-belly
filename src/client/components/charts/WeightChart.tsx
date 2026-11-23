@@ -2,31 +2,49 @@ import { useTranslation } from "react-i18next";
 import { ComposedChart, Line, ResponsiveContainer, Scatter, XAxis, YAxis } from "recharts";
 import { addDays } from "../../../shared/app-day.js";
 import { rollingAverage, type Reading } from "../../../shared/insights.js";
+import { formatDateInput } from "../../lib/feeds.js";
 import { LegendItem } from "./IntakeChart.js";
 
 const DAY_MS = 86_400_000;
 
-/** Raw readings as faint dots and their 7-day rolling average as a line, over eight weeks. */
+/** Raw readings as faint dots and their 7-day rolling average as a line. */
 export function WeightChart({
   readings,
-  today,
+  from,
+  to,
+  tickEvery,
+  timeZone,
   label,
   height = 160,
 }: {
+  /** Readings from before `from` only feed the rolling average. */
   readings: Reading[];
-  today: string;
+  /** First and last day shown, "YYYY-MM-DD". */
+  from: string;
+  to: string;
+  tickEvery: number;
+  /** The app's, which decides the day each reading falls on. */
+  timeZone: string;
   label: string;
   height?: number;
 }) {
   const { t, i18n } = useTranslation();
-  const data = rollingAverage(readings).map((reading) => ({
-    at: reading.at,
-    kg: reading.weightG / 1000,
-    averageKg: reading.averageG / 1000,
-  }));
-  const end = Date.parse(`${addDays(today, 1)}T00:00:00Z`);
-  const start = end - 56 * DAY_MS;
-  const ticks = [0, 14, 28, 42].map((days) => start + days * DAY_MS);
+  const start = Date.parse(`${from}T00:00:00Z`);
+  const end = Date.parse(`${addDays(to, 1)}T00:00:00Z`);
+  const data = rollingAverage(readings)
+    .filter((reading) => {
+      const day = formatDateInput(new Date(reading.at), timeZone);
+      return day >= from && day <= to;
+    })
+    .map((reading) => ({
+      at: reading.at,
+      kg: reading.weightG / 1000,
+      averageKg: reading.averageG / 1000,
+    }));
+  const ticks: number[] = [];
+  for (let tick = start; tick < end; tick += tickEvery * DAY_MS) {
+    ticks.push(tick);
+  }
   const date = new Intl.DateTimeFormat(i18n.language, { day: "numeric", month: "short" });
   const kg = data.flatMap((point) => [point.kg, point.averageKg]);
 
