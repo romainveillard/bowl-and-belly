@@ -2,7 +2,7 @@ import { and, eq, isNull, ne, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { db } from "../db/client.js";
-import { food, pet, petType } from "../db/schema.js";
+import { petType } from "../db/schema.js";
 import { validate } from "../validate.js";
 
 const idParam = z.object({ id: z.coerce.number().int() });
@@ -62,17 +62,28 @@ export const petTypesRoutes = new Hono()
       .get();
     return updated ? c.body(null, 204) : c.json({ code: "not_found" as const }, 404);
   })
-  // A type no pet or food uses is deleted rather than kept archived.
   .post("/:id/archive", validate("param", idParam), (c) => {
+    const archived = db
+      .update(petType)
+      .set({ archivedAt: new Date() })
+      .where(and(eq(petType.id, c.req.valid("param").id), isNull(petType.systemKey)))
+      .returning({ id: petType.id })
+      .get();
+    return archived ? c.body(null, 204) : c.json({ code: "not_found" as const }, 404);
+  })
+  .post("/:id/restore", validate("param", idParam), (c) => {
     const { id } = c.req.valid("param");
-    const custom = and(eq(petType.id, id), isNull(petType.systemKey));
-    const removed = db.transaction((tx) => {
-      const inUse =
-        tx.select({ id: pet.id }).from(pet).where(eq(pet.petTypeId, id)).get() ??
-        tx.select({ id: food.id }).from(food).where(eq(food.petTypeId, id)).get();
-      return inUse
-        ? tx.update(petType).set({ archivedAt: new Date() }).where(custom).returning().get()
-        : tx.delete(petType).where(custom).returning().get();
-    });
-    return removed ? c.body(null, 204) : c.json({ code: "not_found" as const }, 404);
+    const type = db
+      .select({ name: petType.name })
+      .from(petType)
+      .where(and(eq(petType.id, id), isNull(petType.systemKey)))
+      .get();
+    if (!type?.name) {
+      return c.json({ code: "not_found" as const }, 404);
+    }
+    if (nameTaken(type.name, id)) {
+      return c.json({ code: "name_taken" as const }, 409);
+    }
+    db.update(petType).set({ archivedAt: null }).where(eq(petType.id, id)).run();
+    return c.body(null, 204);
   });

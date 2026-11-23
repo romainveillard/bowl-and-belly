@@ -2,7 +2,7 @@ import { and, eq, isNull, ne, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { db } from "../db/client.js";
-import { food, foodType } from "../db/schema.js";
+import { foodType } from "../db/schema.js";
 import { validate } from "../validate.js";
 
 const idParam = z.object({ id: z.coerce.number().int() });
@@ -66,15 +66,28 @@ export const foodTypesRoutes = new Hono()
       .get();
     return updated ? c.body(null, 204) : c.json({ code: "not_found" as const }, 404);
   })
-  // A type no food uses is deleted rather than kept archived.
   .post("/:id/archive", validate("param", idParam), (c) => {
+    const archived = db
+      .update(foodType)
+      .set({ archivedAt: new Date() })
+      .where(and(eq(foodType.id, c.req.valid("param").id), isNull(foodType.systemKey)))
+      .returning({ id: foodType.id })
+      .get();
+    return archived ? c.body(null, 204) : c.json({ code: "not_found" as const }, 404);
+  })
+  .post("/:id/restore", validate("param", idParam), (c) => {
     const { id } = c.req.valid("param");
-    const custom = and(eq(foodType.id, id), isNull(foodType.systemKey));
-    const removed = db.transaction((tx) => {
-      const inUse = tx.select({ id: food.id }).from(food).where(eq(food.foodTypeId, id)).get();
-      return inUse
-        ? tx.update(foodType).set({ archivedAt: new Date() }).where(custom).returning().get()
-        : tx.delete(foodType).where(custom).returning().get();
-    });
-    return removed ? c.body(null, 204) : c.json({ code: "not_found" as const }, 404);
+    const type = db
+      .select({ name: foodType.name })
+      .from(foodType)
+      .where(and(eq(foodType.id, id), isNull(foodType.systemKey)))
+      .get();
+    if (!type?.name) {
+      return c.json({ code: "not_found" as const }, 404);
+    }
+    if (nameTaken(type.name, id)) {
+      return c.json({ code: "name_taken" as const }, 409);
+    }
+    db.update(foodType).set({ archivedAt: null }).where(eq(foodType.id, id)).run();
+    return c.body(null, 204);
   });
