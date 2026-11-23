@@ -8,6 +8,7 @@ import { imagesRoutes } from "./routes/images.js";
 import { petTypesRoutes } from "./routes/pet-types.js";
 import { petsRoutes } from "./routes/pets.js";
 import { settingsRoutes } from "./routes/settings.js";
+import { weightsRoutes } from "./routes/weights.js";
 
 const api = new Hono()
   .get("/health", (c) => {
@@ -20,6 +21,7 @@ const api = new Hono()
   .route("/food-types", foodTypesRoutes)
   .route("/feeds", feedsRoutes)
   .route("/settings", settingsRoutes)
+  .route("/weights", weightsRoutes)
   .route("/images", imagesRoutes);
 
 export const app = new Hono().route("/api", api);

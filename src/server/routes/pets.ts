@@ -6,6 +6,7 @@ import { ACTIVITY_LEVELS, BIRTH_DATE_PRECISIONS, GOALS } from "../../shared/enum
 import { db } from "../db/client.js";
 import { image, pet, petTarget, petType, weightEntry } from "../db/schema.js";
 import { daySummaries } from "../feeds/days.js";
+import { agePrompt } from "../pets/prompts.js";
 import { chooseTarget, latestWeightG, targetOn } from "../pets/targets.js";
 import { today } from "../settings.js";
 
@@ -121,7 +122,11 @@ export const petsRoutes = new Hono()
     }
 
     const weights = db
-      .select({ measuredAt: weightEntry.measuredAt, weightG: weightEntry.weightG })
+      .select({
+        id: weightEntry.id,
+        measuredAt: weightEntry.measuredAt,
+        weightG: weightEntry.weightG,
+      })
       .from(weightEntry)
       .where(eq(weightEntry.petId, id))
       .orderBy(desc(weightEntry.measuredAt), desc(weightEntry.id))
@@ -175,6 +180,27 @@ export const petsRoutes = new Hono()
     });
     return result ? c.json(result) : c.json({ code: "not_found" as const }, 404);
   })
+  .get("/:id/age-prompt", validate("param", idParam), (c) => {
+    const { id } = c.req.valid("param");
+    return c.json(agePrompt(db, id, today(db)));
+  })
+  .post(
+    "/:id/age-prompt",
+    validate("param", idParam),
+    validate("json", z.object({ months: z.number().int(), update: z.boolean() })),
+    (c) => {
+      const { id } = c.req.valid("param");
+      const { months, update } = c.req.valid("json");
+      // Either answer settles the question for this age step.
+      db.transaction((tx) => {
+        tx.update(pet).set({ agePromptMonths: months }).where(eq(pet.id, id)).run();
+        if (update) {
+          chooseTarget(tx, id, today(tx), null);
+        }
+      });
+      return c.body(null, 204);
+    },
+  )
   .put(
     "/:id/target",
     validate("param", idParam),
