@@ -534,5 +534,89 @@
     "applies": "S’applique à partir d’aujourd’hui. Les jours passés gardent leur objectif.",
     "update": "Passer à {kcal} kcal",
     "keep": "Garder {kcal} kcal"
+  },
+  "settings": {
+    "back": "Retour",
+    "general": "Général",
+    "language": "Langue",
+    "languageHint": "Sur cet appareil uniquement.",
+    "timeZone": "Fuseau horaire",
+    "dayStartsAt": "La journée commence à",
+    "dayStartsAtHint": "Les repas avant cette heure comptent pour la veille.",
+    "petsAndFood": "Animaux et nourriture",
+    "version": "Bowl & Belly {version}",
+    "errors": {
+      "time": "Saisissez une heure",
+      "keep": "Saisissez un nombre entre 1 et 999"
+    },
+    "when": {
+      "today": "aujourd’hui à {time}",
+      "yesterday": "hier à {time}",
+      "tomorrow": "demain à {time}",
+      "on": "{date} à {time}"
+    },
+    "backups": {
+      "title": "Sauvegardes",
+      "off": "Aucune sauvegarde programmée.",
+      "last": "Dernière sauvegarde {when}.",
+      "first": "Aucune sauvegarde pour l’instant. La première aura lieu {when}.",
+      "failed": "La dernière sauvegarde a échoué",
+      "failedDetail": "({date}, {time}) : {reason}.",
+      "retry": "Nouvel essai à la prochaine heure prévue.",
+      "errors": {
+        "disk_full": "espace disque insuffisant",
+        "cannot_write": "impossible d’écrire dans le dossier des sauvegardes",
+        "unknown": "une erreur s’est produite sur le serveur"
+      },
+      "scheduled": "Sauvegardes programmées",
+      "scheduledHint": "Enregistrées sur le serveur, dans le volume de données.",
+      "frequency": "Fréquence",
+      "daily": "Quotidienne",
+      "weekly": "Hebdomadaire",
+      "day": "Jour",
+      "time": "Heure",
+      "keep": "Copies à conserver",
+      "download": "Télécharger une sauvegarde",
+      "backUpNow": "Sauvegarder maintenant"
+    }
+  },
+  "types": {
+    "backToSettings": "Retour aux réglages",
+    "builtIn": "Intégré",
+    "name": "Nom",
+    "errorName": "nom",
+    "errors": {
+      "missing": "Saisissez un nom",
+      "taken": "Un type s’appelle déjà {name}"
+    },
+    "leftovers": "Restes",
+    "backInStock": "Remis en stock",
+    "binned": "Jetés",
+    "leftoversHint": "Le choix par défaut quand vous notez un reste. Vous pouvez le changer à chaque fois.",
+    "archive": "Archiver le type",
+    "archiveTitle": "Archiver {name} ?",
+    "food": {
+      "title": "Types de nourriture",
+      "hint": "Les types de nourriture filtrent le choix des aliments et décident du sort des restes.",
+      "returns": "Les restes retournent en stock",
+      "binned": "Les restes sont jetés",
+      "add": "Ajouter un type",
+      "addTitle": "Nouveau type de nourriture",
+      "editTitle": "Modifier le type de nourriture",
+      "save": "Enregistrer le type",
+      "archiveBody": "Les aliments de ce type le gardent. Il ne sera plus proposé pour les nouveaux aliments."
+    },
+    "pet": {
+      "title": "Types d’animaux",
+      "hint": "Les types intégrés ont une formule de calories. Vos propres types utilisent un objectif quotidien que vous fixez.",
+      "builtInNote": "Objectif calculé pour vous",
+      "customNote": "Objectif fixé par vous",
+      "add": "Ajouter un type",
+      "addTitle": "Nouveau type d’animal",
+      "editTitle": "Modifier le type d’animal",
+      "save": "Enregistrer le type",
+      "noFormula": "Il n’y a pas de formule de calories pour vos propres types : les animaux de ce type utilisent un objectif quotidien que vous fixez, par exemple avec votre vétérinaire.",
+      "archiveBody": "Les animaux et aliments de ce type le gardent. Il ne sera plus proposé pour les nouveaux."
+    }
   }
 }

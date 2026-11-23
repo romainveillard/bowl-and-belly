@@ -8,6 +8,7 @@ import {
 import type { InferRequestType, InferResponseType } from "hono/client";
 import { addDays } from "../../shared/app-day.js";
 import { api } from "../api.js";
+import { useSettings } from "./settings.js";
 
 const feeds = api.api.feeds;
 
@@ -151,16 +152,7 @@ export function useRestoreFeed() {
 }
 
 export function useDaySettings() {
-  return useQuery({
-    queryKey: ["settings"],
-    queryFn: async () => {
-      const response = await api.api.settings.$get();
-      if (!response.ok) {
-        throw new Error("Could not load the settings");
-      }
-      return response.json();
-    },
-  });
+  return useSettings();
 }
 
 /** "17:50", on the app's clock rather than the device's. */

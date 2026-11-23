@@ -113,17 +113,21 @@ export function StockScreen() {
             >
               {t("stock.all")}
             </button>
-            {foodTypes.map((type) => (
-              <button
-                key={type.id}
-                type="button"
-                aria-pressed={typeId === type.id}
-                className={chip}
-                onClick={() => setTypeId(type.id)}
-              >
-                {foodTypeLabel(type, t)}
-              </button>
-            ))}
+            {foodTypes
+              .filter(
+                (type) => !type.archived || data.foods.some((food) => food.type.id === type.id),
+              )
+              .map((type) => (
+                <button
+                  key={type.id}
+                  type="button"
+                  aria-pressed={typeId === type.id}
+                  className={chip}
+                  onClick={() => setTypeId(type.id)}
+                >
+                  {foodTypeLabel(type, t)}
+                </button>
+              ))}
           </div>
         </div>
       </header>

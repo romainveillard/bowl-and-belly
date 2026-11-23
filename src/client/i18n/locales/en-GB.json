@@ -534,5 +534,89 @@
     "applies": "Applies from today. Past days keep their target.",
     "update": "Update to {kcal} kcal",
     "keep": "Keep {kcal} kcal"
+  },
+  "settings": {
+    "back": "Back",
+    "general": "General",
+    "language": "Language",
+    "languageHint": "This device only.",
+    "timeZone": "Time zone",
+    "dayStartsAt": "Day starts at",
+    "dayStartsAtHint": "Feeds before this count towards the previous day.",
+    "petsAndFood": "Pets and food",
+    "version": "Bowl & Belly {version}",
+    "errors": {
+      "time": "Enter a time",
+      "keep": "Enter a number from 1 to 999"
+    },
+    "when": {
+      "today": "today at {time}",
+      "yesterday": "yesterday at {time}",
+      "tomorrow": "tomorrow at {time}",
+      "on": "{date} at {time}"
+    },
+    "backups": {
+      "title": "Backups",
+      "off": "No scheduled backups.",
+      "last": "Last backup {when}.",
+      "first": "No backups yet. The first one runs {when}.",
+      "failed": "Last backup failed",
+      "failedDetail": "({date}, {time}): {reason}.",
+      "retry": "It will try again at the next scheduled time.",
+      "errors": {
+        "disk_full": "not enough disk space",
+        "cannot_write": "the backup folder can’t be written to",
+        "unknown": "something went wrong on the server"
+      },
+      "scheduled": "Scheduled backups",
+      "scheduledHint": "Saved on the server, in the data volume.",
+      "frequency": "Frequency",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "day": "Day",
+      "time": "Time",
+      "keep": "Copies to keep",
+      "download": "Download backup",
+      "backUpNow": "Back up now"
+    }
+  },
+  "types": {
+    "backToSettings": "Back to settings",
+    "builtIn": "Built-in",
+    "name": "Name",
+    "errorName": "name",
+    "errors": {
+      "missing": "Enter a name",
+      "taken": "There’s already a type called {name}"
+    },
+    "leftovers": "Leftovers",
+    "backInStock": "Back in stock",
+    "binned": "Binned",
+    "leftoversHint": "The default when you record a leftover. You can change it each time.",
+    "archive": "Archive type",
+    "archiveTitle": "Archive {name}?",
+    "food": {
+      "title": "Food types",
+      "hint": "Food types filter the food picker and decide what happens to leftovers.",
+      "returns": "Leftovers go back into stock",
+      "binned": "Leftovers are binned",
+      "add": "Add food type",
+      "addTitle": "Add food type",
+      "editTitle": "Edit food type",
+      "save": "Save food type",
+      "archiveBody": "Foods of this type keep it. It won’t be offered for new foods."
+    },
+    "pet": {
+      "title": "Pet types",
+      "hint": "Built-in types come with a calorie formula. Your own types use a daily target you set.",
+      "builtInNote": "Target worked out for you",
+      "customNote": "Target set by you",
+      "add": "Add pet type",
+      "addTitle": "Add pet type",
+      "editTitle": "Edit pet type",
+      "save": "Save pet type",
+      "noFormula": "There’s no calorie formula for your own types, so pets of this type use a daily target you set, for example from your vet.",
+      "archiveBody": "Pets and foods of this type keep it. It won’t be offered for new ones."
+    }
   }
 }

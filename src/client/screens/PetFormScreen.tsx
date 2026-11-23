@@ -12,6 +12,7 @@ import { Segmented } from "../components/ui/Segmented.js";
 import { useSnackbar } from "../components/ui/Snackbar.js";
 import { Switch } from "../components/ui/Switch.js";
 import { parsePositive, petTypeLabel } from "../lib/format.js";
+import { offeredTypes } from "../lib/types.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
 import {
   uploadPhoto,
@@ -278,7 +279,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
                     onChange={(event) => set("petTypeId", Number(event.target.value))}
                     className={`${inputClass} appearance-none pr-11`}
                   >
-                    {petTypes?.map((type) => (
+                    {offeredTypes(petTypes ?? [], pet?.petTypeId).map((type) => (
                       <option key={type.id} value={type.id}>
                         {petTypeLabel(type, t)}
                       </option>
