@@ -80,15 +80,18 @@ export function appDayOf(instant: Date, settings: DaySettings): string {
   return instant >= appDayStart(next, settings) ? next : day;
 }
 
+/** The instant the clock in `timeZone` read `time` ("HH:MM") on `date` ("YYYY-MM-DD"). */
+export function instantAt(date: string, time: string, timeZone: string): Date {
+  return appDayStart(date, { timeZone, dayStartsAt: time });
+}
+
 /**
  * The most recent instant, at or before `now`, when the clock in the app time
  * zone read `time` ("HH:MM"). A feed logged at 00:10 for 23:50 lands on the
  * previous evening, not in the future.
  */
 export function latestAt(time: string, now: Date, timeZone: string): Date {
-  const midnight = { timeZone, dayStartsAt: "00:00" };
-  const at = (day: string) => appDayStart(day, { timeZone, dayStartsAt: time });
-  const today = appDayOf(now, midnight);
-  const candidate = at(today);
-  return candidate <= now ? candidate : at(addDays(today, -1));
+  const today = appDayOf(now, { timeZone, dayStartsAt: "00:00" });
+  const candidate = instantAt(today, time, timeZone);
+  return candidate <= now ? candidate : instantAt(addDays(today, -1), time, timeZone);
 }

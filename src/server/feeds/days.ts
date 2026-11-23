@@ -23,8 +23,13 @@ export function daySummaries(db: DbOrTx, petId: number, from: string, to: string
       leftoverG: feedEntry.leftoverG,
       leftoverReturnedToStock: feedEntry.leftoverReturnedToStock,
       kcalPerKg: feedEntry.kcalPerKg,
-      food: { id: food.id, name: food.name, photoId: food.photoId },
-      type: { id: foodType.id, systemKey: foodType.systemKey, name: foodType.name },
+      food: { id: food.id, name: food.name, brand: food.brand, photoId: food.photoId },
+      type: {
+        id: foodType.id,
+        systemKey: foodType.systemKey,
+        name: foodType.name,
+        leftoverReturnsToStock: foodType.leftoverReturnsToStock,
+      },
     })
     .from(feedEntry)
     .innerJoin(food, eq(feedEntry.foodId, food.id))
@@ -70,9 +75,9 @@ export function daySummaries(db: DbOrTx, petId: number, from: string, to: string
         byType: [...types.values()]
           .toSorted((a, b) => a.type.id - b.type.id)
           .map((total) => ({ ...total, kcal: Math.round(total.kcal) })),
-        entries: dayEntries.map(({ kcalPerKg, ...entry }) => ({
+        entries: dayEntries.map((entry) => ({
           ...entry,
-          kcal: Math.round((eatenG(entry) * kcalPerKg) / 1000),
+          kcal: Math.round((eatenG(entry) * entry.kcalPerKg) / 1000),
         })),
       };
     });

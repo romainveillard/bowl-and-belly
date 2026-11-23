@@ -1,7 +1,7 @@
 import { and, desc, eq, isNull, lte, or } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import { latestAt } from "../../shared/app-day.js";
+import { instantAt, latestAt } from "../../shared/app-day.js";
 import { db } from "../db/client.js";
 import { feedEntry, food, foodType, pet } from "../db/schema.js";
 import { hasFeedsBefore, daySummaries } from "../feeds/days.js";
@@ -13,10 +13,18 @@ const petQuery = z.object({ petId: z.coerce.number().int() });
 const idParam = z.object({ id: z.coerce.number().int() });
 const time = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
 
-/** Only the previous feed of the last day prompts for a leftover; older bowls are long gone. */
+/**
+ * Only a recent previous feed prompts for a leftover; older bowls are long
+ * gone. Foods whose leftovers are binned use Add leftover instead.
+ */
 const LEFTOVER_PROMPT_MS = 24 * 60 * 60 * 1000;
 
-const foodTypeLabel = { id: foodType.id, systemKey: foodType.systemKey, name: foodType.name };
+const foodTypeLabel = {
+  id: foodType.id,
+  systemKey: foodType.systemKey,
+  name: foodType.name,
+  leftoverReturnsToStock: foodType.leftoverReturnsToStock,
+};
 
 function returnsLeftovers(foodId: number): boolean {
   const row = db
@@ -100,7 +108,8 @@ export const feedsRoutes = new Hono()
     const askLeftover =
       previous !== undefined &&
       previous.leftoverG === null &&
-      now.getTime() - previous.fedAt.getTime() < LEFTOVER_PROMPT_MS;
+      now.getTime() - previous.fedAt.getTime() < LEFTOVER_PROMPT_MS &&
+      returnsLeftovers(previous.foodId);
 
     return c.json({
       foods: [...recent, ...others].map((row) => ({
@@ -174,6 +183,68 @@ export const feedsRoutes = new Hono()
         return c.json({ code: "not_found" as const }, 404);
       }
       return c.json({ id: result }, 201);
+    },
+  )
+  .put(
+    "/:id",
+    validate("param", idParam),
+    validate(
+      "json",
+      z.object({
+        foodId: z.number().int(),
+        servedG: z.number().int().positive(),
+        leftoverG: z.number().int().nonnegative().nullable(),
+        leftoverReturnedToStock: z.boolean(),
+        /** The calendar date and clock time in the app time zone. */
+        date: z.iso.date(),
+        time,
+      }),
+    ),
+    (c) => {
+      const { id } = c.req.valid("param");
+      const { date, time: clock, ...values } = c.req.valid("json");
+      if (values.leftoverG !== null && values.leftoverG > values.servedG) {
+        return c.json({ code: "invalid_leftover" as const }, 400);
+      }
+      const fedAt = instantAt(date, clock, daySettings(db).timeZone);
+      if (fedAt.getTime() > Date.now()) {
+        return c.json({ code: "in_future" as const }, 400);
+      }
+      const edited = db.transaction((tx) => {
+        const before = tx.select().from(feedEntry).where(eq(feedEntry.id, id)).get();
+        return before !== undefined && editFeed(tx, id, { ...values, petId: before.petId, fedAt });
+      });
+      return edited ? c.body(null, 204) : c.json({ code: "not_found" as const }, 404);
+    },
+  )
+  .put(
+    "/:id/leftover",
+    validate("param", idParam),
+    validate(
+      "json",
+      z.object({
+        leftoverG: z.number().int().nonnegative(),
+        leftoverReturnedToStock: z.boolean(),
+      }),
+    ),
+    (c) => {
+      const { id } = c.req.valid("param");
+      const leftover = c.req.valid("json");
+      const result = db.transaction((tx) => {
+        const before = tx.select().from(feedEntry).where(eq(feedEntry.id, id)).get();
+        if (!before) {
+          return "not_found" as const;
+        }
+        if (leftover.leftoverG > before.servedG) {
+          return "invalid_leftover" as const;
+        }
+        editFeed(tx, id, { ...before, ...leftover });
+        return "done" as const;
+      });
+      if (result === "done") {
+        return c.body(null, 204);
+      }
+      return c.json({ code: result }, result === "not_found" ? 404 : 400);
     },
   )
   .delete("/:id", validate("param", idParam), (c) => {
