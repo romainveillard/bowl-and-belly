@@ -8,7 +8,12 @@ import { Field } from "../components/ui/Field.js";
 import { Segmented } from "../components/ui/Segmented.js";
 import { Sheet } from "../components/ui/Sheet.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
-import { useArchiveType, useSaveFoodType, useSavePetType, type TypeKind } from "../lib/types.js";
+import {
+  useSaveFoodType,
+  useSavePetType,
+  useSetTypeArchived,
+  type TypeKind,
+} from "../lib/types.js";
 
 export interface CustomType {
   id: number;
@@ -37,7 +42,7 @@ export function TypeFormSheet({ kind, type, otherLabels, onClose }: TypeFormShee
   const [archiving, setArchiving] = useState(false);
   const saveFood = useSaveFoodType(type?.id);
   const savePet = useSavePetType(type?.id);
-  const archive = useArchiveType(kind);
+  const archive = useSetTypeArchived(kind, "archive");
   const pending = saveFood.isPending || savePet.isPending;
 
   const problems = new Map<"name", "missing" | "taken">();
@@ -142,7 +147,7 @@ export function TypeFormSheet({ kind, type, otherLabels, onClose }: TypeFormShee
           open={archiving}
           onOpenChange={setArchiving}
           title={t("types.archiveTitle", { name: type.name })}
-          description={t(`types.${kind}.archiveBody`)}
+          description={t(`types.${kind}.archiveBody`, { name: type.name })}
           confirmLabel={t("pets.archiveConfirm")}
           onConfirm={() => archive.mutate(type.id, { onSuccess: onClose })}
         />

@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { TFunction } from "i18next";
 import type { InferRequestType } from "hono/client";
 import { api } from "../api.js";
 
@@ -61,16 +62,21 @@ export function useSavePetType(id: number | undefined) {
   });
 }
 
-export function useArchiveType(kind: TypeKind) {
+/** Archives a custom type, or restores one. Resolves to "name_taken" when a restore is refused. */
+export function useSetTypeArchived(kind: TypeKind, action: "archive" | "restore") {
   const invalidate = useInvalidate(kind);
 
   return useMutation({
     mutationFn: async (id: number) => {
       const route = kind === "food" ? foodTypes : petTypes;
-      const response = await route[":id"].archive.$post({ param: { id: String(id) } });
-      if (!response.ok) {
-        throw new Error("Could not archive the type");
+      const response = await route[":id"][action].$post({ param: { id: String(id) } });
+      if (response.status === 409) {
+        return "name_taken" as const;
       }
+      if (!response.ok) {
+        throw new Error(`Could not ${action} the type`);
+      }
+      return null;
     },
     onSuccess: invalidate,
   });
@@ -82,4 +88,9 @@ export function offeredTypes<Type extends { id: number; archived: boolean }>(
   current: number | null | undefined,
 ): Type[] {
   return types.filter((type) => !type.archived || type.id === current);
+}
+
+/** "Raw (archived)" for an archived type a record still uses. */
+export function optionLabel(label: string, type: { archived: boolean }, t: TFunction): string {
+  return type.archived ? t("types.archivedOption", { name: label }) : label;
 }

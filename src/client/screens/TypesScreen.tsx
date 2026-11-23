@@ -3,16 +3,19 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { BackIcon, ChevronRightIcon, LockIcon, PlusIcon } from "../components/icons.js";
 import { button } from "../components/ui/button.js";
+import { useSnackbar } from "../components/ui/Snackbar.js";
+import { Switch } from "../components/ui/Switch.js";
 import { foodTypeLabel, useFoodTypes } from "../lib/foods.js";
 import { petTypeLabel } from "../lib/format.js";
 import { usePetTypes } from "../lib/pets.js";
-import type { TypeKind } from "../lib/types.js";
+import { useSetTypeArchived, type TypeKind } from "../lib/types.js";
 import { TypeFormSheet, type CustomType } from "./TypeFormSheet.js";
 
 interface Row {
   id: number;
   label: string;
   note: string;
+  archived: boolean;
   /** Set on custom types, which can be edited. */
   custom?: CustomType;
 }
@@ -23,33 +26,31 @@ function useRows(kind: TypeKind): Row[] | undefined {
   const { data: petTypes } = usePetTypes();
 
   if (kind === "food") {
-    return foodTypes
-      ?.filter((type) => !type.archived)
-      .map((type) => ({
-        id: type.id,
-        label: foodTypeLabel(type, t),
-        note: t(type.leftoverReturnsToStock ? "types.food.returns" : "types.food.binned"),
-        ...(type.name !== null && type.systemKey === null
-          ? {
-              custom: {
-                id: type.id,
-                name: type.name,
-                leftoverReturnsToStock: type.leftoverReturnsToStock,
-              },
-            }
-          : {}),
-      }));
-  }
-  return petTypes
-    ?.filter((type) => !type.archived)
-    .map((type) => ({
+    return foodTypes?.map((type) => ({
       id: type.id,
-      label: petTypeLabel(type, t),
-      note: t(type.systemKey ? "types.pet.builtInNote" : "types.pet.customNote"),
+      archived: type.archived,
+      label: foodTypeLabel(type, t),
+      note: t(type.leftoverReturnsToStock ? "types.food.returns" : "types.food.binned"),
       ...(type.name !== null && type.systemKey === null
-        ? { custom: { id: type.id, name: type.name } }
+        ? {
+            custom: {
+              id: type.id,
+              name: type.name,
+              leftoverReturnsToStock: type.leftoverReturnsToStock,
+            },
+          }
         : {}),
     }));
+  }
+  return petTypes?.map((type) => ({
+    id: type.id,
+    archived: type.archived,
+    label: petTypeLabel(type, t),
+    note: t(type.systemKey ? "types.pet.builtInNote" : "types.pet.customNote"),
+    ...(type.name !== null && type.systemKey === null
+      ? { custom: { id: type.id, name: type.name } }
+      : {}),
+  }));
 }
 
 function RowLabel({ row }: { row: Row }) {
@@ -66,13 +67,18 @@ const rowClass =
 
 export function TypesScreen({ kind }: { kind: TypeKind }) {
   const { t } = useTranslation();
-  const rows = useRows(kind);
+  const allRows = useRows(kind);
   // Undefined: closed; null: adding.
   const [editing, setEditing] = useState<CustomType | null | undefined>();
+  const [showArchived, setShowArchived] = useState(false);
+  const restore = useSetTypeArchived(kind, "restore");
+  const showSnackbar = useSnackbar();
 
-  if (!rows) {
+  if (!allRows) {
     return null;
   }
+  const rows = allRows.filter((row) => !row.archived);
+  const archived = allRows.filter((row) => row.archived);
 
   const title = t(`types.${kind}.title`);
   const hint = t(`types.${kind}.hint`);
@@ -123,6 +129,42 @@ export function TypesScreen({ kind }: { kind: TypeKind }) {
               </div>
             );
           })}
+          {archived.length > 0 && (
+            <div className={rowClass}>
+              <span className="text-[15px]">{t("types.showArchived")}</span>
+              <Switch
+                label={t("types.showArchived")}
+                checked={showArchived}
+                onCheckedChange={setShowArchived}
+              />
+            </div>
+          )}
+          {showArchived &&
+            archived.map((row) => (
+              <div key={row.id} className={rowClass}>
+                <span className="flex flex-col gap-0.5">
+                  <span className="text-[15px] font-semibold">{row.label}</span>
+                  <span className="text-[13px] text-muted-foreground">
+                    {t("types.archivedNote")}
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  aria-label={t("pets.restoreNamed", { name: row.label })}
+                  className={`${button.outline} flex-none`}
+                  disabled={restore.isPending}
+                  onClick={() =>
+                    restore.mutate(row.id, {
+                      onSuccess: (result) =>
+                        result === "name_taken" &&
+                        showSnackbar(t("types.restoreTaken", { name: row.label })),
+                    })
+                  }
+                >
+                  {t("pets.restore")}
+                </button>
+              </div>
+            ))}
         </div>
         <button
           type="button"

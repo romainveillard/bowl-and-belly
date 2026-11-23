@@ -12,7 +12,7 @@ import { Segmented } from "../components/ui/Segmented.js";
 import { useSnackbar } from "../components/ui/Snackbar.js";
 import { Switch } from "../components/ui/Switch.js";
 import { parsePositive, petTypeLabel } from "../lib/format.js";
-import { offeredTypes } from "../lib/types.js";
+import { offeredTypes, optionLabel } from "../lib/types.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
 import {
   uploadPhoto,
@@ -281,7 +281,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
                   >
                     {offeredTypes(petTypes ?? [], pet?.petTypeId).map((type) => (
                       <option key={type.id} value={type.id}>
-                        {petTypeLabel(type, t)}
+                        {optionLabel(petTypeLabel(type, t), type, t)}
                       </option>
                     ))}
                   </select>

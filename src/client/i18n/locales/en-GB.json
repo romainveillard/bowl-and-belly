@@ -604,7 +604,7 @@
       "addTitle": "Add food type",
       "editTitle": "Edit food type",
       "save": "Save food type",
-      "archiveBody": "Foods of this type keep it. It won’t be offered for new foods."
+      "archiveBody": "{name} won’t be offered for new foods. Foods that use it keep it, and you can restore it later."
     },
     "pet": {
       "title": "Pet types",
@@ -616,7 +616,11 @@
       "editTitle": "Edit pet type",
       "save": "Save pet type",
       "noFormula": "There’s no calorie formula for your own types, so pets of this type use a daily target you set, for example from your vet.",
-      "archiveBody": "Pets and foods of this type keep it. It won’t be offered for new ones."
-    }
+      "archiveBody": "{name} won’t be offered for new pets. Pets that use it keep it, and you can restore it later."
+    },
+    "showArchived": "Show archived",
+    "archivedNote": "Archived",
+    "archivedOption": "{name} (archived)",
+    "restoreTaken": "Another type is already called {name}. Rename that one first."
   }
 }

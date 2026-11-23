@@ -24,7 +24,7 @@ import {
 import { parsePositive, petTypeLabel } from "../lib/format.js";
 import { uploadPhoto, usePets, usePetTypes } from "../lib/pets.js";
 import { useSelectedPet } from "../lib/selectedPet.js";
-import { offeredTypes } from "../lib/types.js";
+import { offeredTypes, optionLabel } from "../lib/types.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
 import { KcalUpdateDialog } from "./KcalUpdateDialog.js";
 
@@ -300,7 +300,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
                 onChange={(value) => set("foodTypeId", Number(value))}
                 options={offeredTypes(foodTypes, food?.foodTypeId).map((type) => ({
                   value: String(type.id),
-                  label: foodTypeLabel(type, t),
+                  label: optionLabel(foodTypeLabel(type, t), type, t),
                 }))}
               />
             )}
@@ -316,7 +316,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
                 >
                   {offeredTypes(petTypes ?? [], food?.petTypeId).map((type) => (
                     <option key={type.id} value={type.id}>
-                      {petTypeLabel(type, t)}
+                      {optionLabel(petTypeLabel(type, t), type, t)}
                     </option>
                   ))}
                   <option value="">{t("foodForm.anyPet")}</option>

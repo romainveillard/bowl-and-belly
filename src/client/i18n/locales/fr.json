@@ -604,7 +604,7 @@
       "addTitle": "Nouveau type de nourriture",
       "editTitle": "Modifier le type de nourriture",
       "save": "Enregistrer le type",
-      "archiveBody": "Les aliments de ce type le gardent. Il ne sera plus proposé pour les nouveaux aliments."
+      "archiveBody": "{name} ne sera plus proposé pour les nouveaux aliments. Les aliments qui l’utilisent le gardent, et vous pourrez le restaurer plus tard."
     },
     "pet": {
       "title": "Types d’animaux",
@@ -616,7 +616,11 @@
       "editTitle": "Modifier le type d’animal",
       "save": "Enregistrer le type",
       "noFormula": "Il n’y a pas de formule de calories pour vos propres types : les animaux de ce type utilisent un objectif quotidien que vous fixez, par exemple avec votre vétérinaire.",
-      "archiveBody": "Les animaux et aliments de ce type le gardent. Il ne sera plus proposé pour les nouveaux."
-    }
+      "archiveBody": "{name} ne sera plus proposé pour les nouveaux animaux. Les animaux qui l’utilisent le gardent, et vous pourrez le restaurer plus tard."
+    },
+    "showArchived": "Afficher les archivés",
+    "archivedNote": "Archivé",
+    "archivedOption": "{name} (archivé)",
+    "restoreTaken": "Un autre type s’appelle déjà {name}. Renommez-le d’abord."
   }
 }
