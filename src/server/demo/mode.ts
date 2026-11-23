@@ -18,13 +18,19 @@ import { generateDemo } from "./generate.js";
 
 export const demo = process.env.BOWL_DEMO === "true";
 
-// How much a visitor can add between two resets.
+// How much all visitors together can add between two resets.
 const LIMITS = new Map([
-  ["/api/pets", 5],
-  ["/api/foods", 10],
-  ["/api/feeds", 100],
+  ["/api/pets", 10],
+  ["/api/foods", 30],
+  ["/api/feeds", 500],
 ]);
-const DISABLED = ["POST /api/images", "POST /api/backups", "GET /api/backups/download"];
+// Settings are shared by every visitor, so none of them can change.
+const DISABLED = [
+  "POST /api/images",
+  "POST /api/backups",
+  "GET /api/backups/download",
+  "PUT /api/settings",
+];
 
 const added = new Map<string, number>();
 
