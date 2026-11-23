@@ -61,6 +61,7 @@ export const petsRoutes = new Hono()
       .select({
         id: pet.id,
         name: pet.name,
+        petTypeId: pet.petTypeId,
         type: petTypeLabel,
         birthDate: pet.birthDate,
         birthDatePrecision: pet.birthDatePrecision,
