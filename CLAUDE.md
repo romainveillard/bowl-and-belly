@@ -14,6 +14,7 @@ Self-hosted PWA for tracking pets' food intake (calories against a daily target)
 
 - Install: `npm install`
 - Dev: `npm run dev` (API on port 3000, Vite on port 5173 proxying `/api`; open the Vite one)
+- Dev with demo data: `npm run demo` (regenerates `data-demo/`, then runs the dev servers on it)
 - Test: `npm test`
 - Lint and typecheck: `npm run lint`, `npm run format:check` and `npm run typecheck` (`npm run format` rewrites files)
 - Production build: `npm run build`, then `npm start`

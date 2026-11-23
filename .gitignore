@@ -8,6 +8,7 @@ vite.config.ts.timestamp-*
 
 # Local data: the SQLite file, its WAL and backups
 data/
+data-demo/
 *.db
 *.db-shm
 *.db-wal

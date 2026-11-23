@@ -7,6 +7,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently -k -n api,web \"tsx watch src/server/index.ts\" \"vite\"",
+    "demo": "DATA_DIR=data-demo tsx src/server/demo/cli.ts && DATA_DIR=data-demo npm run dev",
     "build": "tsc -b && vite build",
     "start": "node dist/server/index.js",
     "typecheck": "tsc -b",
