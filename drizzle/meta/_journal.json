@@ -15,6 +15,13 @@
       "when": 1795379943174,
       "tag": "0001_drop_weight_decimals",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1795465654225,
+      "tag": "0002_age_prompt",
+      "breakpoints": true
     }
   ]
 }

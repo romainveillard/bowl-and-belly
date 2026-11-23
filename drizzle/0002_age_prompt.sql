@@ -1,0 +1,1 @@
+ALTER TABLE `pet` ADD `age_prompt_months` integer;
