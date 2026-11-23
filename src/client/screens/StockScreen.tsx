@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { FoodTypeBadge, FoodTypeTile } from "../components/FoodTypeMark.js";
-import { ChevronRightIcon, PlusIcon, SearchIcon } from "../components/icons.js";
+import { EmptyState } from "../components/EmptyState.js";
+import { ChevronRightIcon, PlusIcon, SearchIcon, StockIcon } from "../components/icons.js";
 import { button } from "../components/ui/button.js";
 import { inputClass } from "../components/ui/Field.js";
 import {
   foodTypeLabel,
+  isOutOfStock,
   stockLabel,
   useFoods,
   useFoodTypes,
@@ -43,6 +45,28 @@ export function StockScreen() {
 
   if (!data || !foodTypes) {
     return null;
+  }
+  const archivedLink = data.archivedCount > 0 && (
+    <Link
+      to="/stock/archived"
+      className="flex min-h-11 items-center justify-between px-1 text-sm text-muted-foreground desktop:inline-flex desktop:justify-start desktop:gap-1.5 desktop:self-start desktop:px-0"
+    >
+      {t("stock.archivedLink", { count: data.archivedCount })}
+      <ChevronRightIcon size={18} />
+    </Link>
+  );
+
+  if (data.foods.length === 0) {
+    return (
+      <EmptyState
+        heading={t("nav.stock")}
+        icon={<StockIcon size={30} />}
+        title={t("stock.emptyTitle")}
+        body={t("stock.emptyBody")}
+        action={{ to: "/stock/new", label: t("stock.addFirst") }}
+        footer={archivedLink}
+      />
+    );
   }
 
   const wanted = search.trim().toLocaleLowerCase(i18n.language);
@@ -115,7 +139,9 @@ export function StockScreen() {
                 >
                   <FoodTypeTile type={food.type} />
                   <FoodName food={food} />
-                  <span className="flex-none text-sm font-semibold tabular-nums">
+                  <span
+                    className={`flex-none text-sm font-semibold tabular-nums ${isOutOfStock(food) ? "text-warning" : ""}`}
+                  >
                     {stockLabel(food, i18n)}
                   </span>
                   <button
@@ -165,7 +191,10 @@ export function StockScreen() {
                     <span role="cell">
                       <FoodTypeBadge type={food.type} />
                     </span>
-                    <span role="cell" className="text-[15px] font-semibold tabular-nums">
+                    <span
+                      role="cell"
+                      className={`text-[15px] font-semibold tabular-nums ${isOutOfStock(food) ? "text-warning" : ""}`}
+                    >
                       {stockLabel(food, i18n)}
                     </span>
                     <span role="cell" className="text-sm text-muted-foreground tabular-nums">
@@ -189,15 +218,7 @@ export function StockScreen() {
           </>
         )}
 
-        {data.archivedCount > 0 && (
-          <Link
-            to="/stock/archived"
-            className="flex min-h-11 items-center justify-between px-1 text-sm text-muted-foreground desktop:inline-flex desktop:justify-start desktop:gap-1.5 desktop:self-start desktop:px-0"
-          >
-            {t("stock.archivedLink", { count: data.archivedCount })}
-            <ChevronRightIcon size={18} />
-          </Link>
-        )}
+        {archivedLink}
       </div>
 
       <Link

@@ -166,16 +166,40 @@ export function portionPlural(name: string, i18n: I18n): string {
 
 type Stocked = Pick<FoodSummary, "stockG" | "stockUnit" | "portionName" | "portionG">;
 
-/** Stock in the food's own unit: "1.4 kg", "650 g", "8 pouches + 45 g open". */
+/** Feeds logged against a stale count can take stock below zero; it shows as out of stock. */
+export function isOutOfStock(food: Stocked): boolean {
+  return food.stockG <= 0;
+}
+
+/** Stock in the food's own unit: "1.4 kg", "650 g", "8 pouches + 45 g", "Out of stock". */
 export function stockLabel(food: Stocked, i18n: I18n): string {
+  if (isOutOfStock(food)) {
+    return i18n.t("stock.out");
+  }
   const counted = food.stockUnit === "portion" && food.portionName !== null;
   const parts = stockParts({ stockG: food.stockG, portionG: counted ? food.portionG : null });
-  if ("grams" in parts) {
+  const grams = (value: number) => {
     const number = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 1 });
-    return parts.grams >= 1000
-      ? i18n.t("stock.kg", { value: number.format(parts.grams / 1000) })
-      : i18n.t("stock.g", { value: number.format(parts.grams) });
+    return value >= 1000
+      ? i18n.t("stock.kg", { value: number.format(value / 1000) })
+      : i18n.t("stock.g", { value: number.format(value) });
+  };
+  if ("grams" in parts) {
+    return grams(parts.grams);
+  }
+  // Less than one portion left reads better as plain grams than as "0 pouches + 45 g".
+  if (parts.portions === 0) {
+    return grams(parts.openG);
   }
   const portions = countPortions(food.portionName ?? "", parts.portions, i18n);
-  return parts.openG > 0 ? i18n.t("stock.withOpen", { portions, grams: parts.openG }) : portions;
+  return parts.openG > 0
+    ? i18n.t("stock.withRemainder", { portions, grams: parts.openG })
+    : portions;
+}
+
+/** "1.4 kg left", or "Out of stock" on its own. */
+export function stockLeftLabel(food: Stocked, i18n: I18n): string {
+  return isOutOfStock(food)
+    ? i18n.t("stock.out")
+    : i18n.t("stock.left", { stock: stockLabel(food, i18n) });
 }

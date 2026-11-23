@@ -75,15 +75,18 @@ A feed entry has an optional leftover in grams; eaten = served − leftover. Whe
 
 ### Stock and portions
 
-Stock is a running total stored in grams for every food. Each food has a stock unit: grams (shown as kg/g) or portions (shown as e.g. "8 pouches + 45g open", and restocked as "+12 pouches").
+Stock is a running total stored in grams for every food. Each food has a stock unit: grams (shown as kg/g) or portions (shown as e.g. "8 pouches + 45 g", and restocked as "+12 pouches").
 
 - **Portions are opt-in per food.** A switch on the food form turns them on (off by default) and reveals the portion name and weight. Dry food never has portions: its section is hidden and its stock is always in grams. Every other food type, including custom ones, can use them.
 - **Portion names** are picked from chips (Pouch, Tin, Tray) or typed after choosing Other. The suggested names come from the translation files; the chosen name is stored as plain text in the user's language.
 - **Entering stock** for gram-counted foods has a g/kg toggle, since bags are labelled in kg. It only changes the input; storage stays in grams.
 - **Calories** are entered per 100 g or per kg, as printed on the label, and stored as kcal/kg. Lists show them per 100 g.
-- **Portion-counted stock** is shown as whole portions plus what is left of an open one ("8 pouches + 45 g open"). A suggested portion name is counted and translated properly ("1 tin", "3 boîtes"); a typed one takes a plain "s" in the plural.
-- **Restocking** adds to the current stock: a stepper in portions, or an amount in g or kg. Stock that had run below zero counts as an empty shelf.
-- **"For"** on the food form defaults to the type of the user's pet and can be set to "Any pet".
+- **Portion-counted stock** is shown as whole portions plus what is left of an open one ("8 pouches + 45 g"), or in plain grams under one portion. A suggested portion name is counted and translated properly ("1 tin", "3 boîtes"); a typed one takes a plain "s" in the plural.
+- **Out of stock:** stock at or below zero is never shown as a number, only as "Out of stock" in the warning colour.
+- **Restocking** adds to the current stock: a stepper in portions starting at 1, or an amount with a g/kg toggle (kg by default), with the new total shown. Stock that had run below zero counts as an empty shelf.
+- **Correcting the count:** Current stock on the Edit food form sets the stock directly, for when the count is wrong. It keeps no history and leaves past feeds untouched.
+- **"For"** on the food form defaults to the type of the currently selected pet and can be set to "Any pet".
+- **Empty Stock tab:** "No foods yet" with "Add your first food", and the Archived foods link if any.
 
 Logging is always in grams, with an optional grams/portions toggle on the amount input for portion-counted foods. Logging, editing and deleting a feed entry each adjust stock by the difference.
 
@@ -151,7 +154,7 @@ feed_entry    (id, pet_id, food_id, fed_at,                       -- UTC
 
 ## Screens and UX
 
-Seven screens, mobile-first, installable as a PWA. A bottom bar holds five tabs (Today, History, Insights, Stock, Pets); Settings opens from a gear icon on Today. Each tab's main action (Log feed, Add pet, Add food) is a floating button in the same spot, bottom right above the bar. Pet-specific screens (Today, Insights, Log feed) show a pet chip with photo and name; with two or more pets, tapping it opens the pet switcher sheet (each pet with today's kcal, plus "Manage pets"), and the choice carries across screens. With one pet the chip is not tappable. The last pet used is the default.
+Seven screens, mobile-first, installable as a PWA. A bottom bar holds five tabs (Today, History, Insights, Stock, Pets); Settings opens from a gear icon on Today. Each tab's main action (Log feed, Add pet, Add food) is a floating button in the same spot, bottom right above the bar. Pet-specific screens (Today, Insights, Log feed) show a pet chip with photo and name; with two or more pets, tapping it opens the pet switcher sheet (each pet with today's kcal, plus "Manage pets"), and the choice carries across screens. With one pet the chip is not tappable. The last pet used is the default; the choice is kept per device, like the language, and falls back to the first pet when that pet is archived.
 
 | Screen | What it does |
 | --- | --- |

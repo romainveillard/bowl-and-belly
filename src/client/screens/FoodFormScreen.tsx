@@ -23,6 +23,7 @@ import {
 } from "../lib/foods.js";
 import { parsePositive, petTypeLabel } from "../lib/format.js";
 import { uploadPhoto, usePets, usePetTypes } from "../lib/pets.js";
+import { useSelectedPet } from "../lib/selectedPet.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
 import { KcalUpdateDialog } from "./KcalUpdateDialog.js";
 
@@ -50,7 +51,8 @@ interface FormState {
 type FieldName = "name" | "kcal" | "portionName" | "portionG" | "stock";
 const FIELD_ORDER: FieldName[] = ["name", "kcal", "portionName", "portionG", "stock"];
 
-const plain = (value: number) => String(Math.round(value * 100) / 100);
+const plain = (value: number, decimals = 2) =>
+  String(Math.round(value * 10 ** decimals) / 10 ** decimals);
 
 /** A non-negative number from "12" or "1,4"; null when it is something else. */
 function parseAmount(text: string): number | null {
@@ -66,7 +68,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
   const navigate = useNavigate();
   const { data: foodTypes } = useFoodTypes();
   const { data: petTypes } = usePetTypes();
-  const { data: pets } = usePets();
+  const { pet: selectedPet } = useSelectedPet();
   const save = useSaveFood(food?.id);
   const archive = useSetFoodArchived("archive");
   const fileInput = useRef<HTMLInputElement>(null);
@@ -96,13 +98,9 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
       stock:
         food === undefined
           ? ""
-          : plain(
-              counted && food.portionG
-                ? stockG / food.portionG
-                : stockG >= 1000
-                  ? stockG / 1000
-                  : stockG,
-            ),
+          : counted && food.portionG
+            ? plain(stockG / food.portionG, 1)
+            : plain(stockG >= 1000 ? stockG / 1000 : stockG),
       stockIn: stockG >= 1000 ? "kg" : "g",
     };
   });
@@ -119,9 +117,9 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
 
   const foodTypeId = form.foodTypeId ?? foodTypes?.[0]?.id ?? null;
   const isDry = foodTypes?.find((type) => type.id === foodTypeId)?.systemKey === "dry";
-  // A new food is for the user's own kind of pet unless they say otherwise.
+  // A new food is for the selected pet's kind unless the user says otherwise.
   const petTypeId =
-    form.petTypeId === undefined ? (pets?.pets[0]?.petTypeId ?? null) : form.petTypeId;
+    form.petTypeId === undefined ? (selectedPet?.petTypeId ?? null) : form.petTypeId;
 
   const kcal = parsePositive(form.kcal);
   const kcalStored = kcal === null ? null : kcalPerKg(kcal, form.per);
@@ -447,7 +445,10 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
           )}
 
           <Card>
-            <CardHeading title={t("foodForm.stock")} hint={t("foodForm.stockHint")} />
+            <CardHeading
+              title={t("foodForm.stock")}
+              hint={t(food ? "foodForm.stockHintEdit" : "foodForm.stockHint")}
+            />
             {units && (
               <Segmented
                 label={t("foodForm.countIn")}

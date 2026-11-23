@@ -10,10 +10,12 @@ interface EmptyStateProps {
   title: string;
   body: string;
   action: { to: string; label: string };
+  /** Shown under the message, such as a link to archived items. */
+  footer?: ReactNode;
 }
 
 /** A tab with nothing to show yet: centred on a phone, in a card on desktop. */
-export function EmptyState({ heading, icon, title, body, action }: EmptyStateProps) {
+export function EmptyState({ heading, icon, title, body, action, footer }: EmptyStateProps) {
   return (
     <div className="flex min-h-[calc(100dvh-68px-env(safe-area-inset-bottom))] flex-col desktop:min-h-0 desktop:gap-6">
       <header className="px-5 pt-5 pb-3 desktop:p-0">
@@ -35,10 +37,11 @@ export function EmptyState({ heading, icon, title, body, action }: EmptyStatePro
           {body}
         </p>
         <Link to={action.to} className={`${button.primary} mt-1.5 h-12 rounded-full px-[22px]`}>
-          <PlusIcon size={20} />
+          <PlusIcon size={18} />
           {action.label}
         </Link>
       </section>
+      {footer && <div className="px-5 desktop:p-0">{footer}</div>}
     </div>
   );
 }

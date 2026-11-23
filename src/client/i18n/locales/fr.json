@@ -219,18 +219,22 @@
     "per100": "{kcal} kcal/100 g",
     "kg": "{value} kg",
     "g": "{value} g",
-    "withOpen": "{portions} + {grams} g entamés",
     "left": "{stock} restants",
     "adding": "Ajout",
     "fewer": "Moins de {unit}",
     "more": "Plus de {unit}",
     "newTotal": "Nouveau total",
     "addToStock": "Ajouter au stock",
-    "sheetSubtitle": "{name} · {stock} restants",
+    "sheetSubtitle": "{name} · {stock}",
     "unit": "Unité du stock",
     "archivedTitle": "Aliments archivés",
     "archivedHint": "Les repas passés sont conservés. Restaurez un aliment pour l’utiliser à nouveau.",
-    "archivedRow": "{type} · archivé le {date}"
+    "archivedRow": "{type} · archivé le {date}",
+    "withRemainder": "{portions} + {grams} g",
+    "out": "Rupture de stock",
+    "emptyTitle": "Pas encore d’aliments",
+    "emptyBody": "Ajoutez les aliments que vous avez dans le placard, avec les calories de l’étiquette. Vous les choisirez en notant un repas.",
+    "addFirst": "Ajouter votre premier aliment"
   },
   "foodForm": {
     "add": "Ajouter un aliment",
@@ -272,7 +276,7 @@
     "saveChanges": "Enregistrer les modifications",
     "archive": "Archiver l’aliment",
     "archiveTitle": "Archiver {name} ?",
-    "archiveBody": "Ses repas passés sont conservés. Il disparaîtra du choix des aliments, et vous pourrez le restaurer à tout moment depuis Aliments archivés.",
+    "archiveBody": "Ses repas passés sont conservés. Il disparaîtra du choix des aliments et du stock, et vous pourrez le restaurer depuis Aliments archivés.",
     "errors": {
       "name": "Saisissez un nom",
       "kcal": "Saisissez les calories, supérieures à 0",
@@ -286,7 +290,8 @@
       "portionName": "nom de la portion",
       "portionG": "poids de la portion",
       "stock": "stock actuel"
-    }
+    },
+    "stockHintEdit": "Corrigez le compte ici s’il est faux. Utilisez Réapprovisionner quand vous en rachetez."
   },
   "kcalUpdate": {
     "title": "Mettre à jour les repas passés ?",

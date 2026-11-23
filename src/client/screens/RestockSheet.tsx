@@ -6,9 +6,10 @@ import { Field } from "../components/ui/Field.js";
 import { Segmented } from "../components/ui/Segmented.js";
 import { Sheet } from "../components/ui/Sheet.js";
 import {
-  countPortions,
+  isOutOfStock,
   portionPlural,
   stockLabel,
+  stockLeftLabel,
   useRestock,
   type FoodSummary,
 } from "../lib/foods.js";
@@ -38,7 +39,7 @@ export function RestockSheet({ food, onClose }: { food: FoodSummary; onClose: ()
       open
       onOpenChange={(open) => !open && onClose()}
       title={t("stock.restock")}
-      subtitle={t("stock.sheetSubtitle", { name: food.name, stock: stockLabel(food, i18n) })}
+      subtitle={t("stock.sheetSubtitle", { name: food.name, stock: stockLeftLabel(food, i18n) })}
       footer={
         <button
           type="button"
@@ -59,16 +60,18 @@ export function RestockSheet({ food, onClose }: { food: FoodSummary; onClose: ()
               value={amount}
               onChange={setAmount}
             />
-            <Segmented
-              label={t("stock.unit")}
-              hideLabel
-              value={unit}
-              onChange={setUnit}
-              options={[
-                { value: "g", label: "g" },
-                { value: "kg", label: "kg" },
-              ]}
-            />
+            <div className="w-[130px] flex-none">
+              <Segmented
+                label={t("stock.unit")}
+                hideLabel
+                value={unit}
+                onChange={setUnit}
+                options={[
+                  { value: "g", label: "g" },
+                  { value: "kg", label: "kg" },
+                ]}
+              />
+            </div>
           </div>
         ) : (
           <>
@@ -107,10 +110,8 @@ export function RestockSheet({ food, onClose }: { food: FoodSummary; onClose: ()
         )}
         <div className="flex justify-between rounded-[10px] bg-muted px-3.5 py-3 text-sm tabular-nums">
           <span className="text-muted-foreground">{t("stock.newTotal")}</span>
-          <span className="font-semibold">
-            {portionG === null
-              ? stockLabel(newTotal, i18n)
-              : countPortions(food.portionName ?? "", Math.floor(newTotal.stockG / portionG), i18n)}
+          <span className={`font-semibold ${isOutOfStock(newTotal) ? "text-warning" : ""}`}>
+            {stockLabel(newTotal, i18n)}
           </span>
         </div>
       </div>

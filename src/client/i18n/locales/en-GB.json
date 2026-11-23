@@ -219,18 +219,22 @@
     "per100": "{kcal} kcal/100 g",
     "kg": "{value} kg",
     "g": "{value} g",
-    "withOpen": "{portions} + {grams} g open",
     "left": "{stock} left",
     "adding": "Adding",
     "fewer": "Fewer {unit}",
     "more": "More {unit}",
     "newTotal": "New total",
     "addToStock": "Add to stock",
-    "sheetSubtitle": "{name} · {stock} left",
+    "sheetSubtitle": "{name} · {stock}",
     "unit": "Stock unit",
     "archivedTitle": "Archived foods",
     "archivedHint": "Past feeds are kept. Restore a food to log it again.",
-    "archivedRow": "{type} · archived {date}"
+    "archivedRow": "{type} · archived {date}",
+    "withRemainder": "{portions} + {grams} g",
+    "out": "Out of stock",
+    "emptyTitle": "No foods yet",
+    "emptyBody": "Add the foods you keep in the cupboard, with calories from the label. You’ll pick from them when you log a feed.",
+    "addFirst": "Add your first food"
   },
   "foodForm": {
     "add": "Add food",
@@ -272,7 +276,7 @@
     "saveChanges": "Save changes",
     "archive": "Archive food",
     "archiveTitle": "Archive {name}?",
-    "archiveBody": "Its past feeds are kept. It will disappear from the food picker, and you can restore it any time from Archived foods.",
+    "archiveBody": "Its past feeds are kept. It will disappear from the food picker and Stock, and you can restore it from Archived foods.",
     "errors": {
       "name": "Enter a name",
       "kcal": "Enter the calories, above 0",
@@ -286,7 +290,8 @@
       "portionName": "portion name",
       "portionG": "portion weight",
       "stock": "current stock"
-    }
+    },
+    "stockHintEdit": "Fix the count here if it’s wrong. Use Restock when you buy more."
   },
   "kcalUpdate": {
     "title": "Update past feeds?",
