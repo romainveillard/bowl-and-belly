@@ -111,6 +111,8 @@ export const pet = sqliteTable(
     activityLevel: text({ enum: ACTIVITY_LEVELS }).notNull(),
     goal: text({ enum: GOALS }).notNull(),
     targetWeightG: integer(),
+    // The last age step (in months) whose "update target?" question was answered.
+    agePromptMonths: integer(),
     archivedAt: archivedAt(),
   },
   (t) => [
