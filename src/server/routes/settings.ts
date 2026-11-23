@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { BACKUP_FREQUENCIES } from "../../shared/enums.js";
 import { latestBackupAt } from "../backups/files.js";
-import { backupDir, rescheduleBackups } from "../backups/scheduler.js";
+import { backupDir, nextScheduledBackup, rescheduleBackups } from "../backups/scheduler.js";
 import { db } from "../db/client.js";
 import { settings } from "../db/schema.js";
 import { validate } from "../validate.js";
@@ -39,6 +39,8 @@ const shown = {
   backupWeekday: settings.backupWeekday,
   backupTime: settings.backupTime,
   backupKeep: settings.backupKeep,
+  backupFailedAt: settings.backupFailedAt,
+  backupError: settings.backupError,
 };
 
 export const settingsRoutes = new Hono()
@@ -47,7 +49,11 @@ export const settingsRoutes = new Hono()
     if (!row) {
       throw new Error("The settings row is missing");
     }
-    return c.json({ ...row, lastBackupAt: latestBackupAt(backupDir) });
+    return c.json({
+      ...row,
+      lastBackupAt: latestBackupAt(backupDir),
+      nextBackupAt: nextScheduledBackup(),
+    });
   })
   .put("/", validate("json", settingsBody), (c) => {
     db.update(settings).set(c.req.valid("json")).run();

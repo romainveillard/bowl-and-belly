@@ -1,10 +1,24 @@
 import path from "node:path";
 import { dataDir, db } from "../db/client.js";
 import { settings } from "../db/schema.js";
-import { writeBackup } from "./files.js";
+import { runBackup } from "./run.js";
 import { nextBackupAt } from "./schedule.js";
 
 export const backupDir = path.join(dataDir, "backups");
+
+/** When the next scheduled backup runs, or null when they are off. */
+export function nextScheduledBackup(after = new Date()): Date | null {
+  const row = db.select().from(settings).get();
+  if (!row?.backupEnabled) {
+    return null;
+  }
+  return nextBackupAt(after, {
+    frequency: row.backupFrequency,
+    weekday: row.backupWeekday,
+    time: row.backupTime,
+    timeZone: row.timeZone,
+  });
+}
 
 let timer: NodeJS.Timeout | undefined;
 let started = false;
@@ -14,23 +28,13 @@ let started = false;
 function schedule(after = new Date()): void {
   clearTimeout(timer);
   timer = undefined;
-  const row = db.select().from(settings).get();
-  if (!row?.backupEnabled) {
+  const at = nextScheduledBackup(after);
+  if (!at) {
     return;
   }
-  const at = nextBackupAt(after, {
-    frequency: row.backupFrequency,
-    weekday: row.backupWeekday,
-    time: row.backupTime,
-    timeZone: row.timeZone,
-  });
   // A weekly wait stays well under setTimeout's 24.8-day limit.
   timer = setTimeout(() => {
-    try {
-      writeBackup(db, backupDir, at, row.backupKeep);
-    } catch (error) {
-      console.error("Scheduled backup failed", error);
-    }
+    runBackup(db, backupDir, at);
     schedule(at);
   }, at.getTime() - Date.now());
   timer.unref();
