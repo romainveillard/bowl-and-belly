@@ -1,12 +1,14 @@
 import { lazy, Suspense, useEffect, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet, Route, Routes } from "react-router";
+import { DemoBanner } from "./components/DemoBanner.js";
 import { EmptyState } from "./components/EmptyState.js";
 import { HistoryIcon, InsightsIcon } from "./components/icons.js";
 import { BottomNav, Sidebar } from "./components/Navigation.js";
 import { useSnackbar } from "./components/ui/Snackbar.js";
-import { onUnreachable, useAccess } from "./lib/access.js";
+import { onDemoLimit, onUnreachable, useAccess } from "./lib/access.js";
 import { useAuth } from "./lib/auth.js";
+import { useDemo } from "./lib/instance.js";
 import { usePets } from "./lib/pets.js";
 import { LoginScreen, SessionExpiredScreen } from "./screens/AccessScreens.js";
 import { ArchivedFoodsScreen } from "./screens/ArchivedFoodsScreen.js";
@@ -27,10 +29,13 @@ const InsightsScreen = lazy(() =>
 
 // Forms and Settings take the whole phone screen, without the tabs.
 function Shell({ bottomNav = true }: { bottomNav?: boolean }) {
+  const demo = useDemo();
+
   return (
     <div className="flex min-h-dvh flex-col desktop:grid desktop:grid-cols-[248px_1fr]">
       <Sidebar />
       <div className="flex-1 desktop:w-full desktop:max-w-[1120px] desktop:px-10 desktop:py-8">
+        {demo && <DemoBanner />}
         <Outlet />
       </div>
       {bottomNav && <BottomNav />}
@@ -72,6 +77,7 @@ function ConnectionNotice() {
   const showSnackbar = useSnackbar();
 
   useEffect(() => onUnreachable(() => showSnackbar(t("network.unreachable"))), [showSnackbar, t]);
+  useEffect(() => onDemoLimit(() => showSnackbar(t("demo.limit"))), [showSnackbar, t]);
   return null;
 }
 

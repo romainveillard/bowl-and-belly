@@ -647,5 +647,11 @@
   },
   "network": {
     "unreachable": "Impossible de joindre Bowl & Belly. Vérifiez votre connexion."
+  },
+  "demo": {
+    "banner": "Données de démonstration. Les modifications sont effacées chaque nuit.",
+    "link": "Obtenir Bowl & Belly",
+    "limit": "C’est le maximum pour la démo. Elle est réinitialisée chaque nuit.",
+    "timeZone": "Fixé pour la démo."
   }
 }

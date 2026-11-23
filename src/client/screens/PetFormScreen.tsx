@@ -12,6 +12,7 @@ import { Segmented } from "../components/ui/Segmented.js";
 import { useSnackbar } from "../components/ui/Snackbar.js";
 import { Switch } from "../components/ui/Switch.js";
 import { parsePositive, petTypeLabel } from "../lib/format.js";
+import { useDemo } from "../lib/instance.js";
 import { offeredTypes, optionLabel } from "../lib/types.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
 import {
@@ -112,6 +113,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: petTypes } = usePetTypes();
+  const demo = useDemo();
   const save = useSavePet(pet?.id);
   const fileInput = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState(() => initialState(pet));
@@ -229,39 +231,41 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
         <div className="flex min-w-0 flex-col gap-3.5 desktop:gap-6">
           <Card>
             <CardHeading title={t("petForm.details")} />
-            <div className="flex items-center gap-3.5 desktop:gap-4">
-              <button
-                type="button"
-                onClick={() => fileInput.current?.click()}
-                className="flex size-[88px] flex-none cursor-pointer flex-col items-center justify-center gap-1.5 overflow-hidden rounded-full border-[1.5px] border-dashed border-[#B9BFCB] bg-background text-[13px] font-medium text-muted-foreground desktop:size-24"
-              >
-                {form.photoId === null ? (
-                  <>
-                    <CameraIcon />
-                    {t("petForm.photo")}
-                  </>
-                ) : (
-                  <img
-                    src={`/api/images/${form.photoId}`}
-                    alt={t("petForm.photo")}
-                    className="size-full object-cover"
-                  />
-                )}
-              </button>
-              <input
-                ref={fileInput}
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={(event) => {
-                  const photo = event.target.files?.[0];
-                  if (photo) {
-                    void uploadPhoto(photo).then((id) => set("photoId", id));
-                  }
-                }}
-              />
-              <span className="text-[13px] text-muted-foreground">{t("petForm.photoHint")}</span>
-            </div>
+            {!demo && (
+              <div className="flex items-center gap-3.5 desktop:gap-4">
+                <button
+                  type="button"
+                  onClick={() => fileInput.current?.click()}
+                  className="flex size-[88px] flex-none cursor-pointer flex-col items-center justify-center gap-1.5 overflow-hidden rounded-full border-[1.5px] border-dashed border-[#B9BFCB] bg-background text-[13px] font-medium text-muted-foreground desktop:size-24"
+                >
+                  {form.photoId === null ? (
+                    <>
+                      <CameraIcon />
+                      {t("petForm.photo")}
+                    </>
+                  ) : (
+                    <img
+                      src={`/api/images/${form.photoId}`}
+                      alt={t("petForm.photo")}
+                      className="size-full object-cover"
+                    />
+                  )}
+                </button>
+                <input
+                  ref={fileInput}
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={(event) => {
+                    const photo = event.target.files?.[0];
+                    if (photo) {
+                      void uploadPhoto(photo).then((id) => set("photoId", id));
+                    }
+                  }}
+                />
+                <span className="text-[13px] text-muted-foreground">{t("petForm.photoHint")}</span>
+              </div>
+            )}
             <div className="flex flex-col gap-3.5 desktop:grid desktop:grid-cols-2 desktop:gap-4">
               <Field
                 id="pet-name"

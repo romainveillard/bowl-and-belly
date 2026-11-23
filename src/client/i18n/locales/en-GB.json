@@ -647,5 +647,11 @@
   },
   "network": {
     "unreachable": "Can’t reach Bowl & Belly. Check your connection."
+  },
+  "demo": {
+    "banner": "Demo data. Changes reset every night.",
+    "link": "Get Bowl & Belly",
+    "limit": "That’s as much as the demo takes. It resets every night.",
+    "timeZone": "Fixed for the demo."
   }
 }

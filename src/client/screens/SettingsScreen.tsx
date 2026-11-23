@@ -15,6 +15,7 @@ import { Field, inputClass } from "../components/ui/Field.js";
 import { Segmented } from "../components/ui/Segmented.js";
 import { Switch } from "../components/ui/Switch.js";
 import { useAuth, useLogOut } from "../lib/auth.js";
+import { useDemo } from "../lib/instance.js";
 import {
   useBackUpNow,
   useSaveSettings,
@@ -39,6 +40,7 @@ function Select({
   value,
   onChange,
   hint,
+  disabled = false,
   children,
 }: {
   id: string;
@@ -46,6 +48,7 @@ function Select({
   value: string | number;
   onChange: (value: string) => void;
   hint?: string;
+  disabled?: boolean;
   children: ReactNode;
 }) {
   return (
@@ -58,7 +61,8 @@ function Select({
           id={id}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className={`${inputClass} appearance-none pr-11`}
+          disabled={disabled}
+          className={`${inputClass} appearance-none pr-11 disabled:bg-muted disabled:text-muted-foreground`}
         >
           {children}
         </select>
@@ -139,6 +143,7 @@ function SettingsForm({ settings }: { settings: Settings }) {
   const save = useSaveSettings();
   const backUpNow = useBackUpNow();
   const { data: auth } = useAuth();
+  const demo = useDemo();
   const logOut = useLogOut();
   const [saved, setSaved] = useState(() => bodyOf(settings));
   const [dayStartsAt, setDayStartsAt] = useState(settings.dayStartsAt);
@@ -248,6 +253,8 @@ function SettingsForm({ settings }: { settings: Settings }) {
         id="settings-time-zone"
         label={t("settings.timeZone")}
         value={saved.timeZone}
+        disabled={demo}
+        {...(demo ? { hint: t("demo.timeZone") } : {})}
         onChange={(timeZone) => commit({ timeZone })}
       >
         {timeZones(saved.timeZone).map((zone) => (
@@ -395,8 +402,8 @@ function SettingsForm({ settings }: { settings: Settings }) {
         {petsAndFood}
       </div>
       <div className="flex flex-col gap-3.5 desktop:gap-6">
-        {backups}
-        {auth?.passwordRequired && (
+        {!demo && backups}
+        {!demo && auth?.passwordRequired && (
           <Card>
             <CardHeading title={t("settings.access.title")} hint={t("settings.access.hint")} />
             <button

@@ -23,6 +23,7 @@ import {
 } from "../lib/foods.js";
 import { parsePositive, petTypeLabel } from "../lib/format.js";
 import { uploadPhoto, usePets, usePetTypes } from "../lib/pets.js";
+import { useDemo } from "../lib/instance.js";
 import { useSelectedPet } from "../lib/selectedPet.js";
 import { offeredTypes, optionLabel } from "../lib/types.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
@@ -69,6 +70,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
   const navigate = useNavigate();
   const { data: foodTypes } = useFoodTypes();
   const { data: petTypes } = usePetTypes();
+  const demo = useDemo();
   const { pet: selectedPet } = useSelectedPet();
   const save = useSaveFood(food?.id);
   const archive = useSetFoodArchived("archive");
@@ -242,43 +244,46 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
                 }
               }}
             />
-            {form.photoId === null ? (
-              <div className="flex items-center gap-3.5">
-                <button
-                  type="button"
-                  onClick={() => fileInput.current?.click()}
-                  className="flex size-[88px] flex-none cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-[1.5px] border-dashed border-[#B9BFCB] bg-background text-[13px] font-medium text-muted-foreground"
-                >
-                  <CameraIcon />
-                  {t("foodForm.addPhoto")}
-                </button>
-                <span className="text-[13px] text-muted-foreground">{t("foodForm.photoHint")}</span>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                <img
-                  src={`/api/images/${form.photoId}`}
-                  alt={t("foodForm.photo")}
-                  className="h-[180px] w-full rounded-xl object-cover"
-                />
-                <div className="flex gap-2">
+            {!demo &&
+              (form.photoId === null ? (
+                <div className="flex items-center gap-3.5">
                   <button
                     type="button"
-                    className={button.outline}
                     onClick={() => fileInput.current?.click()}
+                    className="flex size-[88px] flex-none cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-[1.5px] border-dashed border-[#B9BFCB] bg-background text-[13px] font-medium text-muted-foreground"
                   >
-                    {t("foodForm.changePhoto")}
+                    <CameraIcon />
+                    {t("foodForm.addPhoto")}
                   </button>
-                  <button
-                    type="button"
-                    className={button.dangerGhost}
-                    onClick={() => set("photoId", null)}
-                  >
-                    {t("foodForm.removePhoto")}
-                  </button>
+                  <span className="text-[13px] text-muted-foreground">
+                    {t("foodForm.photoHint")}
+                  </span>
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="flex flex-col gap-3">
+                  <img
+                    src={`/api/images/${form.photoId}`}
+                    alt={t("foodForm.photo")}
+                    className="h-[180px] w-full rounded-xl object-cover"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      className={button.outline}
+                      onClick={() => fileInput.current?.click()}
+                    >
+                      {t("foodForm.changePhoto")}
+                    </button>
+                    <button
+                      type="button"
+                      className={button.dangerGhost}
+                      onClick={() => set("photoId", null)}
+                    >
+                      {t("foodForm.removePhoto")}
+                    </button>
+                  </div>
+                </div>
+              ))}
             <Field
               label={t("foodForm.brand")}
               placeholder={t("foodForm.brandPlaceholder")}

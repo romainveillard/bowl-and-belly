@@ -31,6 +31,14 @@ export function onUnreachable(listener: () => void): () => void {
   return () => unreachableListeners.delete(listener);
 }
 
+const demoLimitListeners = new Set<() => void>();
+
+/** Calls `listener` when the demo refuses to add more. */
+export function onDemoLimit(listener: () => void): () => void {
+  demoLimitListeners.add(listener);
+  return () => demoLimitListeners.delete(listener);
+}
+
 /**
  * fetch for the API client. A proxy such as Cloudflare Access answers an
  * expired session with a redirect to its own login. Followed, that
@@ -51,6 +59,13 @@ export const accessAwareFetch: typeof fetch = async (input, init) => {
   }
   if (response.type === "opaqueredirect") {
     setAccess("expired");
+  } else if (response.status === 403) {
+    const body: unknown = await response.clone().json();
+    if (typeof body === "object" && body !== null && "code" in body && body.code === "demo_limit") {
+      for (const listener of demoLimitListeners) {
+        listener();
+      }
+    }
   } else if (response.status === 401 && !new URL(response.url).pathname.startsWith("/api/auth")) {
     setAccess("login");
   }
