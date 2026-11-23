@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
+import { addDays } from "../../shared/app-day.js";
 import { explainTarget } from "../../shared/target.js";
 import { BackIcon, EditIcon } from "../components/icons.js";
 import { PetAvatar } from "../components/PetAvatar.js";
@@ -8,7 +9,6 @@ import { button } from "../components/ui/button.js";
 import { Card, CardHeading } from "../components/ui/Card.js";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog.js";
 import {
-  addDays,
   formatAge,
   formatDay,
   formatKg,

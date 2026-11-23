@@ -2,13 +2,12 @@ import { validate } from "../validate.js";
 import { and, count, desc, eq, isNotNull, isNull } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import { appDayStart } from "../../shared/app-day.js";
 import { ACTIVITY_LEVELS, BIRTH_DATE_PRECISIONS, GOALS } from "../../shared/enums.js";
 import { db } from "../db/client.js";
 import { image, pet, petTarget, petType, weightEntry } from "../db/schema.js";
-import { kcalEaten } from "../feeds/intake.js";
+import { daySummaries } from "../feeds/days.js";
 import { chooseTarget, latestWeightG, targetOn } from "../pets/targets.js";
-import { daySettings, today } from "../settings.js";
+import { today } from "../settings.js";
 
 const idParam = z.object({ id: z.coerce.number().int() });
 
@@ -53,9 +52,6 @@ const petTypeLabel = { systemKey: petType.systemKey, name: petType.name };
 export const petsRoutes = new Hono()
   .get("/", (c) => {
     const day = today(db);
-    const settings = daySettings(db);
-    const dayStart = appDayStart(day, settings);
-    const now = new Date();
 
     const pets = db
       .select({
@@ -75,7 +71,7 @@ export const petsRoutes = new Hono()
       .map((row) => ({
         ...row,
         weightG: latestWeightG(db, row.id),
-        todayKcal: kcalEaten(db, row.id, dayStart, now),
+        todayKcal: daySummaries(db, row.id, day, day, day)[0]?.eatenKcal ?? 0,
         targetKcal: targetOn(db, row.id, day)?.kcalPerDay ?? null,
       }));
 

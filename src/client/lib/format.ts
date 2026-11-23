@@ -35,10 +35,6 @@ export function formatSince(day: string, today: string, locale: string, t: TFunc
     : t("date.since", { date: formatDay(day, today, locale) });
 }
 
-export function addDays(day: string, days: number): string {
-  return new Date(Date.parse(day) + days * 86_400_000).toISOString().slice(0, 10);
-}
-
 interface Age {
   birthDate: string;
   birthDatePrecision: "exact" | "year" | "estimated";
