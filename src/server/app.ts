@@ -5,6 +5,7 @@ import { feedsRoutes } from "./routes/feeds.js";
 import { foodTypesRoutes } from "./routes/food-types.js";
 import { foodsRoutes } from "./routes/foods.js";
 import { imagesRoutes } from "./routes/images.js";
+import { insightsRoutes } from "./routes/insights.js";
 import { petTypesRoutes } from "./routes/pet-types.js";
 import { petsRoutes } from "./routes/pets.js";
 import { settingsRoutes } from "./routes/settings.js";
@@ -22,6 +23,7 @@ const api = new Hono()
   .route("/feeds", feedsRoutes)
   .route("/settings", settingsRoutes)
   .route("/weights", weightsRoutes)
+  .route("/insights", insightsRoutes)
   .route("/images", imagesRoutes);
 
 export const app = new Hono().route("/api", api);
