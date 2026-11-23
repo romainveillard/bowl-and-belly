@@ -183,5 +183,130 @@
     "addFoodBody": "Enter it once with the calories from the label. After that, logging a feed is a tap.",
     "addFoodBodyDesktop": "Enter it once with the calories from the label. After that, logging a feed is a click.",
     "addFood": "Add food"
+  },
+  "foodType": {
+    "wet": "Wet",
+    "dry": "Dry"
+  },
+  "portion": {
+    "pouch": "{count, plural, one {# pouch} other {# pouches}}",
+    "tin": "{count, plural, one {# tin} other {# tins}}",
+    "tray": "{count, plural, one {# tray} other {# trays}}"
+  },
+  "portionName": {
+    "pouch": "Pouch",
+    "tin": "Tin",
+    "tray": "Tray",
+    "other": "Other"
+  },
+  "portionPlural": {
+    "pouch": "Pouches",
+    "tin": "Tins",
+    "tray": "Trays"
+  },
+  "stock": {
+    "search": "Search foods",
+    "all": "All",
+    "add": "Add food",
+    "restock": "Restock",
+    "restockNamed": "Restock {name}",
+    "archivedLink": "Archived foods ({count})",
+    "colFood": "Food",
+    "colType": "Type",
+    "colLeft": "Stock left",
+    "colCalories": "Calories",
+    "colActions": "Actions",
+    "per100": "{kcal} kcal/100 g",
+    "kg": "{value} kg",
+    "g": "{value} g",
+    "withOpen": "{portions} + {grams} g open",
+    "left": "{stock} left",
+    "adding": "Adding",
+    "fewer": "Fewer {unit}",
+    "more": "More {unit}",
+    "newTotal": "New total",
+    "addToStock": "Add to stock",
+    "sheetSubtitle": "{name} · {stock} left",
+    "unit": "Stock unit",
+    "archivedTitle": "Archived foods",
+    "archivedHint": "Past feeds are kept. Restore a food to log it again.",
+    "archivedRow": "{type} · archived {date}"
+  },
+  "foodForm": {
+    "add": "Add food",
+    "edit": "Edit food",
+    "details": "Details",
+    "addPhoto": "Add photo",
+    "photoHint": "Optional. Shown next to the food when you log a feed.",
+    "photo": "Food photo",
+    "changePhoto": "Change photo",
+    "removePhoto": "Remove",
+    "brand": "Brand",
+    "brandPlaceholder": "e.g. the name on the pack",
+    "name": "Name",
+    "foodType": "Food type",
+    "for": "For",
+    "anyPet": "Any pet",
+    "calories": "Calories",
+    "caloriesHint": "Usually listed as metabolisable energy",
+    "energy": "Energy",
+    "per": "Per",
+    "caloriesPer": "Calories per",
+    "per100": "100 g",
+    "perKg": "kg",
+    "asPrinted": "Enter it as printed on the label.",
+    "storedAs": "Enter it as printed on the label. Stored as {kcal} kcal/kg.",
+    "portion": "Portion",
+    "portionHint": "Log and restock in pouches, tins or trays.",
+    "usePortion": "Use a portion size",
+    "portionName": "Name",
+    "otherName": "Other portion name",
+    "otherPlaceholder": "Portion name",
+    "weight": "Weight",
+    "stock": "Stock",
+    "stockHint": "Goes down each time you log a feed.",
+    "countIn": "Count stock in",
+    "grams": "Grams",
+    "current": "Current stock",
+    "save": "Save food",
+    "saveChanges": "Save changes",
+    "archive": "Archive food",
+    "archiveTitle": "Archive {name}?",
+    "archiveBody": "Its past feeds are kept. It will disappear from the food picker, and you can restore it any time from Archived foods.",
+    "errors": {
+      "name": "Enter a name",
+      "kcal": "Enter the calories, above 0",
+      "portionName": "Enter a portion name",
+      "portionG": "Enter a portion weight above 0 g",
+      "stock": "Enter the stock, 0 or more"
+    },
+    "errorNames": {
+      "name": "name",
+      "kcal": "energy",
+      "portionName": "portion name",
+      "portionG": "portion weight",
+      "stock": "current stock"
+    }
+  },
+  "kcalUpdate": {
+    "title": "Update past feeds?",
+    "body": "{name} changed from {from} to {to} kcal per {unit}.",
+    "legend": "Which feeds to update",
+    "all": "All past feeds",
+    "allHint": "The label was misread",
+    "since": "Feeds since a date",
+    "sinceHint": "The recipe changed",
+    "sinceLabel": "Update feeds since",
+    "none": "None",
+    "noneHint": "Only new feeds use the new value",
+    "save": "Save"
+  },
+  "history": {
+    "emptyTitle": "No history yet",
+    "emptyBody": "Add a pet, and every feed you log will show up here, day by day."
+  },
+  "insights": {
+    "emptyTitle": "No insights yet",
+    "emptyBody": "Add a pet to see their calories against target and their weight over time."
   }
 }

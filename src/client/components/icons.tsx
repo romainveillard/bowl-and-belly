@@ -165,6 +165,41 @@ export function BowlIcon(props: IconProps) {
   );
 }
 
+export function SearchIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="11" cy="11" r="7" />
+      <path d="M21 21l-4.3-4.3" />
+    </Icon>
+  );
+}
+
+export function MinusIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M5 12h14" />
+    </Icon>
+  );
+}
+
+export function WetFoodIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 3c3.5 4.2 6 7.4 6 10.5A6 6 0 0 1 6 13.5C6 10.4 8.5 7.2 12 3z" />
+    </Icon>
+  );
+}
+
+export function DryFoodIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="8" cy="9" r="2.6" />
+      <circle cx="15.5" cy="8" r="2.6" />
+      <circle cx="11.5" cy="15.5" r="2.6" />
+    </Icon>
+  );
+}
+
 export function LogoMark({ width = 44 }: { width?: number }) {
   return (
     <svg

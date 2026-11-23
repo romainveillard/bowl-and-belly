@@ -139,9 +139,8 @@ function NoFoods({ pet }: { pet: PetSummary }) {
           <span className="desktop:hidden">{t("today.addFoodBody")}</span>
           <span className="hidden desktop:inline">{t("today.addFoodBodyDesktop")}</span>
         </p>
-        {/* Goes to the Add food form once the Stock milestone adds it. */}
         <Link
-          to="/stock"
+          to="/stock/new"
           className={`${button.primaryLarge} desktop:h-12 desktop:w-auto desktop:self-start desktop:rounded-full desktop:px-[22px] desktop:text-[15px]`}
         >
           <PlusIcon size={20} />

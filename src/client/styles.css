@@ -22,7 +22,9 @@
   --color-danger-soft: #fbe9e7;
   --color-danger-strong: #8e2c26;
   --color-wet: #ddebff;
+  --color-wet-foreground: #1e4e8c;
   --color-dry: #fce4cc;
+  --color-dry-foreground: #7a3f12;
 
   /* From this width the sidebar replaces the bottom bar. */
   --breakpoint-desktop: 860px;

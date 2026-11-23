@@ -80,7 +80,10 @@ Stock is a running total stored in grams for every food. Each food has a stock u
 - **Portions are opt-in per food.** A switch on the food form turns them on (off by default) and reveals the portion name and weight. Dry food never has portions: its section is hidden and its stock is always in grams. Every other food type, including custom ones, can use them.
 - **Portion names** are picked from chips (Pouch, Tin, Tray) or typed after choosing Other. The suggested names come from the translation files; the chosen name is stored as plain text in the user's language.
 - **Entering stock** for gram-counted foods has a g/kg toggle, since bags are labelled in kg. It only changes the input; storage stays in grams.
-- **Calories** are entered per 100 g or per kg, as printed on the label, and stored as kcal/kg.
+- **Calories** are entered per 100 g or per kg, as printed on the label, and stored as kcal/kg. Lists show them per 100 g.
+- **Portion-counted stock** is shown as whole portions plus what is left of an open one ("8 pouches + 45 g open"). A suggested portion name is counted and translated properly ("1 tin", "3 boîtes"); a typed one takes a plain "s" in the plural.
+- **Restocking** adds to the current stock: a stepper in portions, or an amount in g or kg. Stock that had run below zero counts as an empty shelf.
+- **"For"** on the food form defaults to the type of the user's pet and can be set to "Any pet".
 
 Logging is always in grams, with an optional grams/portions toggle on the amount input for portion-counted foods. Logging, editing and deleting a feed entry each adjust stock by the difference.
 
@@ -88,7 +91,7 @@ Deleting an entry returns its net amount to stock: served minus any leftover alr
 
 ### Editing a food's calories
 
-Each feed entry snapshots the food's kcal/kg. Editing kcal asks whether to update existing logs: all of them (misread label), those since a date (recipe change), or none. Foods in use are archived, never deleted.
+Each feed entry snapshots the food's kcal/kg. Editing kcal asks whether to update existing logs: all of them (misread label), those since a date (recipe change), or none. The question is only asked when the food has past feeds, and "since a date" is preselected with today. Foods are archived, never deleted: an archived food leaves the food picker, keeps its past feeds, and can be restored from the Archived foods page, reached from a link under the stock list.
 
 The backfill runs in the same transaction as the food edit: `UPDATE feed_entry SET kcal_per_kg = ? WHERE food_id = ?`, plus `AND fed_at >= ?` for "since a date", where that date means the start of that app day (time zone and day start applied). Edits apply in the order they are saved, so a later edit simply overwrites any range it overlaps. For example, "all logs → 3,500" followed by "since 1 March → 3,600" leaves earlier entries at 3,500 and later ones at 3,600.
 
@@ -164,7 +167,7 @@ Seven screens, mobile-first, installable as a PWA. A bottom bar holds five tabs 
 
 Until there is at least one pet and one food, Today guides the set-up instead of showing its normal layout, and Log feed (and Log weight on desktop) stays hidden.
 
-- **No pets:** a welcome card with "Add your first pet", which opens the Add pet form, and a "Getting started" checklist (add your pet, add a food). History and Insights show a short version of the same message.
+- **No pets:** a welcome card with "Add your first pet", which opens the Add pet form, and a "Getting started" checklist (add your pet, add a food). History and Insights show a short version of the same message ("No history yet", "No insights yet") with the same button.
 - **A pet but no foods:** the normal calories card (0 / target, "No feeds yet today") and an "Add a food to start logging" card with the checklist, its first step ticked. "Add food" opens the Add food form.
 - **Once both exist,** Today switches to its normal layout and the checklist goes away for good.
 

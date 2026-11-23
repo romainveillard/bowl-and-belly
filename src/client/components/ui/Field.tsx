@@ -9,7 +9,7 @@ interface FieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "onChan
   value: string;
   onChange: (value: string) => void;
   /** Unit shown inside the field, on the right. */
-  suffix?: string;
+  suffix?: string | undefined;
   hint?: ReactNode;
   /** Shown under the field, which is then marked invalid. */
   error?: string | undefined;

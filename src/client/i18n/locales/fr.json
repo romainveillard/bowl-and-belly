@@ -183,5 +183,130 @@
     "addFoodBody": "Saisissez-le une fois avec les calories de l’étiquette. Ensuite, noter un repas se fait d’un geste.",
     "addFoodBodyDesktop": "Saisissez-le une fois avec les calories de l’étiquette. Ensuite, noter un repas se fait d’un clic.",
     "addFood": "Ajouter un aliment"
+  },
+  "foodType": {
+    "wet": "Humide",
+    "dry": "Sec"
+  },
+  "portion": {
+    "pouch": "{count, plural, one {# sachet} other {# sachets}}",
+    "tin": "{count, plural, one {# boîte} other {# boîtes}}",
+    "tray": "{count, plural, one {# barquette} other {# barquettes}}"
+  },
+  "portionName": {
+    "pouch": "Sachet",
+    "tin": "Boîte",
+    "tray": "Barquette",
+    "other": "Autre"
+  },
+  "portionPlural": {
+    "pouch": "Sachets",
+    "tin": "Boîtes",
+    "tray": "Barquettes"
+  },
+  "stock": {
+    "search": "Rechercher un aliment",
+    "all": "Tous",
+    "add": "Ajouter un aliment",
+    "restock": "Réapprovisionner",
+    "restockNamed": "Réapprovisionner {name}",
+    "archivedLink": "Aliments archivés ({count})",
+    "colFood": "Aliment",
+    "colType": "Type",
+    "colLeft": "Stock restant",
+    "colCalories": "Calories",
+    "colActions": "Actions",
+    "per100": "{kcal} kcal/100 g",
+    "kg": "{value} kg",
+    "g": "{value} g",
+    "withOpen": "{portions} + {grams} g entamés",
+    "left": "{stock} restants",
+    "adding": "Ajout",
+    "fewer": "Moins de {unit}",
+    "more": "Plus de {unit}",
+    "newTotal": "Nouveau total",
+    "addToStock": "Ajouter au stock",
+    "sheetSubtitle": "{name} · {stock} restants",
+    "unit": "Unité du stock",
+    "archivedTitle": "Aliments archivés",
+    "archivedHint": "Les repas passés sont conservés. Restaurez un aliment pour l’utiliser à nouveau.",
+    "archivedRow": "{type} · archivé le {date}"
+  },
+  "foodForm": {
+    "add": "Ajouter un aliment",
+    "edit": "Modifier l’aliment",
+    "details": "Informations",
+    "addPhoto": "Ajouter une photo",
+    "photoHint": "Facultatif. Affichée à côté de l’aliment quand vous notez un repas.",
+    "photo": "Photo de l’aliment",
+    "changePhoto": "Changer la photo",
+    "removePhoto": "Retirer",
+    "brand": "Marque",
+    "brandPlaceholder": "p. ex. le nom sur l’emballage",
+    "name": "Nom",
+    "foodType": "Type d’aliment",
+    "for": "Pour",
+    "anyPet": "Tous les animaux",
+    "calories": "Calories",
+    "caloriesHint": "Souvent indiquées comme énergie métabolisable",
+    "energy": "Énergie",
+    "per": "Pour",
+    "caloriesPer": "Calories pour",
+    "per100": "100 g",
+    "perKg": "kg",
+    "asPrinted": "Saisissez la valeur imprimée sur l’étiquette.",
+    "storedAs": "Saisissez la valeur imprimée sur l’étiquette. Enregistrée comme {kcal} kcal/kg.",
+    "portion": "Portion",
+    "portionHint": "Notez les repas et le stock en sachets, boîtes ou barquettes.",
+    "usePortion": "Utiliser une taille de portion",
+    "portionName": "Nom",
+    "otherName": "Autre nom de portion",
+    "otherPlaceholder": "Nom de la portion",
+    "weight": "Poids",
+    "stock": "Stock",
+    "stockHint": "Diminue à chaque repas noté.",
+    "countIn": "Compter le stock en",
+    "grams": "Grammes",
+    "current": "Stock actuel",
+    "save": "Enregistrer l’aliment",
+    "saveChanges": "Enregistrer les modifications",
+    "archive": "Archiver l’aliment",
+    "archiveTitle": "Archiver {name} ?",
+    "archiveBody": "Ses repas passés sont conservés. Il disparaîtra du choix des aliments, et vous pourrez le restaurer à tout moment depuis Aliments archivés.",
+    "errors": {
+      "name": "Saisissez un nom",
+      "kcal": "Saisissez les calories, supérieures à 0",
+      "portionName": "Saisissez un nom de portion",
+      "portionG": "Saisissez un poids de portion supérieur à 0 g",
+      "stock": "Saisissez le stock, 0 ou plus"
+    },
+    "errorNames": {
+      "name": "nom",
+      "kcal": "énergie",
+      "portionName": "nom de la portion",
+      "portionG": "poids de la portion",
+      "stock": "stock actuel"
+    }
+  },
+  "kcalUpdate": {
+    "title": "Mettre à jour les repas passés ?",
+    "body": "{name} est passé de {from} à {to} kcal pour {unit}.",
+    "legend": "Quels repas mettre à jour",
+    "all": "Tous les repas passés",
+    "allHint": "L’étiquette avait été mal lue",
+    "since": "Les repas depuis une date",
+    "sinceHint": "La recette a changé",
+    "sinceLabel": "Mettre à jour les repas depuis",
+    "none": "Aucun",
+    "noneHint": "Seuls les nouveaux repas utilisent la nouvelle valeur",
+    "save": "Enregistrer"
+  },
+  "history": {
+    "emptyTitle": "Pas encore d’historique",
+    "emptyBody": "Ajoutez un animal, et chaque repas noté apparaîtra ici, jour après jour."
+  },
+  "insights": {
+    "emptyTitle": "Pas encore de tendances",
+    "emptyBody": "Ajoutez un animal pour voir ses calories par rapport à l’objectif et l’évolution de son poids."
   }
 }
