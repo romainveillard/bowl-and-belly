@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import { BowlIcon, CheckIcon, LogoMark, PlusIcon, SettingsIcon } from "../components/icons.js";
 import { FeedRow } from "../components/FeedRow.js";
 import { PetChip } from "../components/PetChip.js";
+import { WeightCard } from "../components/WeightCard.js";
 import { button } from "../components/ui/button.js";
 import { useDay, useDaySettings, type DaySummary } from "../lib/feeds.js";
 import { foodTypeLabel } from "../lib/foods.js";
@@ -11,7 +12,9 @@ import { useFoodCount, usePets, type PetSummary } from "../lib/pets.js";
 import { useSelectedPet } from "../lib/selectedPet.js";
 import { useIsDesktop } from "../lib/useIsDesktop.js";
 import { useFeedSheets } from "./FeedSheets.js";
+import { AgePrompt } from "./AgePrompt.js";
 import { LogFeedSheet } from "./LogFeedSheet.js";
+import { useWeightSheets } from "./WeightSheets.js";
 
 const card = "bg-card inset-ring inset-ring-border";
 
@@ -225,6 +228,9 @@ function TodayFeeds({ pet, today }: { pet: PetSummary; today: string }) {
           </section>
         )}
       </div>
+      <div className="hidden min-w-0 flex-col gap-6 desktop:flex">
+        <WeightCard petId={pet.id} />
+      </div>
       {sheets.sheet}
     </div>
   );
@@ -274,6 +280,7 @@ export function TodayScreen() {
   const { data: foodCount } = useFoodCount();
   const { pet } = useSelectedPet();
   const [logging, setLogging] = useState(false);
+  const weightSheets = useWeightSheets(pet?.id);
 
   if (!pets || foodCount === undefined) {
     return null;
@@ -322,15 +329,23 @@ export function TodayScreen() {
       </header>
       <div className={`px-5 pt-1 desktop:p-0 ${canLog ? "pb-24" : "pb-5"}`}>{content}</div>
       {canLog && (
-        <button
-          type="button"
-          className={`${button.floating} fixed right-5 bottom-[calc(86px+env(safe-area-inset-bottom))] desktop:right-8 desktop:bottom-8`}
-          onClick={() => setLogging(true)}
-        >
-          <PlusIcon size={20} />
-          {t("feed.logFeed")}
-        </button>
+        <div className="fixed right-5 bottom-[calc(86px+env(safe-area-inset-bottom))] flex items-center gap-2.5 desktop:right-8 desktop:bottom-8">
+          <button
+            type="button"
+            className={`${button.floatingSecondary} hidden desktop:inline-flex`}
+            onClick={weightSheets.openLog}
+          >
+            <PlusIcon size={18} />
+            {t("logWeight.button")}
+          </button>
+          <button type="button" className={button.floating} onClick={() => setLogging(true)}>
+            <PlusIcon size={20} />
+            {t("feed.logFeed")}
+          </button>
+        </div>
       )}
+      {weightSheets.ui}
+      {pet && <AgePrompt petId={pet.id} petName={pet.name} />}
       {logging && <LogFeedSheet onClose={() => setLogging(false)} />}
     </div>
   );

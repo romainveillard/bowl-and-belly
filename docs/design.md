@@ -65,7 +65,8 @@ The daily target is RER times a factor from the 2021 AAHA Nutrition and Weight M
 
 * Changing neutered status, activity, goal, target weight, birth date, pet type or the manual override inserts a new target row effective from today. A second change the same day replaces that day's row, and a change that leaves the target as it was adds nothing.
 * A target the user set is never recalculated: it stays until they go back to the suggested value.
-* A weigh-in never recalculates silently. The app offers "Update target from new weight?" so scale noise doesn't make the target jitter. The same goes for a pet reaching 4 or 12 months.
+* A weigh-in never recalculates silently. The app offers "Update target from new weight?" so scale noise doesn't make the target jitter. The same goes for reaching an age at which the table moves a pet to another row: dogs at 4 and 12 months, cats at 12. That question is asked once per age step, whichever the answer, and only if the target was set before the pet reached it.
+* Neither question is asked about a target the user set themselves.
 * Editing the current weight on the pet form is the exception: it logs a weigh-in and updates a calculated target at once, because the form shows the new suggestion before saving.
 * Custom pet types have no formula: the target is manual, and the target line is hidden if none is set.
 
@@ -201,8 +202,10 @@ Used on Today and History. A food-type tile on the left (blue drop for wet, peac
 - **Add and edit pet** share one form: details (photo, name, type), age (birth date, year or age; an age is saved as an estimate), health and goal, current weight, and daily target. Neutered is a Yes/No choice. Choosing Lose or Gain reveals a target weight field, and the suggestion then uses it.
 - **Daily target** on the form shows the live suggestion, with a "Set my own target" switch for a manual value. Custom pet types have no suggestion and only offer the manual value.
 - **Saving an edit that changes the target** (neutered, activity, goal, target weight) shows a snackbar such as "Daily target now 238 kcal from today".
-- **Log weight** is a sheet with weight and date (default today), showing the last reading.
-- **After a weigh-in**, if the suggested target differs, a dialog compares current and suggested targets with "Update to …" and "Keep …". It applies from today; past days keep their target.
+- **Log weight** is a sheet with weight and date (default today), showing the last reading. An earlier date is allowed and a later one refused; two readings on the same day are both kept. A reading more than 20% away from the one before it gets an amber outline and "That's a big change from 4.5 kg. Is 45 kg right?", which does not block saving.
+- **Weigh-ins** on the profile: tapping one opens its actions (Edit, Delete); on desktop they show as buttons on hover. Edit reopens the Log weight sheet prefilled, titled "Edit weigh-in"; Delete shows "Weigh-in deleted" with Undo.
+- **After a weigh-in**, if it is now the latest reading and the suggested target differs, a dialog compares current and suggested targets with "Update to …" and "Keep …". It applies from today; past days keep their target. A backdated reading only joins the history. Editing or deleting the latest reading asks again. The age question uses the same dialog with its own sentence, the next time Today or the pet's profile opens.
+- **Log weight** sits in the profile's Weight card on a phone, and beside the main floating button on desktop Today, History and Pets. Desktop Today also shows a Weight card with the latest reading and a sparkline, linking to the profile.
 - **Set my own target** is a sheet with a kcal/day field and a way back to the suggested value. It also applies from today.
 - **Current weight** is optional on the form. Without it, or without a target weight when the goal needs one, there is no suggestion yet.
 - **The target explanation** on the profile names the species ("for an inactive cat", "for a growing puppy") and says "since today" for a target set today.

@@ -10,7 +10,7 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
   );
 }
 
-export function CardHeading({ title, hint }: { title: string; hint?: string }) {
+export function CardHeading({ title, hint }: { title: string; hint?: string | undefined }) {
   return (
     <div className="flex flex-col gap-0.5">
       <h2 className="text-[15px] font-semibold desktop:text-base">{title}</h2>

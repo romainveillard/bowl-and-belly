@@ -3,8 +3,9 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 import { addDays } from "../../shared/app-day.js";
 import { explainTarget } from "../../shared/target.js";
-import { BackIcon, EditIcon } from "../components/icons.js";
+import { BackIcon, EditIcon, PlusIcon, TrashIcon } from "../components/icons.js";
 import { PetAvatar } from "../components/PetAvatar.js";
+import { Sparkline } from "../components/Sparkline.js";
 import { button } from "../components/ui/button.js";
 import { Card, CardHeading } from "../components/ui/Card.js";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog.js";
@@ -17,7 +18,9 @@ import {
   petTypeLabel,
 } from "../lib/format.js";
 import { usePet, useSetArchived, type PetDetail } from "../lib/pets.js";
+import { AgePrompt } from "./AgePrompt.js";
 import { ManualTargetSheet } from "./ManualTargetSheet.js";
+import type { useWeightSheets } from "./WeightSheets.js";
 
 function suggestionFor(pet: PetDetail) {
   if (!pet.type.systemKey) {
@@ -33,30 +36,6 @@ function suggestionFor(pet: PetDetail) {
     targetWeightG: pet.targetWeightG,
     weightG: pet.weights[0]?.weightG ?? null,
   });
-}
-
-function Sparkline({ weightsG, label }: { weightsG: number[]; label: string }) {
-  const low = Math.min(...weightsG);
-  const span = Math.max(...weightsG) - low || 1;
-  const points = weightsG.map((weightG, index) => ({
-    x: 8 + (index * 290) / (weightsG.length - 1),
-    y: 42 - ((weightG - low) / span) * 28,
-  }));
-
-  return (
-    <svg viewBox="0 0 306 56" role="img" aria-label={label} className="h-14 w-full">
-      <polyline
-        points={points.map((point) => `${point.x},${point.y}`).join(" ")}
-        fill="none"
-        className="stroke-primary"
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-      {points.map((point) => (
-        <circle key={point.x} cx={point.x} cy={point.y} r="3" className="fill-foreground" />
-      ))}
-    </svg>
-  );
 }
 
 function Rows({ rows }: { rows: { key: string; title: string; note?: string; value: string }[] }) {
@@ -78,7 +57,14 @@ function Rows({ rows }: { rows: { key: string; title: string; note?: string; val
   );
 }
 
-export function PetProfile({ petId }: { petId: number }) {
+export function PetProfile({
+  petId,
+  weightSheets,
+}: {
+  petId: number;
+  /** Owned by the Pets screen, which also offers Log weight on desktop. */
+  weightSheets: ReturnType<typeof useWeightSheets>;
+}) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
   const { data: pet } = usePet(petId);
@@ -188,35 +174,80 @@ export function PetProfile({ petId }: { petId: number }) {
             </button>
           </Card>
 
-          {latest && (
-            <Card>
-              <div className="flex items-start justify-between gap-3">
-                <CardHeading
-                  title={t("weight.title")}
-                  hint={t("weight.lastWeighed", { date: day(new Date(latest.measuredAt)) })}
-                />
+          <Card>
+            <div className="flex items-start justify-between gap-3">
+              <CardHeading
+                title={t("weight.title")}
+                hint={latest && t("weight.lastWeighed", { date: day(new Date(latest.measuredAt)) })}
+              />
+              {latest && (
                 <span className="flex items-baseline gap-1">
                   <span className="font-display text-figure font-semibold tabular-nums desktop:text-4xl">
                     {formatKg(latest.weightG, locale)}
                   </span>
                   <span className="text-sm text-muted-foreground">{t("weight.kg")}</span>
                 </span>
-              </div>
-              {pet.weights.length > 1 && (
-                <Sparkline
-                  weightsG={pet.weights.map((weight) => weight.weightG).toReversed()}
-                  label={t("weight.sparkline")}
-                />
               )}
-              <Rows
-                rows={pet.weights.slice(0, 3).map((weight) => ({
-                  key: weight.measuredAt,
-                  title: day(new Date(weight.measuredAt)),
-                  value: t("weight.reading", { weight: formatReadingKg(weight.weightG, locale) }),
-                }))}
+            </div>
+            {pet.weights.length > 1 && (
+              <Sparkline
+                weightsG={pet.weights.map((weight) => weight.weightG).toReversed()}
+                label={t("weight.sparkline")}
               />
-            </Card>
-          )}
+            )}
+            {pet.weights.length > 0 && (
+              <div>
+                {pet.weights.slice(0, 3).map((reading) => {
+                  const date = day(new Date(reading.measuredAt));
+                  return (
+                    <div
+                      key={reading.id}
+                      className="group relative border-t border-border first:border-t-0"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => weightSheets.openActions(reading)}
+                        className="flex min-h-12 w-full cursor-pointer items-center justify-between gap-3 text-left desktop:cursor-default"
+                      >
+                        <span className="text-[15px]">{date}</span>
+                        <span className="text-[15px] font-semibold tabular-nums">
+                          {t("weight.reading", {
+                            weight: formatReadingKg(reading.weightG, locale),
+                          })}
+                        </span>
+                      </button>
+                      <span className="absolute top-1/2 right-20 hidden -translate-y-1/2 gap-1 desktop:group-focus-within:flex desktop:group-hover:flex">
+                        <button
+                          type="button"
+                          aria-label={t("weighIn.editNamed", { date })}
+                          onClick={() => weightSheets.edit(reading)}
+                          className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-muted"
+                        >
+                          <EditIcon size={18} />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={t("weighIn.deleteNamed", { date })}
+                          onClick={() => weightSheets.remove(reading)}
+                          className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-muted text-danger"
+                        >
+                          <TrashIcon size={18} />
+                        </button>
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <button
+              type="button"
+              className={`${button.outline} self-start desktop:hidden`}
+              onClick={weightSheets.openLog}
+            >
+              <PlusIcon size={18} />
+              {t("logWeight.button")}
+            </button>
+          </Card>
         </div>
 
         {pet.targets.length > 0 && (
@@ -265,6 +296,8 @@ export function PetProfile({ petId }: { petId: number }) {
         confirmLabel={t("pets.archiveConfirm")}
         onConfirm={() => archive.mutate(pet.id, { onSuccess: () => navigate("/pets") })}
       />
+
+      <AgePrompt petId={pet.id} petName={pet.name} />
 
       {settingTarget && (
         <ManualTargetSheet

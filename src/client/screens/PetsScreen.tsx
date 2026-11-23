@@ -7,6 +7,7 @@ import { button } from "../components/ui/button.js";
 import { formatAge, formatKg, petTypeLabel } from "../lib/format.js";
 import { usePets } from "../lib/pets.js";
 import { PetProfile } from "./PetProfile.js";
+import { useWeightSheets } from "./WeightSheets.js";
 
 /**
  * The Pets tab. A phone shows the list, then a profile as its own page;
@@ -17,6 +18,9 @@ export function PetsScreen() {
   const locale = i18n.language;
   const params = useParams();
   const { data } = usePets();
+  const openId = params.petId === undefined ? undefined : Number(params.petId);
+  const selectedId = openId ?? data?.pets[0]?.id;
+  const weightSheets = useWeightSheets(selectedId);
 
   if (!data) {
     return null;
@@ -65,9 +69,6 @@ export function PetsScreen() {
       </div>
     );
   }
-
-  const openId = params.petId === undefined ? undefined : Number(params.petId);
-  const selectedId = openId ?? data.pets[0]?.id;
 
   return (
     <div className="flex flex-col desktop:gap-6">
@@ -134,18 +135,30 @@ export function PetsScreen() {
 
         {selectedId !== undefined && (
           <div className={openId ? "" : "hidden desktop:block"}>
-            <PetProfile key={selectedId} petId={selectedId} />
+            <PetProfile key={selectedId} petId={selectedId} weightSheets={weightSheets} />
           </div>
         )}
       </div>
 
-      <Link
-        to="/pets/new"
-        className={`${button.floating} fixed right-5 bottom-[calc(86px+env(safe-area-inset-bottom))] desktop:right-8 desktop:bottom-8 desktop:flex ${openId ? "hidden" : ""}`}
+      <div
+        className={`fixed right-5 bottom-[calc(86px+env(safe-area-inset-bottom))] flex items-center gap-2.5 desktop:right-8 desktop:bottom-8 desktop:flex ${openId ? "hidden" : ""}`}
       >
-        <PlusIcon size={20} />
-        {t("pets.add")}
-      </Link>
+        {selectedId !== undefined && (
+          <button
+            type="button"
+            className={`${button.floatingSecondary} hidden desktop:inline-flex`}
+            onClick={weightSheets.openLog}
+          >
+            <PlusIcon size={18} />
+            {t("logWeight.button")}
+          </button>
+        )}
+        <Link to="/pets/new" className={button.floating}>
+          <PlusIcon size={20} />
+          {t("pets.add")}
+        </Link>
+      </div>
+      {weightSheets.ui}
     </div>
   );
 }

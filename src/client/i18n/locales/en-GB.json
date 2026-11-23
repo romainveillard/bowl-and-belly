@@ -182,7 +182,10 @@
     "addFoodTitle": "Add a food to start logging",
     "addFoodBody": "Enter it once with the calories from the label. After that, logging a feed is a tap.",
     "addFoodBodyDesktop": "Enter it once with the calories from the label. After that, logging a feed is a click.",
-    "addFood": "Add food"
+    "addFood": "Add food",
+    "weightCard": "Weight",
+    "petProfile": "Pet profile",
+    "weightDate": "kg · {date}"
   },
   "foodType": {
     "wet": "Wet",
@@ -417,5 +420,48 @@
     "errorNames": {
       "leftover": "left over"
     }
+  },
+  "logWeight": {
+    "title": "Log weight",
+    "editTitle": "Edit weigh-in",
+    "subtitle": "{name} · last {weight} kg on {date}",
+    "weight": "Weight",
+    "date": "Date",
+    "today": "Today",
+    "save": "Save weight",
+    "button": "Log weight",
+    "bigChange": "That’s a big change from {previous} kg. Is {weight} kg right?",
+    "errors": {
+      "weight": "Enter a weight above 0 kg",
+      "date": "Choose today or an earlier day"
+    },
+    "errorNames": {
+      "weight": "weight",
+      "date": "date"
+    }
+  },
+  "weighIn": {
+    "title": "Weigh-in",
+    "subtitle": "{name} · {date} · {weight} kg",
+    "edit": "Edit",
+    "editHint": "Weight or date",
+    "editNamed": "Edit weigh-in: {date}",
+    "delete": "Delete",
+    "deleteHint": "You can undo for a few seconds",
+    "deleteNamed": "Delete weigh-in: {date}",
+    "deleted": "Weigh-in deleted",
+    "deletedDetail": "{date} · {weight} kg"
+  },
+  "targetPrompt": {
+    "title": "Update daily target?",
+    "weight": "{name} now weighs {weight} kg (was {previous} kg), so the suggested target has changed.",
+    "weightNoPrevious": "{name} now weighs {weight} kg, so the suggested target has changed.",
+    "age4": "{name} is now 4 months old, so the suggested target has changed.",
+    "age12": "{name} is now a year old, so the suggested target has changed.",
+    "current": "Current",
+    "suggested": "Suggested",
+    "applies": "Applies from today. Past days keep their target.",
+    "update": "Update to {kcal} kcal",
+    "keep": "Keep {kcal} kcal"
   }
 }

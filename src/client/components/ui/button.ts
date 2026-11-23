@@ -11,5 +11,7 @@ export const button = {
   primaryLarge: `${base} h-[52px] w-full rounded-xl bg-primary text-base text-foreground`,
   /** Floating main action of a tab. */
   floating: `${base} h-14 rounded-full bg-primary px-6 text-base text-foreground shadow-[0_6px_16px_rgba(31,42,68,0.18)] desktop:px-[26px]`,
+  /** The quieter floating action beside the main one on desktop. */
+  floatingSecondary: `${base} h-[52px] rounded-full bg-card px-5 text-foreground shadow-[inset_0_0_0_1px_var(--color-border),0_6px_16px_rgba(31,42,68,0.12)]`,
   icon: "flex size-11 flex-none cursor-pointer items-center justify-center rounded-full text-foreground",
 };

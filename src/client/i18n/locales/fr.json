@@ -182,7 +182,10 @@
     "addFoodTitle": "Ajoutez un aliment pour commencer",
     "addFoodBody": "Saisissez-le une fois avec les calories de l’étiquette. Ensuite, noter un repas se fait d’un geste.",
     "addFoodBodyDesktop": "Saisissez-le une fois avec les calories de l’étiquette. Ensuite, noter un repas se fait d’un clic.",
-    "addFood": "Ajouter un aliment"
+    "addFood": "Ajouter un aliment",
+    "weightCard": "Poids",
+    "petProfile": "Fiche de l’animal",
+    "weightDate": "kg · {date}"
   },
   "foodType": {
     "wet": "Humide",
@@ -417,5 +420,48 @@
     "errorNames": {
       "leftover": "reste"
     }
+  },
+  "logWeight": {
+    "title": "Noter le poids",
+    "editTitle": "Modifier la pesée",
+    "subtitle": "{name} · dernier poids {weight} kg le {date}",
+    "weight": "Poids",
+    "date": "Date",
+    "today": "Aujourd’hui",
+    "save": "Enregistrer le poids",
+    "button": "Noter le poids",
+    "bigChange": "C’est un grand écart par rapport à {previous} kg. {weight} kg, c’est bien ça ?",
+    "errors": {
+      "weight": "Saisissez un poids supérieur à 0 kg",
+      "date": "Choisissez aujourd’hui ou un jour passé"
+    },
+    "errorNames": {
+      "weight": "poids",
+      "date": "date"
+    }
+  },
+  "weighIn": {
+    "title": "Pesée",
+    "subtitle": "{name} · {date} · {weight} kg",
+    "edit": "Modifier",
+    "editHint": "Poids ou date",
+    "editNamed": "Modifier la pesée : {date}",
+    "delete": "Supprimer",
+    "deleteHint": "Vous pouvez annuler pendant quelques secondes",
+    "deleteNamed": "Supprimer la pesée : {date}",
+    "deleted": "Pesée supprimée",
+    "deletedDetail": "{date} · {weight} kg"
+  },
+  "targetPrompt": {
+    "title": "Mettre à jour l’objectif quotidien ?",
+    "weight": "{name} pèse maintenant {weight} kg (contre {previous} kg), l’objectif suggéré a donc changé.",
+    "weightNoPrevious": "{name} pèse maintenant {weight} kg, l’objectif suggéré a donc changé.",
+    "age4": "{name} a maintenant 4 mois, l’objectif suggéré a donc changé.",
+    "age12": "{name} a maintenant un an, l’objectif suggéré a donc changé.",
+    "current": "Actuel",
+    "suggested": "Suggéré",
+    "applies": "S’applique à partir d’aujourd’hui. Les jours passés gardent leur objectif.",
+    "update": "Passer à {kcal} kcal",
+    "keep": "Garder {kcal} kcal"
   }
 }

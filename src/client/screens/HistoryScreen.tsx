@@ -13,6 +13,7 @@ import { useFoodCount, usePets } from "../lib/pets.js";
 import { useSelectedPet } from "../lib/selectedPet.js";
 import { useFeedSheets } from "./FeedSheets.js";
 import { LogFeedSheet } from "./LogFeedSheet.js";
+import { useWeightSheets } from "./WeightSheets.js";
 
 const typeBackground = { wet: "bg-[#F2F7FF]", dry: "bg-[#FFF6EE]", custom: "bg-background" };
 
@@ -153,6 +154,7 @@ export function HistoryScreen() {
   const sheets = useFeedSheets(pet?.id ?? 0, pets?.today ?? "", settings?.timeZone ?? "UTC");
   const [toggled, setToggled] = useState<Record<string, boolean>>({});
   const [logging, setLogging] = useState(false);
+  const weightSheets = useWeightSheets(pet?.id);
   const end = useRef<HTMLDivElement>(null);
   const { fetchNextPage, hasNextPage, isFetchingNextPage } = history;
 
@@ -226,16 +228,19 @@ export function HistoryScreen() {
         <div ref={end} />
       </div>
 
-      {(foodCount ?? 0) > 0 && (
-        <button
-          type="button"
-          className={`${button.floating} fixed right-8 bottom-8 hidden desktop:inline-flex`}
-          onClick={() => setLogging(true)}
-        >
-          <PlusIcon size={20} />
-          {t("feed.logFeed")}
+      <div className="fixed right-8 bottom-8 hidden items-center gap-2.5 desktop:flex">
+        <button type="button" className={button.floatingSecondary} onClick={weightSheets.openLog}>
+          <PlusIcon size={18} />
+          {t("logWeight.button")}
         </button>
-      )}
+        {(foodCount ?? 0) > 0 && (
+          <button type="button" className={button.floating} onClick={() => setLogging(true)}>
+            <PlusIcon size={20} />
+            {t("feed.logFeed")}
+          </button>
+        )}
+      </div>
+      {weightSheets.ui}
       {logFeedSheet}
       {sheets.sheet}
     </div>
