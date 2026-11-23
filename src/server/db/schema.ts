@@ -11,6 +11,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 import {
   ACTIVITY_LEVELS,
+  BACKUP_ERRORS,
   BACKUP_FREQUENCIES,
   BIRTH_DATE_PRECISIONS,
   FOOD_TYPE_KEYS,
@@ -45,6 +46,9 @@ export const settings = sqliteTable(
     backupWeekday: integer(),
     backupTime: text().notNull().default("03:00"),
     backupKeep: integer().notNull().default(7),
+    // The last scheduled or manual run, while it failed; cleared by a success.
+    backupFailedAt: integer({ mode: "timestamp_ms" }),
+    backupError: text({ enum: BACKUP_ERRORS }),
   },
   (t) => [
     check("settings_single_row", sql`${t.id} = 1`),

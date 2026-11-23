@@ -6,3 +6,4 @@ export const GOALS = ["maintain", "lose", "gain"] as const;
 export const TARGET_SOURCES = ["calculated", "manual"] as const;
 export const STOCK_UNITS = ["g", "portion"] as const;
 export const BACKUP_FREQUENCIES = ["daily", "weekly"] as const;
+export const BACKUP_ERRORS = ["disk_full", "cannot_write", "unknown"] as const;
