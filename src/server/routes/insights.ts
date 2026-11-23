@@ -9,7 +9,7 @@ import { targetOn } from "../pets/targets.js";
 import { daySettings, today } from "../settings.js";
 import { validate } from "../validate.js";
 
-/** The weight chart always looks back this far, whatever period the intake chart shows. */
+/** Without `weightsFrom`, the weight chart looks back this far. */
 const WEIGHT_DAYS = 56;
 /** Longer ranges would only come from a hand-made request. */
 const MAX_RANGE_DAYS = 400;
@@ -18,10 +18,16 @@ export const insightsRoutes = new Hono().get(
   "/",
   validate(
     "query",
-    z.object({ petId: z.coerce.number().int(), from: z.iso.date(), to: z.iso.date() }),
+    z.object({
+      petId: z.coerce.number().int(),
+      from: z.iso.date(),
+      to: z.iso.date(),
+      /** The first day of weigh-ins to return, up to now. */
+      weightsFrom: z.iso.date().optional(),
+    }),
   ),
   (c) => {
-    const { petId, from, to } = c.req.valid("query");
+    const { petId, from, to, weightsFrom } = c.req.valid("query");
     if (to < from || addDays(from, MAX_RANGE_DAYS) < to) {
       return c.json({ code: "invalid_range" as const }, 400);
     }
@@ -48,7 +54,10 @@ export const insightsRoutes = new Hono().get(
       .where(
         and(
           eq(weightEntry.petId, petId),
-          gte(weightEntry.measuredAt, appDayStart(addDays(day, -WEIGHT_DAYS), daySettings(db))),
+          gte(
+            weightEntry.measuredAt,
+            appDayStart(weightsFrom ?? addDays(day, -WEIGHT_DAYS), daySettings(db)),
+          ),
         ),
       )
       .orderBy(asc(weightEntry.measuredAt))
