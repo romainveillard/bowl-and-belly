@@ -3,20 +3,16 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { ACTIVITY_LEVELS, GOALS } from "../../shared/enums.js";
 import { ageInMonths, explainTarget } from "../../shared/target.js";
-import {
-  AlertIcon,
-  BackIcon,
-  CameraIcon,
-  ChevronDownIcon,
-  CloseIcon,
-} from "../components/icons.js";
+import { BackIcon, CameraIcon, ChevronDownIcon, CloseIcon } from "../components/icons.js";
 import { button } from "../components/ui/button.js";
 import { Card, CardHeading } from "../components/ui/Card.js";
+import { ErrorSummary } from "../components/ui/ErrorSummary.js";
 import { Field, inputClass } from "../components/ui/Field.js";
 import { Segmented } from "../components/ui/Segmented.js";
 import { useSnackbar } from "../components/ui/Snackbar.js";
 import { Switch } from "../components/ui/Switch.js";
 import { parsePositive, petTypeLabel } from "../lib/format.js";
+import { useFormErrors } from "../lib/useFormErrors.js";
 import {
   uploadPhoto,
   usePet,
@@ -112,14 +108,12 @@ const FIELD_ORDER: FieldName[] = ["name", "birth", "targetWeight", "weight", "ow
 const BIRTH_ERROR = { exact: "birthDate", year: "birthYear", estimated: "age" } as const;
 
 function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: petTypes } = usePetTypes();
   const save = useSavePet(pet?.id);
   const fileInput = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState(() => initialState(pet));
-  const [shown, setShown] = useState<ReadonlyMap<FieldName, ErrorKey>>(new Map());
-  const [attempted, setAttempted] = useState(false);
   const showSnackbar = useSnackbar();
   const set = <Key extends keyof FormState>(key: Key, value: FormState[Key]) =>
     setForm((current) => ({ ...current, [key]: value }));
@@ -169,33 +163,15 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
     problems.set("ownTarget", "ownTarget");
   }
 
+  const errors = useFormErrors(problems, FIELD_ORDER, "pet");
   const errorFor = (field: FieldName) => {
-    const error = shown.get(field);
-    return error && t(`petForm.errors.${error}`);
+    const problem = errors.problemOf(field);
+    return problem && t(`petForm.errors.${problem}`);
   };
-  // After a failed save, each field is checked again as the user leaves it.
-  const recheck = (field: FieldName) => () => {
-    if (attempted) {
-      setShown((current) => {
-        const next = new Map(current);
-        const problem = problems.get(field);
-        if (problem) {
-          next.set(field, problem);
-        } else {
-          next.delete(field);
-        }
-        return next;
-      });
-    }
-  };
-  const shownInOrder = FIELD_ORDER.flatMap((field) => shown.get(field) ?? []);
+  const { recheck } = errors;
 
   const submit = () => {
-    const [firstInvalid] = problems.keys();
-    if (firstInvalid || petTypeId === null || birthDate === null) {
-      setShown(problems);
-      setAttempted(true);
-      document.getElementById(`pet-${firstInvalid}`)?.focus();
+    if (errors.reject() || petTypeId === null || birthDate === null) {
       return;
     }
     const body: PetBody = {
@@ -246,23 +222,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
         </h1>
       </header>
 
-      {shownInOrder.length > 0 && (
-        <div
-          role="alert"
-          className="mx-5 mb-3.5 flex items-start gap-2.5 rounded-xl bg-danger-soft px-3.5 py-3 text-sm leading-5 text-danger-strong desktop:m-0 desktop:px-4 desktop:py-3.5 desktop:text-[15px] desktop:leading-[22px]"
-        >
-          <span className="flex-none">
-            <AlertIcon size={20} />
-          </span>
-          <span>
-            <strong>{t("form.thingsToFix", { count: shownInOrder.length })}</strong>{" "}
-            {new Intl.ListFormat(i18n.language, { type: "conjunction" }).format(
-              shownInOrder.map((error) => t(`petForm.errorNames.${error}`)),
-            )}
-            .
-          </span>
-        </div>
-      )}
+      <ErrorSummary names={errors.shown.map((problem) => t(`petForm.errorNames.${problem}`))} />
 
       <div className="grid flex-1 content-start gap-3.5 px-5 pt-1 pb-4 desktop:grid-cols-2 desktop:items-start desktop:gap-6 desktop:p-0">
         <div className="flex min-w-0 flex-col gap-3.5 desktop:gap-6">
