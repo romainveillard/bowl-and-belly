@@ -1,4 +1,4 @@
-import { and, eq, isNull, ne } from "drizzle-orm";
+import { and, eq, isNull, ne, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { db } from "../db/client.js";
@@ -26,6 +26,7 @@ function nameTaken(name: string, exceptId?: number): boolean {
     .some((type) => type.name?.toLocaleLowerCase() === name.toLocaleLowerCase());
 }
 
+// Archived types are listed too, for the pets and foods that still use them.
 export const foodTypesRoutes = new Hono()
   .get("/", (c) =>
     c.json(
@@ -34,10 +35,10 @@ export const foodTypesRoutes = new Hono()
           id: foodType.id,
           systemKey: foodType.systemKey,
           name: foodType.name,
+          archived: sql<boolean>`${foodType.archivedAt} IS NOT NULL`.mapWith(Boolean),
           leftoverReturnsToStock: foodType.leftoverReturnsToStock,
         })
         .from(foodType)
-        .where(isNull(foodType.archivedAt))
         .orderBy(foodType.id)
         .all(),
     ),
