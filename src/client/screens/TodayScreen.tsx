@@ -5,6 +5,7 @@ import { BowlIcon, CheckIcon, LogoMark, PlusIcon, SettingsIcon } from "../compon
 import { PetAvatar } from "../components/PetAvatar.js";
 import { button } from "../components/ui/button.js";
 import { useFoodCount, usePets, type PetSummary } from "../lib/pets.js";
+import { useSelectedPet } from "../lib/selectedPet.js";
 
 const card = "bg-card inset-ring inset-ring-border";
 
@@ -157,12 +158,12 @@ export function TodayScreen() {
   const { t, i18n } = useTranslation();
   const { data: pets } = usePets();
   const { data: foodCount } = useFoodCount();
+  const { pet } = useSelectedPet();
 
   if (!pets || foodCount === undefined) {
     return null;
   }
 
-  const [pet] = pets.pets;
   const date = (style: "short" | "long") =>
     new Intl.DateTimeFormat(i18n.language, {
       weekday: style,
