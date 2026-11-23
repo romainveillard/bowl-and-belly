@@ -634,7 +634,8 @@
     "forgotten": "Forgotten it? The password is set on the server by whoever runs Bowl & Belly.",
     "errors": {
       "wrong_password": "That password isn’t right.",
-      "too_many_attempts": "Too many attempts. Try again in a minute."
+      "too_many_attempts": "Too many attempts. Try again in a minute.",
+      "empty": "Enter the password."
     }
   },
   "sessionExpired": {
@@ -643,5 +644,8 @@
     "bodyDesktop": "Reload the page to sign back in. Nothing you saved has been lost.",
     "tryAgain": "Try again",
     "reload": "Reload"
+  },
+  "network": {
+    "unreachable": "Can’t reach Bowl & Belly. Check your connection."
   }
 }

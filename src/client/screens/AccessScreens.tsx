@@ -15,11 +15,17 @@ export function LoginScreen() {
   const { t } = useTranslation();
   const [password, setPassword] = useState("");
   const logIn = useLogIn();
-  const refusal = logIn.data ?? null;
+  const [empty, setEmpty] = useState(false);
+  const problem = empty ? "empty" : (logIn.data ?? null);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    if (password !== "") {
+    // Not sent, so it never counts as a failed attempt.
+    setEmpty(password === "");
+    if (password === "") {
+      logIn.reset();
+      document.getElementById("login-password")?.focus();
+    } else {
       logIn.mutate(password);
     }
   };
@@ -44,7 +50,7 @@ export function LoginScreen() {
             label={t("login.password")}
             value={password}
             onChange={setPassword}
-            error={refusal ? t(`login.errors.${refusal}`) : undefined}
+            error={problem ? t(`login.errors.${problem}`) : undefined}
           />
           <button type="submit" className={button.primaryLarge} disabled={logIn.isPending}>
             {t("login.submit")}

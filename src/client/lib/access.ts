@@ -23,15 +23,33 @@ export function useAccess(): Access {
   );
 }
 
+const unreachableListeners = new Set<() => void>();
+
+/** Calls `listener` whenever the server can't be reached at all. */
+export function onUnreachable(listener: () => void): () => void {
+  unreachableListeners.add(listener);
+  return () => unreachableListeners.delete(listener);
+}
+
 /**
  * fetch for the API client. A proxy such as Cloudflare Access answers an
- * expired session with a redirect to its own login, which the app can't
- * follow from a fetch, so redirects are caught rather than followed.
+ * expired session with a redirect to its own login. Followed, that
+ * cross-origin redirect fails like being offline, so it is caught instead:
+ * the browser reports it as an opaque redirect.
  */
 export const accessAwareFetch: typeof fetch = async (input, init) => {
-  const response = await fetch(input, { ...init, redirect: "manual" });
-  // Browsers hide a redirect they were told not to follow; other clients show the 3xx.
-  if (response.type === "opaqueredirect" || (response.status >= 300 && response.status < 400)) {
+  let response: Response;
+  try {
+    response = await fetch(input, { ...init, redirect: "manual" });
+  } catch (error) {
+    if (!(error instanceof DOMException && error.name === "AbortError")) {
+      for (const listener of unreachableListeners) {
+        listener();
+      }
+    }
+    throw error;
+  }
+  if (response.type === "opaqueredirect") {
     setAccess("expired");
   } else if (response.status === 401 && !new URL(response.url).pathname.startsWith("/api/auth")) {
     setAccess("login");
