@@ -43,6 +43,9 @@ const FACTORS = {
 
 const ADULT_FROM_MONTHS = 12;
 
+/** The ages, in months, at which the factor table moves a pet to another row. */
+export const AGE_STEPS = { cat: [ADULT_FROM_MONTHS], dog: [4, ADULT_FROM_MONTHS] } as const;
+
 export interface TargetExplanation {
   kcalPerDay: number;
   restingKcal: number;
