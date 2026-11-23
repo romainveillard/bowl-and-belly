@@ -1,0 +1,152 @@
+import { eq } from "drizzle-orm";
+import { describe, expect, it } from "vitest";
+import { openDatabase } from "../db/open.js";
+import { feedEntry, food, pet } from "../db/schema.js";
+import { deleteFeed, editFeed, logFeed, restoreFeed } from "./entries.js";
+
+// Two foods with 1,000 g in stock each: kibbles at 3,700 kcal/kg, pouches at 800.
+function pantry() {
+  const db = openDatabase(":memory:");
+  db.insert(pet)
+    .values({
+      name: "Miso",
+      petTypeId: 1,
+      birthDate: "2020-05-01",
+      birthDatePrecision: "exact",
+      neutered: true,
+      activityLevel: "normal",
+      goal: "maintain",
+    })
+    .run();
+  db.insert(food)
+    .values([
+      { name: "Salmon kibbles", foodTypeId: 2, kcalPerKg: 3700, stockG: 1000 },
+      { name: "Chicken in gravy", foodTypeId: 1, kcalPerKg: 800, stockG: 1000 },
+    ])
+    .run();
+  const stock = () =>
+    db
+      .select({ stockG: food.stockG })
+      .from(food)
+      .orderBy(food.id)
+      .all()
+      .map((row) => row.stockG);
+  return { db, stock };
+}
+
+const kibbles = {
+  petId: 1,
+  foodId: 1,
+  fedAt: new Date("2026-11-23T08:00:00Z"),
+  servedG: 20,
+  leftoverG: null,
+  leftoverReturnedToStock: true,
+};
+
+describe("logFeed", () => {
+  it("takes what was served out of stock, less a leftover put back", () => {
+    const { db, stock } = pantry();
+
+    logFeed(db, kibbles);
+    logFeed(db, { ...kibbles, leftoverG: 4 });
+    logFeed(db, {
+      ...kibbles,
+      foodId: 2,
+      servedG: 85,
+      leftoverG: 10,
+      leftoverReturnedToStock: false,
+    });
+
+    expect(stock()).toEqual([1000 - 20 - 16, 1000 - 85]);
+  });
+
+  it("lets stock run below zero rather than refuse a feed", () => {
+    const { db, stock } = pantry();
+
+    logFeed(db, { ...kibbles, servedG: 1200 });
+
+    expect(stock()[0]).toBe(-200);
+  });
+});
+
+describe("editFeed", () => {
+  it("moves stock by the difference", () => {
+    const { db, stock } = pantry();
+    const id = logFeed(db, kibbles) ?? 0;
+
+    editFeed(db, id, { ...kibbles, servedG: 30, leftoverG: 5 });
+
+    expect(stock()[0]).toBe(1000 - 25);
+  });
+
+  it("puts a leftover back only when it is marked as returned", () => {
+    const { db, stock } = pantry();
+    const id = logFeed(db, { ...kibbles, leftoverG: 4 }) ?? 0;
+
+    editFeed(db, id, { ...kibbles, leftoverG: 4, leftoverReturnedToStock: false });
+
+    expect(stock()[0]).toBe(1000 - 20);
+  });
+
+  it("moves the stock and the kcal snapshot to the new food when the food changes", () => {
+    const { db, stock } = pantry();
+    const id = logFeed(db, kibbles) ?? 0;
+    db.update(food).set({ kcalPerKg: 3800 }).where(eq(food.id, 1)).run();
+
+    editFeed(db, id, { ...kibbles, foodId: 2, servedG: 85 });
+
+    expect(stock()).toEqual([1000, 1000 - 85]);
+    expect(db.select({ kcalPerKg: feedEntry.kcalPerKg }).from(feedEntry).get()).toEqual({
+      kcalPerKg: 800,
+    });
+  });
+
+  it("keeps the kcal snapshot when the food stays the same", () => {
+    const { db } = pantry();
+    const id = logFeed(db, kibbles) ?? 0;
+    db.update(food).set({ kcalPerKg: 3800 }).where(eq(food.id, 1)).run();
+
+    editFeed(db, id, { ...kibbles, servedG: 25 });
+
+    expect(db.select({ kcalPerKg: feedEntry.kcalPerKg }).from(feedEntry).get()).toEqual({
+      kcalPerKg: 3700,
+    });
+  });
+});
+
+describe("deleteFeed", () => {
+  it("returns what the entry took out of stock: served less a leftover already put back", () => {
+    const { db, stock } = pantry();
+    const returned = logFeed(db, { ...kibbles, leftoverG: 4 }) ?? 0;
+    const binned =
+      logFeed(db, {
+        ...kibbles,
+        foodId: 2,
+        servedG: 85,
+        leftoverG: 10,
+        leftoverReturnedToStock: false,
+      }) ?? 0;
+
+    deleteFeed(db, returned);
+    deleteFeed(db, binned);
+
+    expect(stock()).toEqual([1000, 1000]);
+  });
+
+  it("can be undone with the original kcal snapshot, taking the stock again", () => {
+    const { db, stock } = pantry();
+    const id = logFeed(db, kibbles) ?? 0;
+    db.update(food).set({ kcalPerKg: 3800 }).where(eq(food.id, 1)).run();
+
+    const deleted = deleteFeed(db, id);
+    if (!deleted) {
+      throw new Error("Nothing deleted");
+    }
+    restoreFeed(db, deleted);
+
+    expect(stock()[0]).toBe(980);
+    expect(db.select({ kcalPerKg: feedEntry.kcalPerKg }).from(feedEntry).get()).toEqual({
+      kcalPerKg: 3700,
+    });
+  });
+});
