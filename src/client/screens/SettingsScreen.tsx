@@ -62,7 +62,7 @@ function Select({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           disabled={disabled}
-          className={`${inputClass} appearance-none pr-11 disabled:bg-muted disabled:text-muted-foreground`}
+          className={`${inputClass} appearance-none pr-11`}
         >
           {children}
         </select>
@@ -254,7 +254,7 @@ function SettingsForm({ settings }: { settings: Settings }) {
         label={t("settings.timeZone")}
         value={saved.timeZone}
         disabled={demo}
-        {...(demo ? { hint: t("demo.timeZone") } : {})}
+        {...(demo ? { hint: t("demo.fixed") } : {})}
         onChange={(timeZone) => commit({ timeZone })}
       >
         {timeZones(saved.timeZone).map((zone) => (
@@ -270,7 +270,8 @@ function SettingsForm({ settings }: { settings: Settings }) {
         value={dayStartsAt}
         onChange={setDayStartsAt}
         onBlur={commitTyped("dayStartsAt", TIME.test(dayStartsAt) ? dayStartsAt : null)}
-        hint={t("settings.dayStartsAtHint")}
+        disabled={demo}
+        hint={t(demo ? "demo.fixed" : "settings.dayStartsAtHint")}
         error={invalid.has("dayStartsAt") ? t("settings.errors.time") : undefined}
       />
     </Card>
