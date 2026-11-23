@@ -71,7 +71,7 @@ The daily target is RER times a factor from the 2021 AAHA Nutrition and Weight M
 
 ### Leftovers
 
-A feed entry has an optional leftover in grams; eaten = served − leftover. Whether the leftover goes back into stock defaults from the food type (dry: returned; wet: binned) and can be overridden per entry. Leftovers are usually found at the next feed, so when the previous entry for that pet is a food whose type returns leftovers, the log form shows an optional "Left over from 14:30?" field. Leftovers can also be added from the timeline.
+A feed entry has an optional leftover in grams; eaten = served − leftover. Whether the leftover goes back into stock defaults from the food type (dry: returned; wet: binned) and can be overridden per entry. Leftovers are usually found at the next feed, so when the pet's previous feed, within the last 24 hours, has no leftover recorded, the log form shows an optional "Left over from 14:30?" field, whatever the food type: a binned leftover still lowers what was eaten. Leaving it empty means nothing was left. The leftover is saved on the previous feed in the same transaction as the new one. Leftovers can also be added from the timeline.
 
 ### Stock and portions
 
@@ -100,7 +100,7 @@ The backfill runs in the same transaction as the food edit: `UPDATE feed_entry S
 
 ### Days and time zones
 
-Timestamps are stored in UTC. One app-wide IANA time zone (e.g. Europe/London) and a "day starts at" time (default 00:00, configurable to e.g. 03:00) decide which day an entry belongs to. Per-entry time zones are out of scope.
+Timestamps are stored in UTC. One app-wide IANA time zone (e.g. Europe/London) and a "day starts at" time (default 00:00, configurable to e.g. 03:00) decide which day an entry belongs to. Per-entry time zones are out of scope. A feed's time is entered as a clock time in the app time zone and saved as the latest moment at or before now when the clock read that time, so 23:50 entered at 00:10 lands on the previous evening.
 
 ### Weights and birth dates
 
@@ -160,7 +160,7 @@ Seven screens, mobile-first, installable as a PWA. A bottom bar holds five tabs 
 | --- | --- |
 | Today (home) | Card with kcal so far vs target, a progress bar and the wet/dry split; today's entries in the feed row style below; a floating "Log feed" button above the bottom bar. |
 | Log feed (bottom sheet) | Recents-first food picker with wet/dry badge, brand on a muted second line, and stock left in the food's own unit ("8 pouches left"); search and type filter chips above. Grams prefilled with the last amount for that pet and food, g/portion toggle, time defaults to now. Shows the "left over from last feed?" prompt when relevant: two lines at most, and leaving it empty means nothing was left. |
-| History | Entries grouped by day. Day header shows kcal vs target; tapping it expands a breakdown per food type (grams and kcal). Entries use the feed row style (see Feed rows below). |
+| History | One card per day with feeds, newest first, plus today. The card shows kcal vs target and a bar; tapping it expands a breakdown per food type (grams eaten and kcal) and the day's entries in the feed row style (see Feed rows below). The latest finished day is open by default, since today's feeds are already on Today. Today is badged "So far" with a lighter bar; a past day within 5% of its target either way is badged "On target". Older days load as the list scrolls. |
 | Insights | Day / week / month toggle. Intake bars with the target line (week and month show average daily kcal). Weight chart stacked below on the same time axis, raw points plus rolling average. |
 | Pets | List of pet cards (photo, type, age, weight, today's kcal vs target), archived pets link, and Add pet. The profile shows the daily target with how it was calculated and "Set my own target", weight with a sparkline, recent weigh-ins and Log weight, target history, and Archive pet. See "Pet forms and target prompts" below. |
 | Stock | Foods with stock level in their own unit; quick restock; add, edit and archive (the food form follows "Stock and portions" above). Editing kcal triggers the "update existing logs?" choice. |
@@ -182,6 +182,16 @@ Used on Today and History. A food-type tile on the left (blue drop for wet, peac
 - **Swipe right** logs it again; **swipe left** deletes it. Both are shortcuts for actions also in the tap menu.
 - **Delete** shows an undo snackbar above the bottom bar for about 5 seconds, naming the entry ("07:30 · Salmon kibbles · 20 g"). One snackbar at a time: a new delete makes the previous one final. Undo restores the entry, the day's total and the stock.
 - **Discoverability:** the first time Today shows entries, the top row peeks a few pixels to reveal the swipe colours, then settles back. No hint text.
+- **Desktop:** no swipes; hovering or focusing a row shows "Log again" and "Delete" buttons beside its kcal.
+- **Undo** puts the deleted entry back with its original time and kcal snapshot, and takes its stock again.
+
+### Logging a feed
+
+- **Food picker:** foods for the pet's type or for any pet, recently fed ones first (most recent first), the rest by name. The most recent food is chosen when the sheet opens.
+- **Amount:** prefilled with the last amount served to this pet of that food. A portion-counted food starts in portions (one portion if never fed, or the last amount when it was a whole number of portions); switching between grams and portions keeps the same quantity. "≈ 74 kcal" follows the amount.
+- **Time** defaults to now; left untouched, the feed is saved at the moment of saving.
+- **Validation** follows the shared pattern; the leftover may not exceed what the previous feed served.
+- **Log feed** stays hidden until there is at least one pet and one food.
 
 ### Pet forms and target prompts
 

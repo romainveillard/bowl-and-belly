@@ -7,6 +7,7 @@ import { usePets } from "./lib/pets.js";
 import { ArchivedFoodsScreen } from "./screens/ArchivedFoodsScreen.js";
 import { ArchivedPetsScreen } from "./screens/ArchivedPetsScreen.js";
 import { FoodFormScreen } from "./screens/FoodFormScreen.js";
+import { HistoryScreen } from "./screens/HistoryScreen.js";
 import { PetFormScreen } from "./screens/PetFormScreen.js";
 import { PetsScreen } from "./screens/PetsScreen.js";
 import { StockScreen } from "./screens/StockScreen.js";
@@ -38,8 +39,8 @@ function ScreenTitle({ label }: { label: "history" | "insights" | "settings" }) 
   );
 }
 
-// History and Insights have nothing to show before the first pet; their own
-// screens come with the feeding and insights milestones.
+// History and Insights have nothing to show before the first pet. Insights
+// gets its own screen with the insights milestone.
 function PetTab({ tab }: { tab: "history" | "insights" }) {
   const { t } = useTranslation();
   const { data: pets } = usePets();
@@ -48,7 +49,7 @@ function PetTab({ tab }: { tab: "history" | "insights" }) {
     return null;
   }
   if (pets.pets.length > 0) {
-    return <ScreenTitle label={tab} />;
+    return tab === "history" ? <HistoryScreen /> : <ScreenTitle label={tab} />;
   }
   return (
     <EmptyState

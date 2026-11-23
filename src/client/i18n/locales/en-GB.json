@@ -308,10 +308,72 @@
   },
   "history": {
     "emptyTitle": "No history yet",
-    "emptyBody": "Add a pet, and every feed you log will show up here, day by day."
+    "emptyBody": "Add a pet, and every feed you log will show up here, day by day.",
+    "today": "Today · {date}",
+    "soFar": "So far",
+    "onTarget": "On target",
+    "byType": "{type} · {grams} g",
+    "progress": "{percent}% of target"
   },
   "insights": {
     "emptyTitle": "No insights yet",
     "emptyBody": "Add a pet to see their calories against target and their weight over time."
+  },
+  "petChip": {
+    "label": "Pet: {name}. Change pet",
+    "switchTitle": "Switch pet",
+    "pets": "Pets",
+    "option": "{type} · {eaten} / {target} kcal today",
+    "optionNoTarget": "{type} · {eaten} kcal today",
+    "manage": "Manage pets"
+  },
+  "feed": {
+    "detail": "{time} · {served} g",
+    "detailLeft": "{time} · {served} g · {left} g left",
+    "kcal": "kcal",
+    "logFeed": "Log feed",
+    "feeds": "{count, plural, one {# feed} other {# feeds}}",
+    "kcalLeft": "{kcal} kcal left",
+    "kcalOver": "{kcal} kcal over",
+    "split": "{type} {kcal}",
+    "actionsSubtitle": "{day} {time} · {served} g · {kcal} kcal",
+    "today": "Today",
+    "edit": "Edit",
+    "editHint": "Food, amount or time",
+    "addLeftover": "Add leftover",
+    "addLeftoverHint": "What was left in the bowl",
+    "logAgain": "Log again",
+    "logAgainHint": "Same food and amount, time now",
+    "logAgainNamed": "Log again: {name}",
+    "delete": "Delete",
+    "deleteHint": "You can undo for a few seconds",
+    "deleteNamed": "Delete: {name}",
+    "deleted": "Feed deleted",
+    "deletedDetail": "{time} · {name} · {served} g",
+    "undo": "Undo"
+  },
+  "logFeed": {
+    "title": "Log a feed",
+    "leftoverQuestion": "Left over from {time}?",
+    "leftoverFood": "{name} · {served} g",
+    "food": "Food",
+    "search": "Search foods",
+    "recent": "Recent",
+    "amount": "Amount",
+    "approx": "≈ {kcal} kcal",
+    "time": "Time",
+    "save": "Save feed",
+    "grams": "Grams",
+    "unit": "Amount in",
+    "errors": {
+      "food": "Choose a food",
+      "amount": "Enter an amount above 0",
+      "leftover": "Enter at most {served} g"
+    },
+    "errorNames": {
+      "food": "food",
+      "amount": "amount",
+      "leftover": "leftover"
+    }
   }
 }

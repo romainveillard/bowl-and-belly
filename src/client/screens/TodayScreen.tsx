@@ -1,11 +1,18 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { BowlIcon, CheckIcon, LogoMark, PlusIcon, SettingsIcon } from "../components/icons.js";
-import { PetAvatar } from "../components/PetAvatar.js";
+import { FeedRow } from "../components/FeedRow.js";
+import { PetChip } from "../components/PetChip.js";
 import { button } from "../components/ui/button.js";
+import { useFeedActions } from "../lib/feedActions.js";
+import { useDay, useDaySettings, type DaySummary, type FeedEntry } from "../lib/feeds.js";
+import { foodTypeLabel } from "../lib/foods.js";
 import { useFoodCount, usePets, type PetSummary } from "../lib/pets.js";
 import { useSelectedPet } from "../lib/selectedPet.js";
+import { useIsDesktop } from "../lib/useIsDesktop.js";
+import { FeedActionsSheet } from "./FeedActionsSheet.js";
+import { LogFeedSheet } from "./LogFeedSheet.js";
 
 const card = "bg-card inset-ring inset-ring-border";
 
@@ -91,37 +98,156 @@ function NoPets() {
   );
 }
 
+function CaloriesCard({
+  eatenKcal,
+  targetKcal,
+  byType,
+}: {
+  eatenKcal: number;
+  targetKcal: number | null;
+  byType: DaySummary["byType"];
+}) {
+  const { t } = useTranslation();
+  const percent = targetKcal ? Math.round((eatenKcal / targetKcal) * 100) : 0;
+  const over = targetKcal !== null && eatenKcal > targetKcal;
+
+  return (
+    <section
+      aria-label={t("today.caloriesLabel")}
+      className={`${card} flex flex-col gap-3 rounded-xl p-[18px] desktop:gap-4 desktop:rounded-[14px] desktop:p-[22px]`}
+    >
+      <h2 className="hidden text-base font-semibold desktop:block">{t("today.caloriesToday")}</h2>
+      <span className="flex items-baseline gap-2 tabular-nums">
+        <span className="font-display text-4xl leading-10 font-semibold desktop:text-[44px] desktop:leading-[48px]">
+          {eatenKcal}
+        </span>
+        <span className="text-base text-muted-foreground desktop:text-heading">
+          {targetKcal === null ? t("pets.kcal") : t("pets.ofTarget", { target: targetKcal })}
+        </span>
+      </span>
+      {targetKcal !== null && (
+        <span
+          role="img"
+          aria-label={t("pets.progress", { percent })}
+          className="relative block h-2.5 rounded-full bg-muted desktop:h-3"
+        >
+          <span
+            className={`absolute inset-y-0 left-0 rounded-full ${over ? "bg-primary-strong" : "bg-primary"}`}
+            style={{ width: `${Math.min(percent, 100)}%` }}
+          />
+        </span>
+      )}
+      {byType.length === 0 ? (
+        <span className="text-[13px] text-muted-foreground desktop:text-sm">
+          {t("today.noFeeds")}
+        </span>
+      ) : (
+        <span className="flex justify-between gap-3 text-[13px] text-muted-foreground tabular-nums desktop:text-sm">
+          <span>
+            {targetKcal !== null &&
+              (over
+                ? t("feed.kcalOver", { kcal: eatenKcal - targetKcal })
+                : t("feed.kcalLeft", { kcal: targetKcal - eatenKcal }))}
+          </span>
+          <span>
+            {byType
+              .map((total) =>
+                t("feed.split", { type: foodTypeLabel(total.type, t), kcal: total.kcal }),
+              )
+              .join(" · ")}
+          </span>
+        </span>
+      )}
+    </section>
+  );
+}
+
+const SWIPE_HINT_KEY = "swipeHintShown";
+
+function swipeHintShown(): boolean {
+  try {
+    return localStorage.getItem(SWIPE_HINT_KEY) !== null;
+  } catch {
+    return true;
+  }
+}
+
+function TodayFeeds({ pet, today }: { pet: PetSummary; today: string }) {
+  const { t } = useTranslation();
+  const { data: summary } = useDay(pet.id, today);
+  const { data: settings } = useDaySettings();
+  const actions = useFeedActions(pet.id);
+  const isDesktop = useIsDesktop();
+  const [open, setOpen] = useState<FeedEntry | null>(null);
+  const [peek] = useState(() => !swipeHintShown());
+  const entries = summary?.entries ?? [];
+
+  useEffect(() => {
+    if (entries.length > 0) {
+      try {
+        localStorage.setItem(SWIPE_HINT_KEY, "1");
+      } catch {
+        // The hint shows again next time; harmless.
+      }
+    }
+  }, [entries.length]);
+
+  if (!summary || !settings) {
+    return null;
+  }
+
+  return (
+    <div className="grid gap-5 desktop:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] desktop:items-start desktop:gap-6">
+      <div className="flex min-w-0 flex-col gap-5 desktop:gap-6">
+        <CaloriesCard
+          eatenKcal={summary.eatenKcal}
+          targetKcal={summary.targetKcal}
+          byType={summary.byType}
+        />
+        {entries.length > 0 && (
+          <section className="flex flex-col gap-2.5 desktop:gap-4 desktop:rounded-[14px] desktop:bg-card desktop:pt-[22px] desktop:inset-ring desktop:inset-ring-border">
+            <h2 className="text-caption font-medium tracking-[0.6px] text-muted-foreground uppercase desktop:px-[22px] desktop:text-base desktop:font-semibold desktop:tracking-normal desktop:text-foreground desktop:normal-case">
+              {t("feed.feeds", { count: entries.length })}
+            </h2>
+            <div
+              className={`${card} overflow-hidden rounded-xl desktop:rounded-t-none desktop:rounded-b-[14px] desktop:border-t desktop:border-border desktop:inset-ring-0`}
+            >
+              {entries.map((entry, index) => (
+                <FeedRow
+                  key={entry.id}
+                  entry={entry}
+                  timeZone={settings.timeZone}
+                  peek={peek && index === 0 && !isDesktop}
+                  onOpen={() => setOpen(entry)}
+                  onLogAgain={() => actions.logAgain(entry)}
+                  onDelete={() => actions.remove(entry)}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+      {open && (
+        <FeedActionsSheet
+          entry={open}
+          day={summary.day}
+          today={today}
+          timeZone={settings.timeZone}
+          onLogAgain={() => actions.logAgain(open)}
+          onDelete={() => actions.remove(open)}
+          onClose={() => setOpen(null)}
+        />
+      )}
+    </div>
+  );
+}
+
 function NoFoods({ pet }: { pet: PetSummary }) {
   const { t } = useTranslation();
 
   return (
     <div className="grid gap-4 desktop:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] desktop:items-start desktop:gap-6">
-      <section
-        aria-label={t("today.caloriesLabel")}
-        className={`${card} flex flex-col gap-3 rounded-xl p-[18px] desktop:gap-4 desktop:rounded-[14px] desktop:p-[22px]`}
-      >
-        <h2 className="hidden text-base font-semibold desktop:block">{t("today.caloriesToday")}</h2>
-        <span className="flex items-baseline gap-2 tabular-nums">
-          <span className="font-display text-4xl leading-10 font-semibold desktop:text-[44px] desktop:leading-[48px]">
-            0
-          </span>
-          <span className="text-base text-muted-foreground desktop:text-heading">
-            {pet.targetKcal === null
-              ? t("pets.kcal")
-              : t("pets.ofTarget", { target: pet.targetKcal })}
-          </span>
-        </span>
-        {pet.targetKcal !== null && (
-          <span
-            role="img"
-            aria-label={t("pets.progress", { percent: 0 })}
-            className="block h-2.5 rounded-full bg-muted desktop:h-3"
-          />
-        )}
-        <span className="text-[13px] text-muted-foreground desktop:text-sm">
-          {t("today.noFeeds")}
-        </span>
-      </section>
+      <CaloriesCard eatenKcal={0} targetKcal={pet.targetKcal} byType={[]} />
       <section
         className={`${card} flex flex-col gap-3.5 rounded-2xl p-5 desktop:gap-4 desktop:p-6`}
       >
@@ -159,6 +285,7 @@ export function TodayScreen() {
   const { data: pets } = usePets();
   const { data: foodCount } = useFoodCount();
   const { pet } = useSelectedPet();
+  const [logging, setLogging] = useState(false);
 
   if (!pets || foodCount === undefined) {
     return null;
@@ -171,12 +298,16 @@ export function TodayScreen() {
       month: style,
     }).format(new Date(`${pets.today}T00:00:00`));
 
-  let content: ReactNode = null;
+  let content: ReactNode;
   if (!pet) {
     content = <NoPets />;
   } else if (foodCount === 0) {
     content = <NoFoods pet={pet} />;
+  } else {
+    content = <TodayFeeds pet={pet} today={pets.today} />;
   }
+  // Logging needs something to log, so it waits for a pet and a food.
+  const canLog = pet !== undefined && foodCount > 0;
 
   return (
     <div className="flex flex-col desktop:gap-6">
@@ -191,14 +322,7 @@ export function TodayScreen() {
           </span>
         </div>
         <div className="flex items-center gap-2 desktop:gap-3">
-          {pet && (
-            <span
-              className={`${card} inline-flex h-11 flex-none items-center gap-1.5 rounded-full pr-3 pl-1.5 text-sm font-semibold desktop:text-[15px]`}
-            >
-              <PetAvatar photoId={pet.photoId} size={32} />
-              {pet.name}
-            </span>
-          )}
+          <PetChip />
           <Link
             to="/settings"
             aria-label={t("today.settings")}
@@ -208,7 +332,18 @@ export function TodayScreen() {
           </Link>
         </div>
       </header>
-      <div className="px-5 pt-1 pb-5 desktop:p-0">{content}</div>
+      <div className={`px-5 pt-1 desktop:p-0 ${canLog ? "pb-24" : "pb-5"}`}>{content}</div>
+      {canLog && (
+        <button
+          type="button"
+          className={`${button.floating} fixed right-5 bottom-[calc(86px+env(safe-area-inset-bottom))] desktop:right-8 desktop:bottom-8`}
+          onClick={() => setLogging(true)}
+        >
+          <PlusIcon size={20} />
+          {t("feed.logFeed")}
+        </button>
+      )}
+      {logging && <LogFeedSheet onClose={() => setLogging(false)} />}
     </div>
   );
 }

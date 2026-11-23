@@ -308,10 +308,72 @@
   },
   "history": {
     "emptyTitle": "Pas encore d’historique",
-    "emptyBody": "Ajoutez un animal, et chaque repas noté apparaîtra ici, jour après jour."
+    "emptyBody": "Ajoutez un animal, et chaque repas noté apparaîtra ici, jour après jour.",
+    "today": "Aujourd’hui · {date}",
+    "soFar": "En cours",
+    "onTarget": "Objectif atteint",
+    "byType": "{type} · {grams} g",
+    "progress": "{percent} % de l’objectif"
   },
   "insights": {
     "emptyTitle": "Pas encore de tendances",
     "emptyBody": "Ajoutez un animal pour voir ses calories par rapport à l’objectif et l’évolution de son poids."
+  },
+  "petChip": {
+    "label": "Animal : {name}. Changer d’animal",
+    "switchTitle": "Changer d’animal",
+    "pets": "Animaux",
+    "option": "{type} · {eaten} / {target} kcal aujourd’hui",
+    "optionNoTarget": "{type} · {eaten} kcal aujourd’hui",
+    "manage": "Gérer les animaux"
+  },
+  "feed": {
+    "detail": "{time} · {served} g",
+    "detailLeft": "{time} · {served} g · {left} g de reste",
+    "kcal": "kcal",
+    "logFeed": "Noter un repas",
+    "feeds": "{count, plural, one {# repas} other {# repas}}",
+    "kcalLeft": "{kcal} kcal restantes",
+    "kcalOver": "{kcal} kcal en trop",
+    "split": "{type} {kcal}",
+    "actionsSubtitle": "{day} {time} · {served} g · {kcal} kcal",
+    "today": "Aujourd’hui",
+    "edit": "Modifier",
+    "editHint": "Aliment, quantité ou heure",
+    "addLeftover": "Ajouter un reste",
+    "addLeftoverHint": "Ce qui restait dans la gamelle",
+    "logAgain": "Noter à nouveau",
+    "logAgainHint": "Même aliment et quantité, à l’heure actuelle",
+    "logAgainNamed": "Noter à nouveau : {name}",
+    "delete": "Supprimer",
+    "deleteHint": "Vous pouvez annuler pendant quelques secondes",
+    "deleteNamed": "Supprimer : {name}",
+    "deleted": "Repas supprimé",
+    "deletedDetail": "{time} · {name} · {served} g",
+    "undo": "Annuler"
+  },
+  "logFeed": {
+    "title": "Noter un repas",
+    "leftoverQuestion": "Un reste de {time} ?",
+    "leftoverFood": "{name} · {served} g",
+    "food": "Aliment",
+    "search": "Rechercher un aliment",
+    "recent": "Récents",
+    "amount": "Quantité",
+    "approx": "≈ {kcal} kcal",
+    "time": "Heure",
+    "save": "Enregistrer le repas",
+    "grams": "Grammes",
+    "unit": "Quantité en",
+    "errors": {
+      "food": "Choisissez un aliment",
+      "amount": "Saisissez une quantité supérieure à 0",
+      "leftover": "Saisissez au plus {served} g"
+    },
+    "errorNames": {
+      "food": "aliment",
+      "amount": "quantité",
+      "leftover": "reste"
+    }
   }
 }
