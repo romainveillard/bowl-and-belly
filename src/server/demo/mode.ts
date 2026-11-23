@@ -23,6 +23,8 @@ const LIMITS = new Map([
   ["/api/pets", 10],
   ["/api/foods", 30],
   ["/api/feeds", 500],
+  ["/api/pet-types", 10],
+  ["/api/food-types", 10],
 ]);
 // Settings are shared by every visitor, so none of them can change.
 const DISABLED = [
