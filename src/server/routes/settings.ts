@@ -4,6 +4,7 @@ import { BACKUP_FREQUENCIES } from "../../shared/enums.js";
 import { latestBackupAt } from "../backups/files.js";
 import { backupDir, nextScheduledBackup, rescheduleBackups } from "../backups/scheduler.js";
 import { db } from "../db/client.js";
+import { demo } from "../demo/mode.js";
 import { settings } from "../db/schema.js";
 import { validate } from "../validate.js";
 
@@ -56,7 +57,11 @@ export const settingsRoutes = new Hono()
     });
   })
   .put("/", validate("json", settingsBody), (c) => {
-    db.update(settings).set(c.req.valid("json")).run();
+    const body = c.req.valid("json");
+    // The demo's time zone and backups stay as they are.
+    db.update(settings)
+      .set(demo ? { dayStartsAt: body.dayStartsAt } : body)
+      .run();
     rescheduleBackups();
     return c.body(null, 204);
   });

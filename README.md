@@ -88,6 +88,12 @@ There's no restore button: you replace the database file while the app is stoppe
 
 Logins are kept, since the session secret isn't part of the database. A backup from an older version is upgraded automatically when the app starts.
 
+## Running a public demo
+
+`BOWL_DEMO=true` turns an instance into a demo: three pets with three months of history, replaced with fresh data at start-up and every night at 03:00 (London time), a banner on every screen, and no photo uploads or backups. Visitors can add a handful of pets, foods and feeds between resets. Run it as its own container with its own volume, never on the one holding your real data, and without `BOWL_PASSWORD`.
+
+To try the same data locally, run `npm run demo` (see [CONTRIBUTING.md](CONTRIBUTING.md)).
+
 ## Development
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for setting up, running and testing the app, and [docs/design.md](docs/design.md) for how it's meant to work.

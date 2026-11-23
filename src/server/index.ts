@@ -3,6 +3,7 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono, type Context } from "hono";
 import { app } from "./app.js";
 import { startBackups } from "./backups/scheduler.js";
+import { demo, startDemoResets } from "./demo/mode.js";
 import { db } from "./db/client.js";
 
 const clientDir = "dist/client";
@@ -22,7 +23,11 @@ const web = new Hono()
   .use(serveStatic({ root: clientDir, onFound: setCacheControl }))
   .get("*", serveStatic({ root: clientDir, path: "index.html", onFound: setCacheControl }));
 
-startBackups();
+if (demo) {
+  startDemoResets(db);
+} else {
+  startBackups();
+}
 
 const port = Number(process.env.PORT ?? 3000);
 

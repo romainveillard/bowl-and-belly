@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { requireSession } from "./auth/access.js";
 import { db } from "./db/client.js";
+import { demo, demoGuard } from "./demo/mode.js";
 import { authRoutes } from "./routes/auth.js";
 import { backupsRoutes } from "./routes/backups.js";
 import { feedsRoutes } from "./routes/feeds.js";
@@ -16,10 +17,12 @@ import { weightsRoutes } from "./routes/weights.js";
 
 const api = new Hono()
   .use(requireSession)
+  .use(demoGuard)
   .get("/health", (c) => {
     db.run(sql`select 1`);
     return c.json({ status: "ok" as const });
   })
+  .get("/instance", (c) => c.json({ demo }))
   .route("/auth", authRoutes)
   .route("/pets", petsRoutes)
   .route("/pet-types", petTypesRoutes)
