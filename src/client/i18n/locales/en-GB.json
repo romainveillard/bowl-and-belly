@@ -372,7 +372,7 @@
     "eaten": "Eaten",
     "underTarget": "{kcal} under target",
     "overTarget": "{kcal} over target",
-    "exactlyOnTarget": "On target",
+    "dayOnTarget": "On target",
     "feeds": "Feeds",
     "lastAt": "Last at {time}",
     "wetDry": "Wet / dry",

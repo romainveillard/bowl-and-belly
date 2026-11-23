@@ -372,7 +372,7 @@
     "eaten": "Mangé",
     "underTarget": "{kcal} sous l’objectif",
     "overTarget": "{kcal} au-dessus de l’objectif",
-    "exactlyOnTarget": "Objectif atteint",
+    "dayOnTarget": "Objectif atteint",
     "feeds": "Repas",
     "lastAt": "Dernier à {time}",
     "wetDry": "Humide / sec",

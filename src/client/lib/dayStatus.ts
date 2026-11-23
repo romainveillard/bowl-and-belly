@@ -9,12 +9,14 @@ export function dayStatus(
   if (day.day === today) {
     return "soFar";
   }
-  if (day.targetKcal === null) {
-    return null;
-  }
-  return Math.abs(day.eatenKcal - day.targetKcal) <= day.targetKcal * ON_TARGET_TOLERANCE
-    ? "onTarget"
-    : null;
+  return isOnTarget(day.eatenKcal, day.targetKcal) ? "onTarget" : null;
+}
+
+/** Within the tolerance of the target, either way. */
+export function isOnTarget(eatenKcal: number, targetKcal: number | null): boolean {
+  return (
+    targetKcal !== null && Math.abs(eatenKcal - targetKcal) <= targetKcal * ON_TARGET_TOLERANCE
+  );
 }
 
 /** Over target by more than the same tolerance, so a day on target is never also over it. */

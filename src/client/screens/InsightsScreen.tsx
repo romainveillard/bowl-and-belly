@@ -10,7 +10,7 @@ import { BackIcon, ChevronRightIcon } from "../components/icons.js";
 import { PetChip } from "../components/PetChip.js";
 import { Segmented } from "../components/ui/Segmented.js";
 import { FeedRow } from "../components/FeedRow.js";
-import { dayStatus, isOverTarget } from "../lib/dayStatus.js";
+import { dayStatus, isOnTarget, isOverTarget } from "../lib/dayStatus.js";
 import { formatDateInput, formatTime, useDay, useDaySettings } from "../lib/feeds.js";
 import { foodTypeLabel } from "../lib/foods.js";
 import { formatDay, formatKg } from "../lib/format.js";
@@ -18,6 +18,7 @@ import { useInsights } from "../lib/insights.js";
 import { suggestionFor, usePet, usePets, type PetDetail } from "../lib/pets.js";
 import { useSelectedPet } from "../lib/selectedPet.js";
 import { useIsDesktop } from "../lib/useIsDesktop.js";
+import { weightTrend } from "../lib/weightTrend.js";
 import { useFeedSheets } from "./FeedSheets.js";
 
 const card = "rounded-xl bg-card inset-ring inset-ring-border desktop:rounded-[14px]";
@@ -180,8 +181,9 @@ function DayInsights({ petId, today, onPeriod }: ViewProps) {
   let eatenNote: string | undefined;
   if (targetKcal !== null) {
     eatenNote =
-      eatenKcal === targetKcal
-        ? t("insights.exactlyOnTarget")
+      // The same 5% band as History and Month.
+      isOnTarget(eatenKcal, targetKcal)
+        ? t("insights.dayOnTarget")
         : eatenKcal < targetKcal
           ? t("insights.underTarget", { kcal: targetKcal - eatenKcal })
           : t("insights.overTarget", { kcal: eatenKcal - targetKcal });
@@ -282,19 +284,16 @@ function DayInsights({ petId, today, onPeriod }: ViewProps) {
 }
 
 /** "Steady this month", or how far the rolling average moved over the month's readings. */
-function weightTrend(averagesG: number[], locale: string, t: TFunction): string | undefined {
-  const first = averagesG[0];
-  const last = averagesG.at(-1);
-  if (first === undefined || last === undefined || averagesG.length < 2) {
+function trendNote(averagesG: number[], locale: string, t: TFunction): string | undefined {
+  const trend = weightTrend(averagesG);
+  if (!trend) {
     return undefined;
   }
-  const change = last - first;
-  // Within 1% either way reads as steady: scales and fur are not that precise.
-  if (Math.abs(change) < first * 0.01) {
+  if (trend.direction === "steady") {
     return t("insights.steady");
   }
-  const weight = formatKg(Math.abs(change), locale);
-  return t(change > 0 ? "insights.up" : "insights.down", { weight });
+  const weight = formatKg(trend.changeG, locale);
+  return t(trend.direction === "up" ? "insights.up" : "insights.down", { weight });
 }
 
 function MonthInsights({ petId, today, onPeriod }: ViewProps) {
@@ -379,7 +378,7 @@ function MonthInsights({ petId, today, onPeriod }: ViewProps) {
           value={latest ? formatKg(latest.weightG, i18n.language) : "–"}
           unit={t("weight.kg")}
           note={
-            weightTrend(
+            trendNote(
               inMonth.map((reading) => reading.averageG),
               i18n.language,
               t,
