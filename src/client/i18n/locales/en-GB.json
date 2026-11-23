@@ -313,7 +313,9 @@
     "soFar": "So far",
     "onTarget": "On target",
     "byType": "{type} · {grams} g",
-    "progress": "{percent}% of target"
+    "progress": "{percent}% of target",
+    "noFeedsTitle": "No feeds yet",
+    "noFeedsBody": "Every feed you log for {name} will show up here, day by day."
   },
   "insights": {
     "emptyTitle": "No insights yet",
@@ -350,7 +352,8 @@
     "deleteNamed": "Delete: {name}",
     "deleted": "Feed deleted",
     "deletedDetail": "{time} · {name} · {served} g",
-    "undo": "Undo"
+    "undo": "Undo",
+    "loggedAgain": "Logged again"
   },
   "logFeed": {
     "title": "Log a feed",
@@ -374,6 +377,45 @@
       "food": "food",
       "amount": "amount",
       "leftover": "leftover"
+    }
+  },
+  "editFeed": {
+    "title": "Edit feed",
+    "subtitle": "{day} · {time} · {kcal} kcal",
+    "food": "Food",
+    "change": "Change",
+    "served": "Served",
+    "leftOver": "Left over",
+    "date": "Date",
+    "time": "Time",
+    "save": "Save changes",
+    "errors": {
+      "served": "Enter an amount above 0",
+      "leftover": "Enter at most what was served",
+      "when": "Choose a time that has already passed"
+    },
+    "errorNames": {
+      "served": "served",
+      "leftover": "left over",
+      "when": "date and time"
+    }
+  },
+  "addLeftover": {
+    "title": "Add leftover",
+    "subtitle": "{name} · {time} · {served} g served",
+    "leftOver": "Left over",
+    "fate": "What happened to it?",
+    "fateLabel": "What happened to the leftover",
+    "back": "Back in stock",
+    "binned": "Binned",
+    "eaten": "Eaten",
+    "eatenValue": "{grams} g · {kcal} kcal",
+    "save": "Save leftover",
+    "errors": {
+      "leftover": "Enter at most {served} g"
+    },
+    "errorNames": {
+      "leftover": "left over"
     }
   }
 }

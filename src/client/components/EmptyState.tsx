@@ -9,10 +9,13 @@ interface EmptyStateProps {
   icon: ReactNode;
   title: string;
   body: string;
-  action: { to: string; label: string };
+  /** A link to `to`, or a button running `onClick`. */
+  action: { label: string } & ({ to: string } | { onClick: () => void });
   /** Shown under the message, such as a link to archived items. */
   footer?: ReactNode;
 }
+
+const actionClass = `${button.primary} mt-1.5 h-12 rounded-full px-[22px]`;
 
 /** A tab with nothing to show yet: centred on a phone, in a card on desktop. */
 export function EmptyState({ heading, icon, title, body, action, footer }: EmptyStateProps) {
@@ -36,10 +39,17 @@ export function EmptyState({ heading, icon, title, body, action, footer }: Empty
         <p className="max-w-[280px] text-[15px] leading-[22px] text-muted-foreground desktop:max-w-[400px] desktop:text-base desktop:leading-6">
           {body}
         </p>
-        <Link to={action.to} className={`${button.primary} mt-1.5 h-12 rounded-full px-[22px]`}>
-          <PlusIcon size={18} />
-          {action.label}
-        </Link>
+        {"to" in action ? (
+          <Link to={action.to} className={actionClass}>
+            <PlusIcon size={18} />
+            {action.label}
+          </Link>
+        ) : (
+          <button type="button" onClick={action.onClick} className={actionClass}>
+            <PlusIcon size={18} />
+            {action.label}
+          </button>
+        )}
       </section>
       {footer && <div className="px-5 desktop:p-0">{footer}</div>}
     </div>

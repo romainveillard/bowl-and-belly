@@ -2,16 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FeedRow } from "../components/FeedRow.js";
 import { FoodTypeTile } from "../components/FoodTypeMark.js";
-import { ChevronDownIcon, PlusIcon } from "../components/icons.js";
+import { EmptyState } from "../components/EmptyState.js";
+import { ChevronDownIcon, HistoryIcon, PlusIcon } from "../components/icons.js";
 import { PetChip } from "../components/PetChip.js";
 import { button } from "../components/ui/button.js";
 import { dayStatus } from "../lib/dayStatus.js";
-import { useFeedActions } from "../lib/feedActions.js";
 import { useDaySettings, useHistory, type DaySummary, type FeedEntry } from "../lib/feeds.js";
 import { foodTypeLabel } from "../lib/foods.js";
 import { useFoodCount, usePets } from "../lib/pets.js";
 import { useSelectedPet } from "../lib/selectedPet.js";
-import { FeedActionsSheet } from "./FeedActionsSheet.js";
+import { useFeedSheets } from "./FeedSheets.js";
 import { LogFeedSheet } from "./LogFeedSheet.js";
 
 const typeBackground = { wet: "bg-[#F2F7FF]", dry: "bg-[#FFF6EE]", custom: "bg-background" };
@@ -150,9 +150,8 @@ export function HistoryScreen() {
   const { data: settings } = useDaySettings();
   const { pet } = useSelectedPet();
   const history = useHistory(pet?.id, pets?.today);
-  const actions = useFeedActions(pet?.id ?? 0);
+  const sheets = useFeedSheets(pet?.id ?? 0, pets?.today ?? "", settings?.timeZone ?? "UTC");
   const [toggled, setToggled] = useState<Record<string, boolean>>({});
-  const [open, setOpen] = useState<{ entry: FeedEntry; day: string } | null>(null);
   const [logging, setLogging] = useState(false);
   const end = useRef<HTMLDivElement>(null);
   const { fetchNextPage, hasNextPage, isFetchingNextPage } = history;
@@ -177,6 +176,25 @@ export function HistoryScreen() {
   }
 
   const days = history.data.pages.flatMap((page) => page.days);
+  const logFeedSheet = logging && <LogFeedSheet onClose={() => setLogging(false)} />;
+  if (days.every((summary) => summary.entries.length === 0) && !history.hasNextPage) {
+    return (
+      <>
+        <EmptyState
+          heading={t("nav.history")}
+          icon={<HistoryIcon size={30} />}
+          title={t("history.noFeedsTitle")}
+          body={t("history.noFeedsBody", { name: pet.name })}
+          action={
+            (foodCount ?? 0) > 0
+              ? { label: t("feed.logFeed"), onClick: () => setLogging(true) }
+              : { label: t("today.addFood"), to: "/stock/new" }
+          }
+        />
+        {logFeedSheet}
+      </>
+    );
+  }
   // The latest finished day opens by default: today's feeds are already on Today.
   const openByDefault = days.find((summary) => summary.day !== pets.today)?.day;
   const isExpanded = (day: string) => toggled[day] ?? day === openByDefault;
@@ -200,9 +218,9 @@ export function HistoryScreen() {
             onToggle={() =>
               setToggled((current) => ({ ...current, [summary.day]: !isExpanded(summary.day) }))
             }
-            onOpen={(entry) => setOpen({ entry, day: summary.day })}
-            onLogAgain={actions.logAgain}
-            onDelete={actions.remove}
+            onOpen={(entry) => sheets.open(entry, summary.day)}
+            onLogAgain={sheets.logAgain}
+            onDelete={sheets.remove}
           />
         ))}
         <div ref={end} />
@@ -218,18 +236,8 @@ export function HistoryScreen() {
           {t("feed.logFeed")}
         </button>
       )}
-      {logging && <LogFeedSheet onClose={() => setLogging(false)} />}
-      {open && (
-        <FeedActionsSheet
-          entry={open.entry}
-          day={open.day}
-          today={pets.today}
-          timeZone={settings.timeZone}
-          onLogAgain={() => actions.logAgain(open.entry)}
-          onDelete={() => actions.remove(open.entry)}
-          onClose={() => setOpen(null)}
-        />
-      )}
+      {logFeedSheet}
+      {sheets.sheet}
     </div>
   );
 }

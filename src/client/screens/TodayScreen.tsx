@@ -5,13 +5,12 @@ import { BowlIcon, CheckIcon, LogoMark, PlusIcon, SettingsIcon } from "../compon
 import { FeedRow } from "../components/FeedRow.js";
 import { PetChip } from "../components/PetChip.js";
 import { button } from "../components/ui/button.js";
-import { useFeedActions } from "../lib/feedActions.js";
-import { useDay, useDaySettings, type DaySummary, type FeedEntry } from "../lib/feeds.js";
+import { useDay, useDaySettings, type DaySummary } from "../lib/feeds.js";
 import { foodTypeLabel } from "../lib/foods.js";
 import { useFoodCount, usePets, type PetSummary } from "../lib/pets.js";
 import { useSelectedPet } from "../lib/selectedPet.js";
 import { useIsDesktop } from "../lib/useIsDesktop.js";
-import { FeedActionsSheet } from "./FeedActionsSheet.js";
+import { useFeedSheets } from "./FeedSheets.js";
 import { LogFeedSheet } from "./LogFeedSheet.js";
 
 const card = "bg-card inset-ring inset-ring-border";
@@ -143,7 +142,7 @@ function CaloriesCard({
         </span>
       ) : (
         <span className="flex justify-between gap-3 text-[13px] text-muted-foreground tabular-nums desktop:text-sm">
-          <span>
+          <span className={over ? "font-semibold text-warning" : ""}>
             {targetKcal !== null &&
               (over
                 ? t("feed.kcalOver", { kcal: eatenKcal - targetKcal })
@@ -176,9 +175,8 @@ function TodayFeeds({ pet, today }: { pet: PetSummary; today: string }) {
   const { t } = useTranslation();
   const { data: summary } = useDay(pet.id, today);
   const { data: settings } = useDaySettings();
-  const actions = useFeedActions(pet.id);
+  const sheets = useFeedSheets(pet.id, today, settings?.timeZone ?? "UTC");
   const isDesktop = useIsDesktop();
-  const [open, setOpen] = useState<FeedEntry | null>(null);
   const [peek] = useState(() => !swipeHintShown());
   const entries = summary?.entries ?? [];
 
@@ -218,26 +216,16 @@ function TodayFeeds({ pet, today }: { pet: PetSummary; today: string }) {
                   entry={entry}
                   timeZone={settings.timeZone}
                   peek={peek && index === 0 && !isDesktop}
-                  onOpen={() => setOpen(entry)}
-                  onLogAgain={() => actions.logAgain(entry)}
-                  onDelete={() => actions.remove(entry)}
+                  onOpen={() => sheets.open(entry, summary.day)}
+                  onLogAgain={() => sheets.logAgain(entry)}
+                  onDelete={() => sheets.remove(entry)}
                 />
               ))}
             </div>
           </section>
         )}
       </div>
-      {open && (
-        <FeedActionsSheet
-          entry={open}
-          day={summary.day}
-          today={today}
-          timeZone={settings.timeZone}
-          onLogAgain={() => actions.logAgain(open)}
-          onDelete={() => actions.remove(open)}
-          onClose={() => setOpen(null)}
-        />
-      )}
+      {sheets.sheet}
     </div>
   );
 }

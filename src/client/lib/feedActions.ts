@@ -19,14 +19,29 @@ export function useFeedActions(petId: number) {
   const restoreFeed = useRestoreFeed();
 
   return {
+    // A swipe right is easy to make by accident, so logging again can be undone.
     logAgain: (entry: FeedEntry) =>
-      logFeed.mutate({
-        petId,
-        foodId: entry.food.id,
-        servedG: entry.servedG,
-        time: null,
-        previousLeftover: null,
-      }),
+      logFeed.mutate(
+        {
+          petId,
+          foodId: entry.food.id,
+          servedG: entry.servedG,
+          time: null,
+          previousLeftover: null,
+        },
+        {
+          onSuccess: (id) =>
+            showSnackbar({
+              message: t("feed.loggedAgain"),
+              detail: t("feed.deletedDetail", {
+                time: formatTime(new Date(), settings?.timeZone ?? "UTC", i18n.language),
+                name: entry.food.name,
+                served: entry.servedG,
+              }),
+              action: { label: t("feed.undo"), onClick: () => deleteFeed.mutate(id) },
+            }),
+        },
+      ),
     remove: (entry: FeedEntry) =>
       deleteFeed.mutate(entry.id, {
         onSuccess: (deleted) =>

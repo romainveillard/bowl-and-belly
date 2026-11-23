@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { RepeatIcon, TrashIcon } from "../components/icons.js";
+import { BowlIcon, EditIcon, RepeatIcon, TrashIcon } from "../components/icons.js";
 import { Sheet } from "../components/ui/Sheet.js";
 import { formatTime, type FeedEntry } from "../lib/feeds.js";
 import { formatDay } from "../lib/format.js";
@@ -10,6 +10,8 @@ interface FeedActionsSheetProps {
   day: string;
   today: string;
   timeZone: string;
+  onEdit: () => void;
+  onAddLeftover: () => void;
   onLogAgain: () => void;
   onDelete: () => void;
   onClose: () => void;
@@ -53,6 +55,8 @@ export function FeedActionsSheet({
   day,
   today,
   timeZone,
+  onEdit,
+  onAddLeftover,
   onLogAgain,
   onDelete,
   onClose,
@@ -76,6 +80,18 @@ export function FeedActionsSheet({
         kcal: entry.kcal,
       })}
     >
+      <Action
+        icon={<EditIcon size={18} />}
+        label={t("feed.edit")}
+        hint={t("feed.editHint")}
+        onClick={onEdit}
+      />
+      <Action
+        icon={<BowlIcon size={18} />}
+        label={t("feed.addLeftover")}
+        hint={t("feed.addLeftoverHint")}
+        onClick={onAddLeftover}
+      />
       <Action
         icon={<RepeatIcon size={18} />}
         label={t("feed.logAgain")}

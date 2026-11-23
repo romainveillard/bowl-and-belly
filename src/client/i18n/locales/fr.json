@@ -313,7 +313,9 @@
     "soFar": "En cours",
     "onTarget": "Objectif atteint",
     "byType": "{type} · {grams} g",
-    "progress": "{percent} % de l’objectif"
+    "progress": "{percent} % de l’objectif",
+    "noFeedsTitle": "Pas encore de repas",
+    "noFeedsBody": "Chaque repas noté pour {name} apparaîtra ici, jour après jour."
   },
   "insights": {
     "emptyTitle": "Pas encore de tendances",
@@ -350,7 +352,8 @@
     "deleteNamed": "Supprimer : {name}",
     "deleted": "Repas supprimé",
     "deletedDetail": "{time} · {name} · {served} g",
-    "undo": "Annuler"
+    "undo": "Annuler",
+    "loggedAgain": "Noté à nouveau"
   },
   "logFeed": {
     "title": "Noter un repas",
@@ -373,6 +376,45 @@
     "errorNames": {
       "food": "aliment",
       "amount": "quantité",
+      "leftover": "reste"
+    }
+  },
+  "editFeed": {
+    "title": "Modifier le repas",
+    "subtitle": "{day} · {time} · {kcal} kcal",
+    "food": "Aliment",
+    "change": "Changer",
+    "served": "Servi",
+    "leftOver": "Reste",
+    "date": "Date",
+    "time": "Heure",
+    "save": "Enregistrer les modifications",
+    "errors": {
+      "served": "Saisissez une quantité supérieure à 0",
+      "leftover": "Saisissez au plus la quantité servie",
+      "when": "Choisissez une heure déjà passée"
+    },
+    "errorNames": {
+      "served": "quantité servie",
+      "leftover": "reste",
+      "when": "date et heure"
+    }
+  },
+  "addLeftover": {
+    "title": "Ajouter un reste",
+    "subtitle": "{name} · {time} · {served} g servis",
+    "leftOver": "Reste",
+    "fate": "Qu’est-il devenu ?",
+    "fateLabel": "Ce qu’est devenu le reste",
+    "back": "Remis en stock",
+    "binned": "Jeté",
+    "eaten": "Mangé",
+    "eatenValue": "{grams} g · {kcal} kcal",
+    "save": "Enregistrer le reste",
+    "errors": {
+      "leftover": "Saisissez au plus {served} g"
+    },
+    "errorNames": {
       "leftover": "reste"
     }
   }

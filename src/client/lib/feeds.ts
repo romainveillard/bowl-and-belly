@@ -74,6 +74,7 @@ export function useLogForm(petId: number | undefined) {
   });
 }
 
+/** Logs a feed and resolves to its id, so that it can be undone. */
 export function useLogFeed() {
   const queryClient = useQueryClient();
 
@@ -83,6 +84,7 @@ export function useLogFeed() {
       if (!response.ok) {
         throw new Error("Could not log the feed");
       }
+      return (await response.json()).id;
     },
     onSuccess: () => refreshAfterFeed(queryClient),
   });
@@ -99,6 +101,36 @@ export function useDeleteFeed() {
         throw new Error("Could not delete the feed");
       }
       return response.json();
+    },
+    onSuccess: () => refreshAfterFeed(queryClient),
+  });
+}
+
+export function useEditFeed(id: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (json: InferRequestType<(typeof feeds)[":id"]["$put"]>["json"]) => {
+      const response = await feeds[":id"].$put({ param: { id: String(id) }, json });
+      if (!response.ok) {
+        throw new Error("Could not edit the feed");
+      }
+    },
+    onSuccess: () => refreshAfterFeed(queryClient),
+  });
+}
+
+export function useAddLeftover(id: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (
+      json: InferRequestType<(typeof feeds)[":id"]["leftover"]["$put"]>["json"],
+    ) => {
+      const response = await feeds[":id"].leftover.$put({ param: { id: String(id) }, json });
+      if (!response.ok) {
+        throw new Error("Could not save the leftover");
+      }
     },
     onSuccess: () => refreshAfterFeed(queryClient),
   });
@@ -137,6 +169,16 @@ export function formatTime(instant: string | Date, timeZone: string, locale: str
     hour: "2-digit",
     minute: "2-digit",
     hourCycle: "h23",
+    timeZone,
+  }).format(new Date(instant));
+}
+
+/** "2026-11-21", the calendar date on the app's clock, as a date input wants it. */
+export function formatDateInput(instant: string | Date, timeZone: string): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
     timeZone,
   }).format(new Date(instant));
 }
