@@ -19,15 +19,17 @@ function sqliteCode(error: unknown): string | undefined {
 /** What an error the routes didn't handle answers, as a code like every other response. */
 export function errorResponse(error: unknown): {
   status: ContentfulStatusCode;
-  code: "not_found" | "invalid_request" | "internal";
+  code: "invalid_reference" | "invalid_request" | "internal";
 } {
   if (error instanceof HTTPException && error.status < 500) {
     // Hono's validator throws this for a body that isn't JSON at all.
     return { status: error.status, code: "invalid_request" };
   }
   const code = sqliteCode(error);
+  // Routes check the resource in their URL themselves, so a missing row here
+  // is one the request body named.
   if (code === "SQLITE_CONSTRAINT_FOREIGNKEY") {
-    return { status: 404, code: "not_found" };
+    return { status: 400, code: "invalid_reference" };
   }
   if (code?.startsWith("SQLITE_CONSTRAINT")) {
     return { status: 400, code: "invalid_request" };

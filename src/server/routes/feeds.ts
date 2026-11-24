@@ -180,7 +180,7 @@ export const feedsRoutes = new Hono()
         return c.json({ code: "invalid_leftover" as const }, 400);
       }
       if (result === undefined) {
-        return c.json({ code: "not_found" as const }, 404);
+        return c.json({ code: "invalid_reference" as const }, 400);
       }
       return c.json({ id: result }, 201);
     },
@@ -210,11 +210,19 @@ export const feedsRoutes = new Hono()
       if (fedAt.getTime() > Date.now()) {
         return c.json({ code: "in_future" as const }, 400);
       }
-      const edited = db.transaction((tx) => {
+      const result = db.transaction((tx) => {
         const before = tx.select().from(feedEntry).where(eq(feedEntry.id, id)).get();
-        return before !== undefined && editFeed(tx, id, { ...values, petId: before.petId, fedAt });
+        if (!before) {
+          return "not_found" as const;
+        }
+        return editFeed(tx, id, { ...values, petId: before.petId, fedAt })
+          ? ("done" as const)
+          : ("invalid_reference" as const);
       });
-      return edited ? c.body(null, 204) : c.json({ code: "not_found" as const }, 404);
+      if (result === "done") {
+        return c.body(null, 204);
+      }
+      return c.json({ code: result }, result === "not_found" ? 404 : 400);
     },
   )
   .put(

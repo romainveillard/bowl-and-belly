@@ -14,7 +14,7 @@ function thrownBy(write: () => unknown): unknown {
 }
 
 describe("errorResponse", () => {
-  it("answers not_found for a reference to a row that doesn't exist", () => {
+  it("answers invalid_reference for a reference to a row that doesn't exist", () => {
     const db = openDatabase(":memory:");
     const error = thrownBy(() =>
       db
@@ -31,7 +31,7 @@ describe("errorResponse", () => {
         .run(),
     );
 
-    expect(errorResponse(error)).toEqual({ status: 404, code: "not_found" });
+    expect(errorResponse(error)).toEqual({ status: 400, code: "invalid_reference" });
   });
 
   it("answers invalid_request for values a CHECK constraint refuses", () => {

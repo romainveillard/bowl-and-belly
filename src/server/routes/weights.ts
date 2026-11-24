@@ -45,7 +45,7 @@ export const weightsRoutes = new Hono()
         prompt: latestId(tx, petId) === id ? weighInPrompt(tx, petId, today(tx)) : null,
       };
     });
-    return result ? c.json(result, 201) : c.json({ code: "not_found" as const }, 404);
+    return result ? c.json(result, 201) : c.json({ code: "invalid_reference" as const }, 400);
   })
   .put("/:id", validate("param", idParam), validate("json", reading), (c) => {
     const { id } = c.req.valid("param");
