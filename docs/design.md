@@ -236,7 +236,7 @@ The app is translation-ready from the first commit and ships in English and Fren
 - **Library:** i18next with react-i18next, the most familiar choice for open-source contributors, using ICU message format for plurals ("1 pouch", "8 pouches").
 - **Formatting:** numbers, dates and units go through `Intl`, so French users see "4,2 kg" and their own date order.
 - **Seeded rows:** cat, dog, wet and dry are labelled through their `system_key` translation keys. User-entered names (pets, foods, custom types) are never translated.
-- **API:** returns error codes and machine values, never user-facing sentences, so all wording lives in the frontend.
+- **API:** returns error codes and machine values, never user-facing sentences, so all wording lives in the frontend. An error no route handles still answers a code: `not_found` for a reference to a missing row, `invalid_request` for a body that isn't JSON or breaks a constraint, and `internal` (logged) for anything else.
 - **Language choice:** browser language by default, overridable per device (stored in the browser), since household members may want different languages and there are no user accounts.
 
 ## Architecture

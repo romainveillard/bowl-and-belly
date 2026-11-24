@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { requireSession } from "./auth/access.js";
 import { db } from "./db/client.js";
 import { demo, demoGuard } from "./demo/mode.js";
+import { onApiError } from "./errors.js";
 import { authRoutes } from "./routes/auth.js";
 import { backupsRoutes } from "./routes/backups.js";
 import { feedsRoutes } from "./routes/feeds.js";
@@ -33,7 +34,8 @@ const api = new Hono()
   .route("/weights", weightsRoutes)
   .route("/insights", insightsRoutes)
   .route("/images", imagesRoutes)
-  .route("/backups", backupsRoutes);
+  .route("/backups", backupsRoutes)
+  .onError(onApiError);
 
 export const app = new Hono().route("/api", api);
 
