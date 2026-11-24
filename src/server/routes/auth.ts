@@ -5,7 +5,7 @@ import { validate } from "../validate.js";
 
 export const authRoutes = new Hono()
   .get("/", (c) => c.json({ passwordRequired, signedIn: signedIn(c) }))
-  .post("/login", validate("json", z.object({ password: z.string() })), async (c) => {
+  .post("/login", validate("json", z.object({ password: z.string().max(1024) })), async (c) => {
     const result = await logIn(c, c.req.valid("json").password);
     if (result === "ok") {
       return c.body(null, 204);

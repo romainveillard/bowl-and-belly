@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
+import { bodyLimit } from "hono/body-limit";
 import { requireSession } from "./auth/access.js";
 import { db } from "./db/client.js";
 import { demo, demoGuard } from "./demo/mode.js";
@@ -16,7 +17,15 @@ import { petsRoutes } from "./routes/pets.js";
 import { settingsRoutes } from "./routes/settings.js";
 import { weightsRoutes } from "./routes/weights.js";
 
+const jsonBodyLimit = bodyLimit({
+  maxSize: 64 * 1024,
+  onError: (c) => c.json({ code: "too_large" as const }, 413),
+});
+
 const api = new Hono()
+  // Before the session check, so an open route such as login can't be sent a
+  // body big enough to exhaust memory. Photo uploads have their own limit.
+  .use((c, next) => (c.req.path === "/api/images" ? next() : jsonBodyLimit(c, next)))
   .use(requireSession)
   .use(demoGuard)
   .get("/health", (c) => {
