@@ -12,6 +12,7 @@ import {
   chooseTargetAfterEdit,
   formulaInputs,
   latestWeightG,
+  suggestedKcal,
   targetOn,
 } from "../pets/targets.js";
 import { today } from "../settings.js";
@@ -225,8 +226,15 @@ export const petsRoutes = new Hono()
       if (!exists) {
         return c.json({ code: "not_found" as const }, 404);
       }
-      db.transaction((tx) => chooseTarget(tx, id, today(tx), manualTargetKcal));
-      return c.body(null, 204);
+      const applied = db.transaction((tx) => {
+        const day = today(tx);
+        if (manualTargetKcal === null && suggestedKcal(tx, id, day) === null) {
+          return false;
+        }
+        chooseTarget(tx, id, day, manualTargetKcal);
+        return true;
+      });
+      return applied ? c.body(null, 204) : c.json({ code: "no_suggestion" as const }, 409);
     },
   )
   .post("/:id/archive", validate("param", idParam), (c) => {

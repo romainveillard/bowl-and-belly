@@ -68,7 +68,7 @@ The daily target is RER times a factor from the 2021 AAHA Nutrition and Weight M
 * A weigh-in never recalculates silently. The app offers "Update target from new weight?" so scale noise doesn't make the target jitter. The same goes for reaching an age at which the table moves a pet to another row: dogs at 4 and 12 months, cats at 12. That question is asked once per age step, whichever the answer, and only if the target was set before the pet reached it.
 * Neither question is asked about a target the user set themselves.
 * Editing the current weight on the pet form is the exception: it logs a weigh-in and updates a calculated target at once, because the form shows the new suggestion before saving. An edit that changes nothing the formula reads, such as a new name or photo, leaves a calculated target as it is, so a suggestion the user kept their old target over isn't applied behind their back.
-* Custom pet types have no formula: the target is manual, and the target line is hidden if none is set.
+* Custom pet types have no formula: the target is manual, and the target line is hidden if none is set. A pet moved from cat or dog to a custom type keeps its calculated target as its own, from today. Going back to the suggested target when there is none (no weigh-in yet, or a custom type) is refused with `no_suggestion`.
 
 ### Leftovers
 

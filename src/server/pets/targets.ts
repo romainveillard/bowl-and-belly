@@ -96,6 +96,11 @@ export function chooseTarget(
   const source = manualKcal === null ? "calculated" : "manual";
   const kcalPerDay = manualKcal ?? suggestedKcal(db, petId, day);
   if (kcalPerDay === null) {
+    // A custom type has no formula, so a calculated target it inherited from
+    // a built-in type becomes the user's own rather than one nothing backs.
+    if (manualKcal === null && before?.source === "calculated" && !hasFormula(db, petId)) {
+      setTarget(db, petId, day, before.kcalPerDay, "manual");
+    }
     return null;
   }
   const setToday = before?.effectiveFrom === day;
@@ -110,6 +115,16 @@ export function chooseTarget(
     setTarget(db, petId, day, kcalPerDay, source);
   }
   return kcalPerDay === before?.kcalPerDay ? null : kcalPerDay;
+}
+
+function hasFormula(db: DbOrTx, petId: number): boolean {
+  const row = db
+    .select({ systemKey: petType.systemKey })
+    .from(pet)
+    .innerJoin(petType, eq(pet.petTypeId, petType.id))
+    .where(eq(pet.id, petId))
+    .get();
+  return row?.systemKey != null;
 }
 
 /** What the formula reads from a pet, besides its weight. */

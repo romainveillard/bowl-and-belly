@@ -116,6 +116,29 @@ describe("chooseTarget", () => {
     expect(chooseTarget(db, id, "2026-11-10", null)).toBeNull();
     expect(targetOn(db, id, "2026-11-10")).toBeUndefined();
   });
+
+  it("makes a calculated target the user's own when the pet moves to a custom type", () => {
+    const { db, id } = catWeighing(4000);
+    chooseTarget(db, id, "2026-11-10", null);
+    const rabbit = db.insert(petType).values({ name: "Rabbit" }).returning().get();
+    db.update(pet).set({ petTypeId: rabbit.id }).where(eq(pet.id, id)).run();
+
+    expect(chooseTarget(db, id, "2026-11-20", null)).toBeNull();
+    expect(targetOn(db, id, "2026-11-20")).toEqual({
+      effectiveFrom: "2026-11-20",
+      kcalPerDay: 238,
+      source: "manual",
+    });
+  });
+
+  it("keeps a calculated target while a built-in type only lacks a weight", () => {
+    const { db, id } = catWeighing(4000);
+    chooseTarget(db, id, "2026-11-10", null);
+    db.delete(weightEntry).run();
+
+    expect(chooseTarget(db, id, "2026-11-20", null)).toBeNull();
+    expect(targetOn(db, id, "2026-11-20")?.source).toBe("calculated");
+  });
 });
 
 // The cat after a weigh-in at 5 kg whose suggested 281 kcal the user declined.
