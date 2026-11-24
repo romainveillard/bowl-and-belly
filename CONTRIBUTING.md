@@ -18,6 +18,7 @@ You need Node 24 (see `.nvmrc`).
 - Lint and typecheck: `npm run lint`, `npm run format:check` and `npm run typecheck`. `npm run format` fixes formatting.
 - Production build: `npm run build`, then `npm start`
 - Container image: `docker build -t bowl-and-belly .` (or `podman build`)
+- UI review: `npm run dev` shows the [Agentation](https://github.com/benjitaylor/agentation) toolbar. Click elements to annotate them, then Copy to get notes with the React component names for each, ready to paste to a coding agent. It is a dev dependency under the PolyForm Shield licence, not MIT: it only loads in development, and production builds and the container image never include it.
 
 ## Making changes
 

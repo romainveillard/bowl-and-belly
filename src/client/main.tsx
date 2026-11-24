@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { StrictMode } from "react";
+import { lazy, StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { App } from "./App.js";
@@ -14,6 +14,12 @@ if (!root) {
 
 const queryClient = new QueryClient();
 
+// UI review annotations, for development only: the constant condition lets
+// the production build drop the import, so the package never ships.
+const Agentation = import.meta.env.DEV
+  ? lazy(() => import("agentation").then((module) => ({ default: module.Agentation })))
+  : null;
+
 createRoot(root).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
@@ -23,5 +29,10 @@ createRoot(root).render(
         </SnackbarProvider>
       </BrowserRouter>
     </QueryClientProvider>
+    {Agentation && (
+      <Suspense fallback={null}>
+        <Agentation />
+      </Suspense>
+    )}
   </StrictMode>,
 );
