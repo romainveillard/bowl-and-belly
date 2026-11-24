@@ -34,7 +34,13 @@ export function signedIn(c: Context): boolean {
 
 /** Guards the API; health and the auth routes stay open. */
 export const requireSession: MiddlewareHandler = async (c, next) => {
-  if (!current || c.req.path === "/api/health" || c.req.path.startsWith("/api/auth")) {
+  const route = c.req.path;
+  if (
+    !current ||
+    route === "/api/health" ||
+    route === "/api/auth" ||
+    route.startsWith("/api/auth/")
+  ) {
     return next();
   }
   const now = Date.now();
