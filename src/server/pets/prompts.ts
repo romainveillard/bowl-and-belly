@@ -45,12 +45,8 @@ export function weighInPrompt(db: DbOrTx, petId: number, day: string) {
   };
 }
 
-/**
- * Asked once when a pet has reached an age at which the factor table moves
- * it on (a puppy at 4 months, any pet at 12), if its calculated target was
- * set before it got there.
- */
-export function agePrompt(db: DbOrTx, petId: number, day: string) {
+/** The pet's age and the last age at which the factor table moved it on. */
+function ageState(db: DbOrTx, petId: number, day: string) {
   const row = db
     .select({
       systemKey: petType.systemKey,
@@ -62,11 +58,26 @@ export function agePrompt(db: DbOrTx, petId: number, day: string) {
     .where(eq(pet.id, petId))
     .get();
   if (!row?.systemKey) {
-    return null;
+    return undefined;
   }
   const months = ageInMonths(row.birthDate, day);
-  const reached = AGE_STEPS[row.systemKey].filter((step) => step <= months).at(-1);
-  if (reached === undefined || (row.agePromptMonths ?? 0) >= reached) {
+  return { ...row, reached: AGE_STEPS[row.systemKey].filter((step) => step <= months).at(-1) };
+}
+
+/** The age step, in months, that an answer to the age question settles. */
+export function reachedAgeStep(db: DbOrTx, petId: number, day: string): number | undefined {
+  return ageState(db, petId, day)?.reached;
+}
+
+/**
+ * Asked once when a pet has reached an age at which the factor table moves
+ * it on (a puppy at 4 months, any pet at 12), if its calculated target was
+ * set before it got there.
+ */
+export function agePrompt(db: DbOrTx, petId: number, day: string) {
+  const row = ageState(db, petId, day);
+  const reached = row?.reached;
+  if (!row || reached === undefined || (row.agePromptMonths ?? 0) >= reached) {
     return null;
   }
   const change = changedSuggestion(db, petId, day);

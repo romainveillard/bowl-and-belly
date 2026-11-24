@@ -6,7 +6,7 @@ import { ACTIVITY_LEVELS, BIRTH_DATE_PRECISIONS, GOALS } from "../../shared/enum
 import { db } from "../db/client.js";
 import { image, pet, petTarget, petType, weightEntry } from "../db/schema.js";
 import { daySummaries } from "../feeds/days.js";
-import { agePrompt } from "../pets/prompts.js";
+import { agePrompt, reachedAgeStep } from "../pets/prompts.js";
 import {
   chooseTarget,
   chooseTargetAfterEdit,
@@ -205,6 +205,14 @@ export const petsRoutes = new Hono()
     (c) => {
       const { id } = c.req.valid("param");
       const { months, update } = c.req.valid("json");
+      const exists = db.select({ id: pet.id }).from(pet).where(eq(pet.id, id)).get();
+      if (!exists) {
+        return c.json({ code: "not_found" as const }, 404);
+      }
+      // Any other count would settle steps the pet hasn't reached yet.
+      if (months !== reachedAgeStep(db, id, today(db))) {
+        return c.json({ code: "invalid_request" as const, fields: ["months"] }, 400);
+      }
       // Either answer settles the question for this age step.
       db.transaction((tx) => {
         tx.update(pet).set({ agePromptMonths: months }).where(eq(pet.id, id)).run();
