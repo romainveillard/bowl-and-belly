@@ -112,16 +112,33 @@ export function startDemoResets(db: Db): void {
  * to a table counts against it.
  */
 export function demoGuard(db: Db): MiddlewareHandler {
+  // Requests let through whose rows aren't written yet. A slow body keeps a
+  // request waiting between the check and the write, and parallel ones must
+  // not all pass the check meanwhile.
+  const inFlight = new Map<SQLiteTable, number>();
+  const pending = (table: SQLiteTable) => inFlight.get(table) ?? 0;
+
   return async (c, next) => {
     if (DISABLED.includes(`${c.req.method} ${c.req.path}`)) {
       return c.json({ code: "demo_disabled" as const }, 403);
     }
-    const full = addsTo(c.req.method, c.req.path).some(
-      ({ table, limit }) => rowsIn(db, table) - (atReset.get(table) ?? 0) >= limit,
+    const tables = addsTo(c.req.method, c.req.path);
+    const full = tables.some(
+      ({ table, limit }) => rowsIn(db, table) - (atReset.get(table) ?? 0) + pending(table) >= limit,
     );
     if (full) {
       return c.json({ code: "demo_limit" as const }, 403);
     }
-    return next();
+    for (const { table } of tables) {
+      inFlight.set(table, pending(table) + 1);
+    }
+    try {
+      await next();
+    } finally {
+      for (const { table } of tables) {
+        inFlight.set(table, pending(table) - 1);
+      }
+    }
+    return undefined;
   };
 }
