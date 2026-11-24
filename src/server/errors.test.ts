@@ -62,6 +62,10 @@ describe("errorResponse", () => {
     });
   });
 
+  it("answers forbidden for a form posted from another site", () => {
+    expect(errorResponse(new HTTPException(403))).toEqual({ status: 403, code: "forbidden" });
+  });
+
   it("answers internal for anything else", () => {
     expect(errorResponse(new Error("Disk on fire"))).toEqual({ status: 500, code: "internal" });
   });

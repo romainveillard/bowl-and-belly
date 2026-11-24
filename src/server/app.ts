@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
+import { csrf } from "hono/csrf";
 import { requireSession } from "./auth/access.js";
 import { db } from "./db/client.js";
 import { demo, demoGuard } from "./demo/mode.js";
@@ -22,7 +23,17 @@ const jsonBodyLimit = bodyLimit({
   onError: (c) => c.json({ code: "too_large" as const }, 413),
 });
 
+/**
+ * Refuses forms posted from another site, which need no login when there is
+ * no password. Browsers that send no Sec-Fetch-Site are judged by Origin, on
+ * the host alone, because HTTPS usually ends at a proxy in front of the app.
+ */
+const sameSiteForms = csrf({
+  origin: (origin, c) => URL.parse(origin)?.host === new URL(c.req.url).host,
+});
+
 const api = new Hono()
+  .use(sameSiteForms)
   // Before the session check, so an open route such as login can't be sent a
   // body big enough to exhaust memory. Photo uploads have their own limit.
   .use((c, next) => (c.req.path === "/api/images" ? next() : jsonBodyLimit(c, next)))

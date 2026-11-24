@@ -19,8 +19,12 @@ function sqliteCode(error: unknown): string | undefined {
 /** What an error the routes didn't handle answers, as a code like every other response. */
 export function errorResponse(error: unknown): {
   status: ContentfulStatusCode;
-  code: "invalid_reference" | "invalid_request" | "internal";
+  code: "forbidden" | "invalid_reference" | "invalid_request" | "internal";
 } {
+  if (error instanceof HTTPException && error.status === 403) {
+    // The CSRF check throws this for a form posted from another site.
+    return { status: 403, code: "forbidden" };
+  }
   if (error instanceof HTTPException && error.status < 500) {
     // Hono's validator throws this for a body that isn't JSON at all.
     return { status: error.status, code: "invalid_request" };
