@@ -7,7 +7,13 @@ import { db } from "../db/client.js";
 import { image, pet, petTarget, petType, weightEntry } from "../db/schema.js";
 import { daySummaries } from "../feeds/days.js";
 import { agePrompt } from "../pets/prompts.js";
-import { chooseTarget, latestWeightG, targetOn } from "../pets/targets.js";
+import {
+  chooseTarget,
+  chooseTargetAfterEdit,
+  formulaInputs,
+  latestWeightG,
+  targetOn,
+} from "../pets/targets.js";
 import { today } from "../settings.js";
 
 const idParam = z.object({ id: z.coerce.number().int() });
@@ -163,19 +169,27 @@ export const petsRoutes = new Hono()
     const body = c.req.valid("json");
     const result = db.transaction((tx) => {
       const before = tx.select({ photoId: pet.photoId }).from(pet).where(eq(pet.id, id)).get();
-      if (!before) {
+      const inputs = formulaInputs(tx, id);
+      if (!before || !inputs) {
         return null;
       }
       tx.update(pet).set(profileOf(body)).where(eq(pet.id, id)).run();
       if (before.photoId !== null && before.photoId !== body.photoId) {
         tx.delete(image).where(eq(image.id, before.photoId)).run();
       }
-      if (body.weightG !== null && body.weightG !== latestWeightG(tx, id)) {
+      const newWeightG = body.weightG === latestWeightG(tx, id) ? null : body.weightG;
+      if (newWeightG !== null) {
         tx.insert(weightEntry)
-          .values({ petId: id, measuredAt: new Date(), weightG: body.weightG })
+          .values({ petId: id, measuredAt: new Date(), weightG: newWeightG })
           .run();
       }
-      return { targetKcal: chooseTarget(tx, id, today(tx), body.manualTargetKcal) };
+      return {
+        targetKcal: chooseTargetAfterEdit(tx, id, today(tx), {
+          before: inputs,
+          weighed: newWeightG !== null,
+          manualKcal: body.manualTargetKcal,
+        }),
+      };
     });
     return result ? c.json(result) : c.json({ code: "not_found" as const }, 404);
   })

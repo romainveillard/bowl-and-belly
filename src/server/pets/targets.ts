@@ -111,3 +111,48 @@ export function chooseTarget(
   }
   return kcalPerDay === before?.kcalPerDay ? null : kcalPerDay;
 }
+
+/** What the formula reads from a pet, besides its weight. */
+export function formulaInputs(db: DbOrTx, petId: number) {
+  return db
+    .select({
+      petTypeId: pet.petTypeId,
+      birthDate: pet.birthDate,
+      neutered: pet.neutered,
+      activityLevel: pet.activityLevel,
+      goal: pet.goal,
+      targetWeightG: pet.targetWeightG,
+    })
+    .from(pet)
+    .where(eq(pet.id, petId))
+    .get();
+}
+
+type FormulaInputs = NonNullable<ReturnType<typeof formulaInputs>>;
+
+/**
+ * Applies the pet form's target after an edit. A calculated target only
+ * follows the formula again when the form changed what the formula reads or
+ * logged a new weight, so an edit such as a rename never applies a suggestion
+ * the user declined after a weigh-in or a birthday.
+ */
+export function chooseTargetAfterEdit(
+  db: DbOrTx,
+  petId: number,
+  day: string,
+  edit: { before: FormulaInputs; weighed: boolean; manualKcal: number | null },
+): number | null {
+  const after = formulaInputs(db, petId);
+  const before = new Map(Object.entries(edit.before));
+  const inputsChanged =
+    after === undefined || Object.entries(after).some(([key, value]) => value !== before.get(key));
+  if (
+    edit.manualKcal === null &&
+    !edit.weighed &&
+    !inputsChanged &&
+    targetOn(db, petId, day)?.source === "calculated"
+  ) {
+    return null;
+  }
+  return chooseTarget(db, petId, day, edit.manualKcal);
+}

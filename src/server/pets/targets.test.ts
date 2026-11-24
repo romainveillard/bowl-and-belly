@@ -2,7 +2,13 @@ import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { openDatabase } from "../db/open.js";
 import { pet, petTarget, petType, weightEntry } from "../db/schema.js";
-import { chooseTarget, suggestedKcal, targetOn } from "./targets.js";
+import {
+  chooseTarget,
+  chooseTargetAfterEdit,
+  formulaInputs,
+  suggestedKcal,
+  targetOn,
+} from "./targets.js";
 
 // A neutered adult cat with normal activity: 238 kcal at 4 kg, 277 once active.
 function catWeighing(weightG: number | null) {
@@ -109,6 +115,62 @@ describe("chooseTarget", () => {
 
     expect(chooseTarget(db, id, "2026-11-10", null)).toBeNull();
     expect(targetOn(db, id, "2026-11-10")).toBeUndefined();
+  });
+});
+
+// The cat after a weigh-in at 5 kg whose suggested 281 kcal the user declined.
+function catKeeping238() {
+  const { db, id } = catWeighing(4000);
+  chooseTarget(db, id, "2026-11-10", null);
+  db.insert(weightEntry)
+    .values({ petId: id, measuredAt: new Date("2026-11-15T08:00:00Z"), weightG: 5000 })
+    .run();
+  const before = formulaInputs(db, id);
+  if (!before) {
+    throw new Error("Missing pet");
+  }
+  return { db, id, before };
+}
+
+describe("chooseTargetAfterEdit", () => {
+  it("keeps a declined suggestion when the edit leaves the formula's inputs alone", () => {
+    const { db, id, before } = catKeeping238();
+    db.update(pet).set({ name: "Miso the Great" }).run();
+
+    expect(
+      chooseTargetAfterEdit(db, id, "2026-11-20", { before, weighed: false, manualKcal: null }),
+    ).toBeNull();
+    expect(targetOn(db, id, "2026-11-20")?.kcalPerDay).toBe(238);
+  });
+
+  it("follows the formula again when the edit changes what it reads", () => {
+    const { db, id, before } = catKeeping238();
+    db.update(pet).set({ activityLevel: "active" }).run();
+
+    expect(
+      chooseTargetAfterEdit(db, id, "2026-11-20", { before, weighed: false, manualKcal: null }),
+    ).toBe(328);
+  });
+
+  it("follows the formula again when the edit logs a new weight", () => {
+    const { db, id, before } = catKeeping238();
+
+    expect(
+      chooseTargetAfterEdit(db, id, "2026-11-20", { before, weighed: true, manualKcal: null }),
+    ).toBe(281);
+  });
+
+  it("goes back to the formula from a target the user set", () => {
+    const { db, id } = catWeighing(4000);
+    chooseTarget(db, id, "2026-11-10", 250);
+    const before = formulaInputs(db, id);
+    if (!before) {
+      throw new Error("Missing pet");
+    }
+
+    expect(
+      chooseTargetAfterEdit(db, id, "2026-11-20", { before, weighed: false, manualKcal: null }),
+    ).toBe(238);
   });
 });
 
