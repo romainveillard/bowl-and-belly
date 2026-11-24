@@ -14,7 +14,10 @@ FROM node:24-bookworm-slim
 ENV NODE_ENV=production PORT=3000 DATA_DIR=/data
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
+# Only what runs: the TypeScript build caches beside them aren't needed.
+COPY --from=build /app/dist/server ./dist/server
+COPY --from=build /app/dist/shared ./dist/shared
+COPY --from=build /app/dist/client ./dist/client
 COPY drizzle ./drizzle
 COPY package.json ./
 RUN mkdir /data && chown node:node /data
