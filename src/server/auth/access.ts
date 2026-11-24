@@ -2,7 +2,7 @@ import path from "node:path";
 import type { Context, MiddlewareHandler } from "hono";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { dataDir } from "../db/client.js";
-import { loginLimiter } from "./limiter.js";
+import { clientOf, loginLimiter } from "./limiter.js";
 import { loadSecret, passwordMatches, SESSION_MS, sessions } from "./session.js";
 
 const COOKIE = "bowl_session";
@@ -15,7 +15,10 @@ export const passwordRequired = password !== null;
 
 // Behind a proxy every request comes from the proxy, so the limit is global
 // unless the operator says Cloudflare's client address header can be trusted.
-const clientKey = (c: Context) => (trustCloudflare && c.req.header("CF-Connecting-IP")) || "global";
+function clientKey(c: Context): string {
+  const address = trustCloudflare ? c.req.header("CF-Connecting-IP") : undefined;
+  return address ? clientOf(address) : "global";
+}
 
 function startSession(c: Context, token: string) {
   setCookie(c, COOKIE, token, {
