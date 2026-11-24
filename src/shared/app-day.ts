@@ -52,18 +52,26 @@ function minutesOf(time: string): number {
   return hours * 60 + minutes;
 }
 
+/**
+ * The instants at which the clock in `timeZone` read `time` on `date`: one
+ * normally, two in an hour repeated by a clock change. A time skipped by a
+ * clock change gives its instant moved forward by the length of the gap, as
+ * Temporal's "compatible" disambiguation does.
+ */
+function occurrences(date: string, time: string, timeZone: string): number[] {
+  const wall = Date.parse(date) + minutesOf(time) * 60_000;
+  const candidates = [
+    wall - offsetAt(wall - DAY_MS, timeZone),
+    wall - offsetAt(wall + DAY_MS, timeZone),
+  ];
+  const exact = candidates.filter((candidate) => wallClock(candidate, timeZone) === wall);
+  return exact.length > 0 ? [...new Set(exact)] : [Math.max(...candidates)];
+}
+
 /** The UTC instant at which the app day `day` ("YYYY-MM-DD") begins. */
 export function appDayStart(day: string, settings: DaySettings): Date {
-  const wall = Date.parse(day) + minutesOf(settings.dayStartsAt) * 60_000;
-  const candidates = [
-    wall - offsetAt(wall - DAY_MS, settings.timeZone),
-    wall - offsetAt(wall + DAY_MS, settings.timeZone),
-  ];
-  const exact = candidates.filter((candidate) => wallClock(candidate, settings.timeZone) === wall);
-  // A start time repeated by a clock change takes its first occurrence; one
-  // skipped by a clock change moves forward by the length of the gap. This
-  // matches Temporal's "compatible" disambiguation.
-  return new Date(exact.length > 0 ? Math.min(...exact) : Math.max(...candidates));
+  // A start time repeated by a clock change takes its first occurrence.
+  return new Date(Math.min(...occurrences(day, settings.dayStartsAt, settings.timeZone)));
 }
 
 /** The app day ("YYYY-MM-DD") that `instant` belongs to. */
@@ -99,6 +107,10 @@ export function instantAt(date: string, time: string, timeZone: string): Date {
  */
 export function latestAt(time: string, now: Date, timeZone: string): Date {
   const today = appDayOf(now, { timeZone, dayStartsAt: "00:00" });
-  const candidate = instantAt(today, time, timeZone);
-  return candidate <= now ? candidate : instantAt(addDays(today, -1), time, timeZone);
+  const past = occurrences(today, time, timeZone).filter((instant) => instant <= now.getTime());
+  return new Date(
+    past.length > 0
+      ? Math.max(...past)
+      : Math.max(...occurrences(addDays(today, -1), time, timeZone)),
+  );
 }

@@ -93,4 +93,21 @@ describe("latestAt", () => {
     // 01:00 in Paris is midnight UTC on the 23rd.
     expect(latestAt("01:00", now, "Europe/Paris")).toEqual(utc("2026-11-23T00:00:00"));
   });
+
+  it("takes the second pass through an hour the clocks repeat, once it has come", () => {
+    // London reads 01:30 at 00:30Z (BST) and again at 01:30Z (GMT) on 25 October 2026.
+    expect(latestAt("01:30", utc("2026-10-25T01:45:00"), "Europe/London")).toEqual(
+      utc("2026-10-25T01:30:00"),
+    );
+    expect(latestAt("01:30", utc("2026-10-25T01:15:00"), "Europe/London")).toEqual(
+      utc("2026-10-25T00:30:00"),
+    );
+  });
+
+  it("moves a time the clocks skip forward by the gap", () => {
+    // London never reads 01:30 on 29 March 2026: 01:00 GMT is followed by 02:00 BST.
+    expect(latestAt("01:30", utc("2026-03-29T02:00:00"), "Europe/London")).toEqual(
+      utc("2026-03-29T01:30:00"),
+    );
+  });
 });
