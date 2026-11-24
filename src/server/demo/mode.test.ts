@@ -1,8 +1,11 @@
-import { Hono } from "hono";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { Hono, type Context } from "hono";
 import { describe, expect, it } from "vitest";
 import { openDatabase } from "../db/open.js";
 import { pet, weightEntry } from "../db/schema.js";
-import { demoGuard } from "./mode.js";
+import { ADDS_NO_ROWS, ADDS_ROWS, DISABLED, demoGuard } from "./mode.js";
 
 function demoWithWeighIns(weighIns: number) {
   const db = openDatabase(":memory:");
@@ -31,12 +34,21 @@ function demoWithWeighIns(weighIns: number) {
   return { db, petId: id };
 }
 
-// A pet with the demo's 200 extra weigh-ins already logged.
+const created = (c: Context) => c.body(null, 201);
+
+// A pet with the demo's 200 extra weigh-ins already logged, behind routes
+// registered with the app's own patterns.
 function demoWithWeighInsFull() {
   const { db } = demoWithWeighIns(200);
   const app = new Hono()
     .use(demoGuard(db))
-    .all("*", (c) => c.body(null, c.req.method === "POST" ? 201 : 204));
+    .post("/api/pets", created)
+    .put("/api/pets/:id", created)
+    .post("/api/pets/:id/archive", created)
+    .post("/api/weights", created)
+    .post("/api/weights/restore", created)
+    .post("/api/feeds/restore", created)
+    .get("/api/backups/download", created);
   return { db, app };
 }
 
@@ -44,14 +56,14 @@ describe("demoGuard", () => {
   it("counts weigh-ins against the limit whichever route adds them", async () => {
     const { app } = demoWithWeighInsFull();
 
-    for (const [method, path] of [
+    for (const [method, url] of [
       ["POST", "/api/weights"],
       ["POST", "/api/weights/restore"],
       ["PUT", "/api/pets/1"],
       ["POST", "/api/pets"],
     ] as const) {
-      const response = await app.request(path, { method });
-      expect(await response.json(), `${method} ${path}`).toEqual({ code: "demo_limit" });
+      const response = await app.request(url, { method });
+      expect(await response.json(), `${method} ${url}`).toEqual({ code: "demo_limit" });
     }
   });
 
@@ -103,5 +115,25 @@ describe("demoGuard", () => {
     await app.request("/api/weights", { method: "POST" });
 
     expect((await app.request("/api/weights", { method: "POST" })).status).toBe(400);
+  });
+});
+
+describe("the demo's route lists", () => {
+  it("place every route that writes in exactly one list, and only routes that exist", async () => {
+    // The app opens its database on import, so it gets a folder of its own.
+    process.env.DATA_DIR = mkdtempSync(path.join(tmpdir(), "bowl-demo-routes-"));
+    const { app } = await import("../app.js");
+    const writes = new Set(
+      app.routes
+        .filter((route) => ["POST", "PUT", "PATCH"].includes(route.method))
+        .map((route) => `${route.method} ${route.path}`),
+    );
+    const listed = [...DISABLED, ...ADDS_ROWS.keys(), ...ADDS_NO_ROWS];
+
+    expect([...writes].filter((route) => !listed.includes(route))).toEqual([]);
+    expect(listed.filter((route, i) => listed.indexOf(route) !== i)).toEqual([]);
+    expect(
+      listed.filter((route) => !writes.has(route) && route !== "GET /api/backups/download"),
+    ).toEqual([]);
   });
 });

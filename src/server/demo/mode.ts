@@ -1,6 +1,7 @@
 import { count, sql } from "drizzle-orm";
 import type { SQLiteTable } from "drizzle-orm/sqlite-core";
 import type { MiddlewareHandler } from "hono";
+import { routePath } from "hono/route";
 import { nextBackupAt } from "../backups/schedule.js";
 import type { Db } from "../db/open.js";
 import {
@@ -27,42 +28,55 @@ const WEIGH_INS = { table: weightEntry, limit: 200 };
 const PET_TYPES = { table: petType, limit: 10 };
 const FOOD_TYPES = { table: foodType, limit: 10 };
 
-/** The limited tables a request can add rows to, whichever route it takes. */
-function addsTo(method: string, path: string): { table: SQLiteTable; limit: number }[] {
-  if (method === "PUT" && /^\/api\/pets\/\d+$/.test(path)) {
-    // The pet form logs a weigh-in when the weight changes.
-    return [WEIGH_INS];
-  }
-  if (method !== "POST") {
-    return [];
-  }
-  switch (path) {
-    case "/api/pets":
-      return [PETS, WEIGH_INS];
-    case "/api/foods":
-      return [FOODS];
-    case "/api/feeds":
-    case "/api/feeds/restore":
-      return [FEEDS];
-    case "/api/weights":
-    case "/api/weights/restore":
-      return [WEIGH_INS];
-    case "/api/pet-types":
-      return [PET_TYPES];
-    case "/api/food-types":
-      return [FOOD_TYPES];
-    default:
-      return [];
-  }
-}
+// Every POST, PUT and PATCH route, keyed by its registered pattern, must be in
+// exactly one of the three lists below. A route that adds rows needs mapping
+// to the tables it adds to, or visitors could use it to get past the limits;
+// mode.test.ts fails for a route that isn't listed.
 
-// Settings are shared by every visitor, so none of them can change.
-const DISABLED = [
+/** Refused outright: settings are shared by every visitor, and files and backups aren't for strangers. */
+export const DISABLED = new Set([
   "POST /api/images",
   "POST /api/backups",
   "GET /api/backups/download",
   "PUT /api/settings",
-];
+]);
+
+/** The limited tables each route can add rows to. */
+export const ADDS_ROWS = new Map<string, { table: SQLiteTable; limit: number }[]>([
+  ["POST /api/pets", [PETS, WEIGH_INS]],
+  // The pet form logs a weigh-in when the weight changes.
+  ["PUT /api/pets/:id", [WEIGH_INS]],
+  ["POST /api/foods", [FOODS]],
+  ["POST /api/feeds", [FEEDS]],
+  ["POST /api/feeds/restore", [FEEDS]],
+  ["POST /api/weights", [WEIGH_INS]],
+  ["POST /api/weights/restore", [WEIGH_INS]],
+  ["POST /api/pet-types", [PET_TYPES]],
+  ["POST /api/food-types", [FOOD_TYPES]],
+]);
+
+/** Routes that write but never add a row to a limited table. */
+export const ADDS_NO_ROWS = new Set([
+  "POST /api/auth/login",
+  "POST /api/auth/logout",
+  "POST /api/pets/:id/age-prompt",
+  "PUT /api/pets/:id/target",
+  "POST /api/pets/:id/archive",
+  "POST /api/pets/:id/restore",
+  "PUT /api/pet-types/:id",
+  "POST /api/pet-types/:id/archive",
+  "POST /api/pet-types/:id/restore",
+  "PUT /api/foods/:id",
+  "POST /api/foods/:id/restock",
+  "POST /api/foods/:id/archive",
+  "POST /api/foods/:id/restore",
+  "PUT /api/food-types/:id",
+  "POST /api/food-types/:id/archive",
+  "POST /api/food-types/:id/restore",
+  "PUT /api/feeds/:id",
+  "PUT /api/feeds/:id/leftover",
+  "PUT /api/weights/:id",
+]);
 
 /** Rows in each limited table just after the last reset. */
 const atReset = new Map<SQLiteTable, number>();
@@ -121,10 +135,12 @@ export function demoGuard(db: Db): MiddlewareHandler {
   return async (c, next) => {
     // Hono answers HEAD with the GET handler, which runs in full.
     const method = c.req.method === "HEAD" ? "GET" : c.req.method;
-    if (DISABLED.includes(`${method} ${c.req.path}`)) {
+    // The pattern of the route the request reached, such as "/api/pets/:id".
+    const route = `${method} ${routePath(c, -1)}`;
+    if (DISABLED.has(route)) {
       return c.json({ code: "demo_disabled" as const }, 403);
     }
-    const tables = addsTo(c.req.method, c.req.path);
+    const tables = ADDS_ROWS.get(route) ?? [];
     const full = tables.some(
       ({ table, limit }) => rowsIn(db, table) - (atReset.get(table) ?? 0) + pending(table) >= limit,
     );
