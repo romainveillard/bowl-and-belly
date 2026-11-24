@@ -119,7 +119,9 @@ export function demoGuard(db: Db): MiddlewareHandler {
   const pending = (table: SQLiteTable) => inFlight.get(table) ?? 0;
 
   return async (c, next) => {
-    if (DISABLED.includes(`${c.req.method} ${c.req.path}`)) {
+    // Hono answers HEAD with the GET handler, which runs in full.
+    const method = c.req.method === "HEAD" ? "GET" : c.req.method;
+    if (DISABLED.includes(`${method} ${c.req.path}`)) {
       return c.json({ code: "demo_disabled" as const }, 403);
     }
     const tables = addsTo(c.req.method, c.req.path);

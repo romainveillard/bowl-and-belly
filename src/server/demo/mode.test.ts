@@ -82,6 +82,18 @@ describe("demoGuard", () => {
     expect(db.select().from(weightEntry).all()).toHaveLength(200);
   });
 
+  it("refuses a backup download asked for with HEAD as well as GET", async () => {
+    const { app } = demoWithWeighInsFull();
+
+    const statuses = await Promise.all(
+      ["GET", "HEAD"].map(
+        async (method) => (await app.request("/api/backups/download", { method })).status,
+      ),
+    );
+
+    expect(statuses).toEqual([403, 403]);
+  });
+
   it("frees the place of a request that fails", async () => {
     const { db } = demoWithWeighIns(199);
     const app = new Hono()
