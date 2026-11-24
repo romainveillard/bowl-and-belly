@@ -82,7 +82,7 @@ export function useWeightSheets(petId: number | undefined) {
     ui = (
       <LogWeightSheet
         pet={pet}
-        timeZone={settings.timeZone}
+        daySettings={settings}
         editing={opened.sheet === "edit" ? opened.reading : undefined}
         onSaved={(next) => {
           close();

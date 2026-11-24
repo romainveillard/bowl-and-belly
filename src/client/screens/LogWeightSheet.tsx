@@ -5,7 +5,7 @@ import { button } from "../components/ui/button.js";
 import { ErrorSummary } from "../components/ui/ErrorSummary.js";
 import { Field } from "../components/ui/Field.js";
 import { Sheet } from "../components/ui/Sheet.js";
-import { formatDateInput } from "../lib/feeds.js";
+import { appDayOf, type DaySettings } from "../../shared/app-day.js";
 import { formatDay, formatReadingKg, parsePositive } from "../lib/format.js";
 import type { PetDetail } from "../lib/pets.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
@@ -20,28 +20,32 @@ const BIG_CHANGE = 0.2;
 
 interface LogWeightSheetProps {
   pet: Pick<PetDetail, "id" | "name" | "weights" | "today">;
-  timeZone: string;
+  daySettings: DaySettings;
   /** The weigh-in to correct; a new one is logged without it. */
   editing?: Reading | undefined;
   onSaved: (prompt: WeighInPrompt | null) => void;
   onClose: () => void;
 }
 
-export function LogWeightSheet({ pet, timeZone, editing, onSaved, onClose }: LogWeightSheetProps) {
+export function LogWeightSheet({
+  pet,
+  daySettings,
+  editing,
+  onSaved,
+  onClose,
+}: LogWeightSheetProps) {
   const { t, i18n } = useTranslation();
   const save = useSaveWeight(pet.id, editing?.id);
+  const dayOf = (reading: Reading) => appDayOf(new Date(reading.measuredAt), daySettings);
   const [weight, setWeight] = useState(editing ? String(editing.weightG / 1000) : "");
-  const [date, setDate] = useState(
-    editing ? formatDateInput(editing.measuredAt, timeZone) : pet.today,
-  );
+  const [date, setDate] = useState(editing ? dayOf(editing) : pet.today);
 
   const kg = parsePositive(weight);
   const weightG = kg === null ? null : Math.round(kg * 1000);
   const others = pet.weights.filter((reading) => reading.id !== editing?.id);
   const last = others[0];
   // The reading just before this one in time, which a typo would jump away from.
-  const previous =
-    others.find((reading) => formatDateInput(reading.measuredAt, timeZone) <= date) ?? last;
+  const previous = others.find((reading) => dayOf(reading) <= date) ?? last;
   const bigChange =
     weightG !== null &&
     weightG > 0 &&

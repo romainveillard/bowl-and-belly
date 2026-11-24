@@ -1,13 +1,14 @@
 import { desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import { appDayOf, instantAt } from "../../shared/app-day.js";
+import { appDayOf } from "../../shared/app-day.js";
 import { db } from "../db/client.js";
 import type { DbOrTx } from "../db/open.js";
 import { pet, weightEntry } from "../db/schema.js";
 import { weighInPrompt } from "../pets/prompts.js";
 import { daySettings, today } from "../settings.js";
 import { validate } from "../validate.js";
+import { measuredOn } from "../weights/readings.js";
 
 const idParam = z.object({ id: z.coerce.number().int() });
 const reading = z.object({ weightG: z.number().int().positive(), date: z.iso.date() });
@@ -20,14 +21,6 @@ function latestId(tx: DbOrTx, petId: number): number | undefined {
     .orderBy(desc(weightEntry.measuredAt), desc(weightEntry.id))
     .limit(1)
     .get()?.id;
-}
-
-/**
- * When a reading dated `date` was taken: now for today, so same-day readings
- * keep their order, and midday for an earlier day.
- */
-function measuredOn(date: string): Date {
-  return date === today(db) ? new Date() : instantAt(date, "12:00", daySettings(db).timeZone);
 }
 
 export const weightsRoutes = new Hono()
@@ -43,7 +36,7 @@ export const weightsRoutes = new Hono()
       }
       const { id } = tx
         .insert(weightEntry)
-        .values({ petId, weightG, measuredAt: measuredOn(date) })
+        .values({ petId, weightG, measuredAt: measuredOn(date, new Date(), daySettings(tx)) })
         .returning({ id: weightEntry.id })
         .get();
       // A backdated reading only joins the history; only the latest can change the target.
@@ -66,15 +59,12 @@ export const weightsRoutes = new Hono()
         return null;
       }
       const wasLatest = latestId(tx, before.petId) === id;
-      const sameDay =
-        appDayOf(before.measuredAt, {
-          timeZone: daySettings(tx).timeZone,
-          dayStartsAt: "00:00",
-        }) === date;
-      tx.update(weightEntry)
-        .set({ weightG, measuredAt: sameDay ? before.measuredAt : measuredOn(date) })
-        .where(eq(weightEntry.id, id))
-        .run();
+      const settings = daySettings(tx);
+      const measuredAt =
+        appDayOf(before.measuredAt, settings) === date
+          ? before.measuredAt
+          : measuredOn(date, new Date(), settings);
+      tx.update(weightEntry).set({ weightG, measuredAt }).where(eq(weightEntry.id, id)).run();
       const isLatest = latestId(tx, before.petId) === id;
       return { prompt: wasLatest || isLatest ? weighInPrompt(tx, before.petId, today(tx)) : null };
     });
