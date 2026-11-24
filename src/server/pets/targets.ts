@@ -1,4 +1,5 @@
 import { and, desc, eq, lte } from "drizzle-orm";
+import { addDays } from "../../shared/app-day.js";
 import { TARGET_SOURCES } from "../../shared/enums.js";
 import { calculateTarget } from "../../shared/target.js";
 import type { DbOrTx } from "../db/open.js";
@@ -81,8 +82,9 @@ export function setTarget(
 /**
  * Applies the user's choice from `day` on: their own value, or the formula's
  * when `manualKcal` is null. Nothing is written when that is already the
- * target, so the history only gains a row when something changed. Returns the
- * new kcal value if it differs from the one in force before.
+ * target, and a change back to the value in force before `day` removes that
+ * day's row, so the history only shows real changes. Returns the new kcal
+ * value if it differs from the one in force before.
  */
 export function chooseTarget(
   db: DbOrTx,
@@ -96,7 +98,15 @@ export function chooseTarget(
   if (kcalPerDay === null) {
     return null;
   }
-  if (before?.source !== source || before.kcalPerDay !== kcalPerDay) {
+  const setToday = before?.effectiveFrom === day;
+  const previous = setToday ? targetOn(db, petId, addDays(day, -1)) : before;
+  if (previous?.source === source && previous.kcalPerDay === kcalPerDay) {
+    if (setToday) {
+      db.delete(petTarget)
+        .where(and(eq(petTarget.petId, petId), eq(petTarget.effectiveFrom, day)))
+        .run();
+    }
+  } else if (before?.source !== source || before.kcalPerDay !== kcalPerDay) {
     setTarget(db, petId, day, kcalPerDay, source);
   }
   return kcalPerDay === before?.kcalPerDay ? null : kcalPerDay;

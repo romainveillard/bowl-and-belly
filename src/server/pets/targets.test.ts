@@ -69,6 +69,28 @@ describe("chooseTarget", () => {
     expect(db.select().from(petTarget).all()).toHaveLength(1);
   });
 
+  it("removes the day's row when the target changes back to the one before it", () => {
+    const { db, id } = catWeighing(4000);
+    chooseTarget(db, id, "2026-11-10", null);
+    db.update(pet).set({ activityLevel: "active" }).run();
+    chooseTarget(db, id, "2026-11-20", null);
+    db.update(pet).set({ activityLevel: "normal" }).run();
+
+    expect(chooseTarget(db, id, "2026-11-20", null)).toBe(238);
+    expect(db.select().from(petTarget).all()).toMatchObject([
+      { effectiveFrom: "2026-11-10", kcalPerDay: 238 },
+    ]);
+  });
+
+  it("keeps the day's row when only the value matches the one before it, not who set it", () => {
+    const { db, id } = catWeighing(4000);
+    chooseTarget(db, id, "2026-11-10", null);
+    chooseTarget(db, id, "2026-11-20", 250);
+
+    expect(chooseTarget(db, id, "2026-11-20", 238)).toBe(238);
+    expect(targetOn(db, id, "2026-11-20")).toMatchObject({ kcalPerDay: 238, source: "manual" });
+  });
+
   it("keeps a target the user set when the profile changes, until they go back to the formula", () => {
     const { db, id } = catWeighing(4000);
     expect(chooseTarget(db, id, "2026-11-10", 250)).toBe(250);

@@ -63,7 +63,7 @@ The daily target is RER times a factor from the 2021 AAHA Nutrition and Weight M
 - Growing pets are always fed for their current weight: the growth case comes first, so a weight goal only takes effect from 12 months. Age is counted in completed calendar months from the birth date.
 - Pregnancy, lactation and working dogs are out of scope and use the manual override. Large-breed dogs keep growing past 12 months, which also needs the override.
 
-* Changing neutered status, activity, goal, target weight, birth date, pet type or the manual override inserts a new target row effective from today. A second change the same day replaces that day's row, and a change that leaves the target as it was adds nothing.
+* Changing neutered status, activity, goal, target weight, birth date, pet type or the manual override inserts a new target row effective from today. A second change the same day replaces that day's row, a change that leaves the target as it was adds nothing, and a change back to the target in force before today removes today's row.
 * A target the user set is never recalculated: it stays until they go back to the suggested value.
 * A weigh-in never recalculates silently. The app offers "Update target from new weight?" so scale noise doesn't make the target jitter. The same goes for reaching an age at which the table moves a pet to another row: dogs at 4 and 12 months, cats at 12. That question is asked once per age step, whichever the answer, and only if the target was set before the pet reached it.
 * Neither question is asked about a target the user set themselves.
