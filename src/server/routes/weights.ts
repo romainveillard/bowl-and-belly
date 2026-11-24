@@ -7,11 +7,11 @@ import type { DbOrTx } from "../db/open.js";
 import { pet, weightEntry } from "../db/schema.js";
 import { weighInPrompt } from "../pets/prompts.js";
 import { daySettings, today } from "../settings.js";
-import { validate } from "../validate.js";
+import { grams, validate } from "../validate.js";
 import { measuredOn } from "../weights/readings.js";
 
 const idParam = z.object({ id: z.coerce.number().int() });
-const reading = z.object({ weightG: z.number().int().positive(), date: z.iso.date() });
+const reading = z.object({ weightG: grams, date: z.iso.date() });
 
 function latestId(tx: DbOrTx, petId: number): number | undefined {
   return tx
@@ -93,7 +93,7 @@ export const weightsRoutes = new Hono()
       z.object({
         petId: z.number().int(),
         measuredAt: z.coerce.date(),
-        weightG: z.number().int().positive(),
+        weightG: grams,
       }),
     ),
     (c) => {

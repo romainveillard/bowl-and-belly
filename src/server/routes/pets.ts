@@ -1,4 +1,4 @@
-import { validate } from "../validate.js";
+import { grams, kcalPerDay, validate } from "../validate.js";
 import { and, count, desc, eq, isNotNull, isNull } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
@@ -29,11 +29,11 @@ const petBody = z
     neutered: z.boolean(),
     activityLevel: z.enum(ACTIVITY_LEVELS),
     goal: z.enum(GOALS),
-    targetWeightG: z.number().int().positive().nullable(),
+    targetWeightG: grams.nullable(),
     /** Logged as a weigh-in when it differs from the latest one. */
-    weightG: z.number().int().positive().nullable(),
+    weightG: grams.nullable(),
     /** Null follows the calculated target. */
-    manualTargetKcal: z.number().int().positive().nullable(),
+    manualTargetKcal: kcalPerDay.nullable(),
   })
   .refine((body) => body.goal === "maintain" || body.targetWeightG !== null, {
     path: ["targetWeightG"],
@@ -226,7 +226,7 @@ export const petsRoutes = new Hono()
   .put(
     "/:id/target",
     validate("param", idParam),
-    validate("json", z.object({ manualTargetKcal: z.number().int().positive().nullable() })),
+    validate("json", z.object({ manualTargetKcal: kcalPerDay.nullable() })),
     (c) => {
       const { id } = c.req.valid("param");
       const { manualTargetKcal } = c.req.valid("json");

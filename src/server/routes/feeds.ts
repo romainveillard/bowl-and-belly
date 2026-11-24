@@ -7,7 +7,7 @@ import { feedEntry, food, foodType, pet } from "../db/schema.js";
 import { hasFeedsBefore, daySummaries } from "../feeds/days.js";
 import { deleteFeed, editFeed, logFeed, restoreFeed } from "../feeds/entries.js";
 import { daySettings, today } from "../settings.js";
-import { validate } from "../validate.js";
+import { grams, kcalPerKg, leftoverGrams, validate } from "../validate.js";
 
 const petQuery = z.object({ petId: z.coerce.number().int() });
 const idParam = z.object({ id: z.coerce.number().int() });
@@ -135,12 +135,12 @@ export const feedsRoutes = new Hono()
       z.object({
         petId: z.number().int(),
         foodId: z.number().int(),
-        servedG: z.number().int().positive(),
+        servedG: grams,
         /** "HH:MM" in the app time zone; null is now. */
         time: time.nullable(),
         /** The leftover found from the pet's previous feed, if any. */
         previousLeftover: z
-          .object({ entryId: z.number().int(), leftoverG: z.number().int().nonnegative() })
+          .object({ entryId: z.number().int(), leftoverG: leftoverGrams })
           .nullable(),
       }),
     ),
@@ -192,8 +192,8 @@ export const feedsRoutes = new Hono()
       "json",
       z.object({
         foodId: z.number().int(),
-        servedG: z.number().int().positive(),
-        leftoverG: z.number().int().nonnegative().nullable(),
+        servedG: grams,
+        leftoverG: leftoverGrams.nullable(),
         leftoverReturnedToStock: z.boolean(),
         /** The calendar date and clock time in the app time zone. */
         date: z.iso.date(),
@@ -223,7 +223,7 @@ export const feedsRoutes = new Hono()
     validate(
       "json",
       z.object({
-        leftoverG: z.number().int().nonnegative(),
+        leftoverG: leftoverGrams,
         leftoverReturnedToStock: z.boolean(),
       }),
     ),
@@ -260,10 +260,10 @@ export const feedsRoutes = new Hono()
         petId: z.number().int(),
         foodId: z.number().int(),
         fedAt: z.coerce.date(),
-        servedG: z.number().int().positive(),
-        leftoverG: z.number().int().nonnegative().nullable(),
+        servedG: grams,
+        leftoverG: leftoverGrams.nullable(),
         leftoverReturnedToStock: z.boolean(),
-        kcalPerKg: z.number().int().positive(),
+        kcalPerKg,
       }),
     ),
     (c) => {

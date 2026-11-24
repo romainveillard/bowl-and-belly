@@ -6,7 +6,7 @@ import { db } from "../db/client.js";
 import { feedEntry, food, foodType, image } from "../db/schema.js";
 import { changeKcal } from "../foods/kcal.js";
 import { portionsFor } from "../foods/portions.js";
-import { validate } from "../validate.js";
+import { grams, kcalPerKg, stockGrams, validate } from "../validate.js";
 
 const idParam = z.object({ id: z.coerce.number().int() });
 
@@ -17,11 +17,11 @@ const foodBody = z.object({
   foodTypeId: z.number().int(),
   /** Null suits any pet. */
   petTypeId: z.number().int().nullable(),
-  kcalPerKg: z.number().int().positive(),
+  kcalPerKg,
   portionName: z.string().trim().min(1).max(40).nullable(),
-  portionG: z.number().int().positive().nullable(),
+  portionG: grams.nullable(),
   stockUnit: z.enum(STOCK_UNITS),
-  stockG: z.number().int(),
+  stockG: stockGrams,
 });
 
 const backfill = z.discriminatedUnion("scope", [
@@ -159,7 +159,7 @@ export const foodsRoutes = new Hono()
   .post(
     "/:id/restock",
     validate("param", idParam),
-    validate("json", z.object({ addG: z.number().int().positive() })),
+    validate("json", z.object({ addG: grams })),
     (c) => {
       const { id } = c.req.valid("param");
       const { addG } = c.req.valid("json");

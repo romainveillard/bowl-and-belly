@@ -150,6 +150,7 @@ feed_entry    (id, pet_id, food_id, fed_at,                       -- UTC
 - **Seeded rows:** cat, dog, wet, dry and the single settings row (`CHECK (id = 1)`) are inserted by start-up code, not by a migration, and only when missing. Restarting never resets settings. The time zone starts as the server's (`TZ`), which is UTC in the container unless set.
 - **Dates and times:** instants (`fed_at`, `measured_at`, `archived_at`) are integer milliseconds in UTC. Calendar values (`birth_date`, `effective_from`) are `YYYY-MM-DD` text, and times of day are `HH:MM` text.
 - **Targets:** a pet has at most one target row per app day; a second change the same day replaces it. Any goal other than maintain requires `target_weight_g`.
+- **Bounds:** the API refuses amounts, weights and portions over 1,000,000 g, stock beyond ±10,000,000 g, more than 10,000 kcal/kg and daily targets over 20,000 kcal, so one bad value can't swamp totals or charts.
 - **Unused photos:** a photo is uploaded before its form is saved, so an abandoned form leaves one behind. Photos that no pet or food uses are deleted at start-up.
 - **Stock audit trail:** none in the MVP; stock is a mutated total. A purchases table arrives with cost tracking.
 
