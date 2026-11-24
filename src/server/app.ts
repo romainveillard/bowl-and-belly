@@ -38,7 +38,7 @@ const api = new Hono()
   // body big enough to exhaust memory. Photo uploads have their own limit.
   .use((c, next) => (c.req.path === "/api/images" ? next() : jsonBodyLimit(c, next)))
   .use(requireSession)
-  .use(demoGuard)
+  .use(demo ? demoGuard(db) : (_c, next) => next())
   .get("/health", (c) => {
     db.run(sql`select 1`);
     return c.json({ status: "ok" as const });

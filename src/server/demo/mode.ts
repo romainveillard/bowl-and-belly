@@ -1,4 +1,5 @@
-import { sql } from "drizzle-orm";
+import { count, sql } from "drizzle-orm";
+import type { SQLiteTable } from "drizzle-orm/sqlite-core";
 import type { MiddlewareHandler } from "hono";
 import { nextBackupAt } from "../backups/schedule.js";
 import type { Db } from "../db/open.js";
@@ -18,14 +19,43 @@ import { generateDemo } from "./generate.js";
 
 export const demo = process.env.BOWL_DEMO === "true";
 
-// How much all visitors together can add between two resets.
-const LIMITS = new Map([
-  ["/api/pets", 10],
-  ["/api/foods", 30],
-  ["/api/feeds", 500],
-  ["/api/pet-types", 10],
-  ["/api/food-types", 10],
-]);
+// How many rows all visitors together can add to a table between two resets.
+const PETS = { table: pet, limit: 10 };
+const FOODS = { table: food, limit: 30 };
+const FEEDS = { table: feedEntry, limit: 500 };
+const WEIGH_INS = { table: weightEntry, limit: 200 };
+const PET_TYPES = { table: petType, limit: 10 };
+const FOOD_TYPES = { table: foodType, limit: 10 };
+
+/** The limited tables a request can add rows to, whichever route it takes. */
+function addsTo(method: string, path: string): { table: SQLiteTable; limit: number }[] {
+  if (method === "PUT" && /^\/api\/pets\/\d+$/.test(path)) {
+    // The pet form logs a weigh-in when the weight changes.
+    return [WEIGH_INS];
+  }
+  if (method !== "POST") {
+    return [];
+  }
+  switch (path) {
+    case "/api/pets":
+      return [PETS, WEIGH_INS];
+    case "/api/foods":
+      return [FOODS];
+    case "/api/feeds":
+    case "/api/feeds/restore":
+      return [FEEDS];
+    case "/api/weights":
+    case "/api/weights/restore":
+      return [WEIGH_INS];
+    case "/api/pet-types":
+      return [PET_TYPES];
+    case "/api/food-types":
+      return [FOOD_TYPES];
+    default:
+      return [];
+  }
+}
+
 // Settings are shared by every visitor, so none of them can change.
 const DISABLED = [
   "POST /api/images",
@@ -34,7 +64,11 @@ const DISABLED = [
   "PUT /api/settings",
 ];
 
-const added = new Map<string, number>();
+/** Rows in each limited table just after the last reset. */
+const atReset = new Map<SQLiteTable, number>();
+
+const rowsIn = (db: Db, table: SQLiteTable) =>
+  db.select({ rows: count() }).from(table).get()?.rows ?? 0;
 
 /** Replaces everything with fresh demo data ending now. */
 export function resetDemo(db: Db): void {
@@ -49,7 +83,9 @@ export function resetDemo(db: Db): void {
   });
   seed(db);
   db.transaction((tx) => generateDemo(tx, new Date()));
-  added.clear();
+  for (const { table } of [PETS, FOODS, FEEDS, WEIGH_INS, PET_TYPES, FOOD_TYPES]) {
+    atReset.set(table, rowsIn(db, table));
+  }
 }
 
 /** Resets the demo every night at 03:00 in its time zone. */
@@ -70,21 +106,22 @@ export function startDemoResets(db: Db): void {
   schedule();
 }
 
-/** Keeps strangers from uploading files, taking backups or filling the database. */
-export const demoGuard: MiddlewareHandler = async (c, next) => {
-  if (!demo) {
+/**
+ * Keeps strangers from uploading files, taking backups or filling the
+ * database. Limits count rows rather than requests, so every route that adds
+ * to a table counts against it.
+ */
+export function demoGuard(db: Db): MiddlewareHandler {
+  return async (c, next) => {
+    if (DISABLED.includes(`${c.req.method} ${c.req.path}`)) {
+      return c.json({ code: "demo_disabled" as const }, 403);
+    }
+    const full = addsTo(c.req.method, c.req.path).some(
+      ({ table, limit }) => rowsIn(db, table) - (atReset.get(table) ?? 0) >= limit,
+    );
+    if (full) {
+      return c.json({ code: "demo_limit" as const }, 403);
+    }
     return next();
-  }
-  if (DISABLED.includes(`${c.req.method} ${c.req.path}`)) {
-    return c.json({ code: "demo_disabled" as const }, 403);
-  }
-  const limit = c.req.method === "POST" ? LIMITS.get(c.req.path) : undefined;
-  const limited = limit === undefined ? null : c.req.path;
-  if (limited && limit !== undefined && (added.get(limited) ?? 0) >= limit) {
-    return c.json({ code: "demo_limit" as const }, 403);
-  }
-  await next();
-  if (limited && c.res.status === 201) {
-    added.set(limited, (added.get(limited) ?? 0) + 1);
-  }
-};
+  };
+}
