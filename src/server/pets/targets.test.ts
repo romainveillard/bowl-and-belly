@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { openDatabase } from "../db/open.js";
 import { pet, petTarget, petType, weightEntry } from "../db/schema.js";
 import {
+  applyTargetChoice,
   chooseTarget,
   chooseTargetAfterEdit,
   formulaInputs,
@@ -138,6 +139,16 @@ describe("chooseTarget", () => {
 
     expect(chooseTarget(db, id, "2026-11-20", null)).toBeNull();
     expect(targetOn(db, id, "2026-11-20")?.source).toBe("calculated");
+  });
+});
+
+describe("applyTargetChoice", () => {
+  it("refuses going back to the formula when it has nothing to suggest, keeping the user's own", () => {
+    const { db, id } = catWeighing(null);
+    chooseTarget(db, id, "2026-11-10", 300);
+
+    expect(applyTargetChoice(db, id, "2026-11-20", null)).toBe("no_suggestion");
+    expect(targetOn(db, id, "2026-11-20")).toMatchObject({ kcalPerDay: 300, source: "manual" });
   });
 });
 

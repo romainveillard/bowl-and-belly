@@ -1,12 +1,15 @@
-import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { instantAt, latestAt } from "../../shared/app-day.js";
-import { leftoverFits } from "../../shared/feeds.js";
 import { db } from "../db/client.js";
-import { feedEntry } from "../db/schema.js";
 import { hasFeedsBefore, daySummaries } from "../feeds/days.js";
-import { deleteFeed, editFeed, logFeedWithLeftover, restoreFeed } from "../feeds/entries.js";
+import {
+  deleteFeed,
+  editFromForm,
+  logFeedWithLeftover,
+  recordLeftover,
+  restoreFeed,
+} from "../feeds/entries.js";
 import { logForm } from "../feeds/logForm.js";
 import { daySettings, today } from "../settings.js";
 import { grams, kcalPerKg, leftoverGrams, validate } from "../validate.js";
@@ -83,26 +86,14 @@ export const feedsRoutes = new Hono()
     (c) => {
       const { id } = c.req.valid("param");
       const { date, time: clock, ...values } = c.req.valid("json");
-      if (values.leftoverG !== null && !leftoverFits(values.leftoverG, values.servedG)) {
-        return c.json({ code: "invalid_leftover" as const }, 400);
-      }
       const fedAt = instantAt(date, clock, daySettings(db).timeZone);
-      if (fedAt.getTime() > Date.now()) {
-        return c.json({ code: "in_future" as const }, 400);
-      }
-      const result = db.transaction((tx) => {
-        const before = tx.select().from(feedEntry).where(eq(feedEntry.id, id)).get();
-        if (!before) {
-          return "not_found" as const;
-        }
-        return editFeed(tx, id, { ...values, petId: before.petId, fedAt })
-          ? ("done" as const)
-          : ("invalid_reference" as const);
-      });
-      if (result === "done") {
+      const refused = db.transaction((tx) =>
+        editFromForm(tx, id, { ...values, fedAt }, new Date()),
+      );
+      if (!refused) {
         return c.body(null, 204);
       }
-      return c.json({ code: result }, result === "not_found" ? 404 : 400);
+      return c.json({ code: refused }, refused === "not_found" ? 404 : 400);
     },
   )
   .put(
@@ -117,22 +108,11 @@ export const feedsRoutes = new Hono()
     ),
     (c) => {
       const { id } = c.req.valid("param");
-      const leftover = c.req.valid("json");
-      const result = db.transaction((tx) => {
-        const before = tx.select().from(feedEntry).where(eq(feedEntry.id, id)).get();
-        if (!before) {
-          return "not_found" as const;
-        }
-        if (!leftoverFits(leftover.leftoverG, before.servedG)) {
-          return "invalid_leftover" as const;
-        }
-        editFeed(tx, id, { ...before, ...leftover });
-        return "done" as const;
-      });
-      if (result === "done") {
+      const refused = db.transaction((tx) => recordLeftover(tx, id, c.req.valid("json")));
+      if (!refused) {
         return c.body(null, 204);
       }
-      return c.json({ code: result }, result === "not_found" ? 404 : 400);
+      return c.json({ code: refused }, refused === "not_found" ? 404 : 400);
     },
   )
   .delete("/:id", validate("param", idParam), (c) => {

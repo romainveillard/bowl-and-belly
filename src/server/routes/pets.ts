@@ -5,15 +5,16 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { ACTIVITY_LEVELS, BIRTH_DATE_PRECISIONS, GOALS } from "../../shared/enums.js";
 import { db } from "../db/client.js";
-import { image, pet, petTarget, petType, weightEntry } from "../db/schema.js";
+import { pet, petTarget, petType, weightEntry } from "../db/schema.js";
 import { daySummaries } from "../feeds/days.js";
-import { agePrompt, reachedAgeStep } from "../pets/prompts.js";
+import { dropReplacedPhoto } from "../images/photos.js";
+import { agePrompt, answerAgePrompt } from "../pets/prompts.js";
 import {
+  applyTargetChoice,
   chooseTarget,
   chooseTargetAfterEdit,
   formulaInputs,
   latestWeightG,
-  suggestedKcal,
   targetOn,
 } from "../pets/targets.js";
 import { today } from "../settings.js";
@@ -172,9 +173,7 @@ export const petsRoutes = new Hono()
         return null;
       }
       tx.update(pet).set(profileOf(body)).where(eq(pet.id, id)).run();
-      if (before.photoId !== null && before.photoId !== body.photoId) {
-        tx.delete(image).where(eq(image.id, before.photoId)).run();
-      }
+      dropReplacedPhoto(tx, before.photoId, body.photoId);
       const weighed = logCurrentWeight(tx, id, body.weightG, new Date());
       return {
         targetKcal: chooseTargetAfterEdit(tx, id, today(tx), {
@@ -201,18 +200,12 @@ export const petsRoutes = new Hono()
       if (!exists) {
         return c.json({ code: "not_found" as const }, 404);
       }
-      // Any other count would settle steps the pet hasn't reached yet.
-      if (months !== reachedAgeStep(db, id, today(db))) {
-        return c.json({ code: "invalid_request" as const, fields: ["months"] }, 400);
-      }
-      // Either answer settles the question for this age step.
-      db.transaction((tx) => {
-        tx.update(pet).set({ agePromptMonths: months }).where(eq(pet.id, id)).run();
-        if (update) {
-          chooseTarget(tx, id, today(tx), null);
-        }
-      });
-      return c.body(null, 204);
+      const refused = db.transaction((tx) =>
+        answerAgePrompt(tx, id, today(tx), { months, update }),
+      );
+      return refused
+        ? c.json({ code: "invalid_request" as const, fields: ["months"] }, 400)
+        : c.body(null, 204);
     },
   )
   .put(
@@ -226,15 +219,10 @@ export const petsRoutes = new Hono()
       if (!exists) {
         return c.json({ code: "not_found" as const }, 404);
       }
-      const applied = db.transaction((tx) => {
-        const day = today(tx);
-        if (manualTargetKcal === null && suggestedKcal(tx, id, day) === null) {
-          return false;
-        }
-        chooseTarget(tx, id, day, manualTargetKcal);
-        return true;
-      });
-      return applied ? c.body(null, 204) : c.json({ code: "no_suggestion" as const }, 409);
+      const refused = db.transaction((tx) =>
+        applyTargetChoice(tx, id, today(tx), manualTargetKcal),
+      );
+      return refused ? c.json({ code: refused }, 409) : c.body(null, 204);
     },
   )
   .post("/:id/archive", validate("param", idParam), (c) => {

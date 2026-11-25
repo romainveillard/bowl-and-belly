@@ -10,9 +10,13 @@ const { passwordProblem } = await import("./access.js");
 describe("passwordProblem", () => {
   it("refuses the README's example and anything under 12 characters", () => {
     expect(
-      ["change-me", "elevenchars", "twelve chars", "🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈", "🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈"].map(
-        (password) => passwordProblem(password) !== null,
-      ),
+      [
+        "change-me",
+        "elevenchars",
+        "twelve chars",
+        "🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈",
+        "🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈",
+      ].map((password) => passwordProblem(password) !== null),
     ).toEqual([true, true, false, true, false]);
   });
 

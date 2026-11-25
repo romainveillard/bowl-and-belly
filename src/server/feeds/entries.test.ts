@@ -2,7 +2,15 @@ import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { openDatabase } from "../db/open.js";
 import { feedEntry, food, pet } from "../db/schema.js";
-import { deleteFeed, editFeed, logFeed, logFeedWithLeftover, restoreFeed } from "./entries.js";
+import {
+  deleteFeed,
+  editFeed,
+  editFromForm,
+  logFeed,
+  logFeedWithLeftover,
+  recordLeftover,
+  restoreFeed,
+} from "./entries.js";
 
 // Two foods with 1,000 g in stock each: kibbles at 3,700 kcal/kg, pouches at 800.
 function pantry() {
@@ -154,6 +162,58 @@ describe("editFeed", () => {
     expect(db.select({ kcalPerKg: feedEntry.kcalPerKg }).from(feedEntry).get()).toEqual({
       kcalPerKg: 3700,
     });
+  });
+});
+
+describe("editFromForm", () => {
+  const now = new Date("2026-11-23T12:00:00Z");
+  const form = {
+    foodId: 1,
+    fedAt: new Date("2026-11-23T08:00:00Z"),
+    servedG: 20,
+    leftoverG: null,
+    leftoverReturnedToStock: true,
+  };
+
+  it("refuses a leftover above what was served, or a time still to come, changing nothing", () => {
+    const { db, stock } = pantry();
+    const id = logFeed(db, kibbles) ?? 0;
+
+    expect(editFromForm(db, id, { ...form, servedG: 30, leftoverG: 31 }, now)).toBe(
+      "invalid_leftover",
+    );
+    expect(
+      editFromForm(db, id, { ...form, servedG: 30, fedAt: new Date(now.getTime() + 1) }, now),
+    ).toBe("in_future");
+    expect(stock()[0]).toBe(980);
+  });
+
+  it("keeps the feed on its pet", () => {
+    const { db } = pantry();
+    const id = logFeed(db, kibbles) ?? 0;
+
+    expect(editFromForm(db, id, { ...form, foodId: 2 }, now)).toBeUndefined();
+    expect(
+      db.select({ petId: feedEntry.petId, foodId: feedEntry.foodId }).from(feedEntry).get(),
+    ).toEqual({
+      petId: 1,
+      foodId: 2,
+    });
+  });
+});
+
+describe("recordLeftover", () => {
+  it("refuses a leftover above what was served", () => {
+    const { db, stock } = pantry();
+    const id = logFeed(db, kibbles) ?? 0;
+
+    expect(recordLeftover(db, id, { leftoverG: 21, leftoverReturnedToStock: true })).toBe(
+      "invalid_leftover",
+    );
+    expect(
+      recordLeftover(db, id, { leftoverG: 20, leftoverReturnedToStock: true }),
+    ).toBeUndefined();
+    expect(stock()[0]).toBe(1000);
   });
 });
 

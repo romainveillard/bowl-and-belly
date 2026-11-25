@@ -2,8 +2,8 @@ import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { openDatabase } from "../db/open.js";
 import { pet, weightEntry } from "../db/schema.js";
-import { agePrompt, weighInPrompt } from "./prompts.js";
-import { chooseTarget, setTarget } from "./targets.js";
+import { agePrompt, answerAgePrompt, weighInPrompt } from "./prompts.js";
+import { chooseTarget, setTarget, targetOn } from "./targets.js";
 
 // A neutered, normally active pet weighing 4 kg on 1 November.
 function petWith(petTypeId: 1 | 2, birthDate: string) {
@@ -100,5 +100,30 @@ describe("agePrompt", () => {
     setTarget(db, id, "2026-10-31", 600, "manual");
 
     expect(agePrompt(db, id, "2026-11-01")).toBeNull();
+  });
+});
+
+describe("answerAgePrompt", () => {
+  it("refuses an answer for a step the pet hasn't reached", () => {
+    const { db, id } = petWith(2, "2026-07-01");
+    chooseTarget(db, id, "2026-10-31", null);
+
+    expect(answerAgePrompt(db, id, "2026-11-01", { months: 12, update: false })).toBe("wrong_step");
+    expect(agePrompt(db, id, "2026-11-01")).toMatchObject({ months: 4 });
+  });
+
+  it("settles the step either way, and moves the target only when asked", () => {
+    const kept = petWith(2, "2026-07-01");
+    chooseTarget(kept.db, kept.id, "2026-10-31", null);
+    const updated = petWith(2, "2026-07-01");
+    chooseTarget(updated.db, updated.id, "2026-10-31", null);
+    const prompt = agePrompt(updated.db, updated.id, "2026-11-01");
+
+    answerAgePrompt(kept.db, kept.id, "2026-11-01", { months: 4, update: false });
+    answerAgePrompt(updated.db, updated.id, "2026-11-01", { months: 4, update: true });
+
+    expect(agePrompt(kept.db, kept.id, "2026-11-01")).toBeNull();
+    expect(targetOn(kept.db, kept.id, "2026-11-01")?.kcalPerDay).toBe(prompt?.currentKcal);
+    expect(targetOn(updated.db, updated.id, "2026-11-01")?.kcalPerDay).toBe(prompt?.suggestedKcal);
   });
 });

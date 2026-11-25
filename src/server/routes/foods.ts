@@ -3,10 +3,11 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { STOCK_UNITS } from "../../shared/enums.js";
 import { db } from "../db/client.js";
-import { feedEntry, food, foodType, image } from "../db/schema.js";
+import { feedEntry, food, foodType } from "../db/schema.js";
 import { changeKcal } from "../foods/kcal.js";
 import { portionsFor } from "../foods/portions.js";
 import { restock } from "../foods/restock.js";
+import { dropReplacedPhoto } from "../images/photos.js";
 import { grams, kcalPerKg, stockGrams, validate } from "../validate.js";
 
 const idParam = z.object({ id: z.coerce.number().int() });
@@ -158,9 +159,7 @@ export const foodsRoutes = new Hono()
         if (before.kcalPerKg !== row.kcalPerKg) {
           changeKcal(tx, id, row.kcalPerKg, kcalBackfill);
         }
-        if (before.photoId !== null && before.photoId !== row.photoId) {
-          tx.delete(image).where(eq(image.id, before.photoId)).run();
-        }
+        dropReplacedPhoto(tx, before.photoId, row.photoId);
         return true;
       });
       return found ? c.body(null, 204) : c.json({ code: "not_found" as const }, 404);

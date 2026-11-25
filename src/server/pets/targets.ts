@@ -136,6 +136,23 @@ export function chooseTarget(
   return kcalPerDay === before?.kcalPerDay ? null : kcalPerDay;
 }
 
+/**
+ * The target card's choice. Going back to the formula is refused when it has
+ * nothing to suggest, rather than quietly keeping the user's own target.
+ */
+export function applyTargetChoice(
+  db: DbOrTx,
+  petId: number,
+  day: string,
+  manualKcal: number | null,
+): "no_suggestion" | undefined {
+  if (manualKcal === null && suggestedKcal(db, petId, day) === null) {
+    return "no_suggestion";
+  }
+  chooseTarget(db, petId, day, manualKcal);
+  return undefined;
+}
+
 function hasFormula(db: DbOrTx, petId: number): boolean {
   const row = db
     .select({ systemKey: petType.systemKey })

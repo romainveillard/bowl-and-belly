@@ -2,7 +2,7 @@ import { desc, eq } from "drizzle-orm";
 import { AGE_STEPS, ageInMonths } from "../../shared/target.js";
 import type { DbOrTx } from "../db/open.js";
 import { pet, petType, weightEntry } from "../db/schema.js";
-import { suggestedKcal, targetOn } from "./targets.js";
+import { chooseTarget, suggestedKcal, targetOn } from "./targets.js";
 
 /**
  * The calculated target and what the formula now gives, when they differ.
@@ -64,9 +64,24 @@ function ageState(db: DbOrTx, petId: number, day: string) {
   return { ...row, reached: AGE_STEPS[row.systemKey].filter((step) => step <= months).at(-1) };
 }
 
-/** The age step, in months, that an answer to the age question settles. */
-export function reachedAgeStep(db: DbOrTx, petId: number, day: string): number | undefined {
-  return ageState(db, petId, day)?.reached;
+/**
+ * Records the answer to the age question. Either answer settles it for the
+ * step the pet has reached; any other step would settle ones it hasn't.
+ */
+export function answerAgePrompt(
+  db: DbOrTx,
+  petId: number,
+  day: string,
+  answer: { months: number; update: boolean },
+): "wrong_step" | undefined {
+  if (answer.months !== ageState(db, petId, day)?.reached) {
+    return "wrong_step";
+  }
+  db.update(pet).set({ agePromptMonths: answer.months }).where(eq(pet.id, petId)).run();
+  if (answer.update) {
+    chooseTarget(db, petId, day, null);
+  }
+  return undefined;
 }
 
 /**
