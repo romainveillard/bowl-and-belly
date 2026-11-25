@@ -71,6 +71,7 @@ export function FoodPicker({
             >
               <FoodRow
                 food={food}
+                typeNamed
                 trailing={
                   <span className="flex flex-none flex-col items-end gap-1">
                     <FoodTypeBadge type={food.type} />

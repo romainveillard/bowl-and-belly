@@ -160,7 +160,7 @@ export function StockScreen() {
                     className={`${columns} min-h-16 items-center border-t border-border py-2`}
                   >
                     <span role="cell" className="flex min-w-0 items-center gap-3">
-                      <FoodTypeTile type={food.type} />
+                      <FoodTypeTile type={food.type} decorative />
                       <FoodName food={food} />
                     </span>
                     <span role="cell">

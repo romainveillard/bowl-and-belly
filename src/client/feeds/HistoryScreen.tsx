@@ -112,7 +112,7 @@ function DayCard({
                 className={`flex items-center gap-2.5 rounded-[10px] p-2.5 ${typeBackground[total.type.systemKey ?? "custom"]}`}
               >
                 <span className="scale-80">
-                  <FoodTypeTile type={total.type} />
+                  <FoodTypeTile type={total.type} decorative />
                 </span>
                 <span className="flex flex-col tabular-nums">
                   <span className="text-sm font-semibold">

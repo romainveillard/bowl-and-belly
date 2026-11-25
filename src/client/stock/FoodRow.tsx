@@ -12,16 +12,18 @@ interface FoodRowProps {
   trailing: ReactNode;
   /** The brand in the darker text that reads on the peach highlight. */
   onAccent?: boolean;
+  /** The trailing content names the food type, so the tile needn't. */
+  typeNamed?: boolean;
 }
 
 /**
  * A food's photo or type tile, name and brand, for the inside of a row:
  * the parent draws the row itself, as a button or a highlighted box.
  */
-export function FoodRow({ food, trailing, onAccent = false }: FoodRowProps) {
+export function FoodRow({ food, trailing, onAccent = false, typeNamed = false }: FoodRowProps) {
   return (
     <>
-      <FoodImage food={food} />
+      <FoodImage food={food} decorative={typeNamed} />
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="truncate text-[15px] font-semibold">{food.name}</span>
         {food.brand && (

@@ -55,9 +55,9 @@ export function Sheet({
                   {title}
                 </Dialog.Title>
                 {subtitle && (
-                  <span className="text-[13px] text-muted-foreground desktop:text-sm">
+                  <Dialog.Description className="text-[13px] text-muted-foreground desktop:text-sm">
                     {subtitle}
-                  </span>
+                  </Dialog.Description>
                 )}
               </div>
               <div className="flex flex-none items-center gap-2">
