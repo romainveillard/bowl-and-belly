@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { birthDateOf, initialPetForm } from "./petForm.js";
 
 const today = "2026-11-25";
-const blank = initialPetForm(undefined);
+const blank = initialPetForm(undefined, "en-GB");
 
 describe("birthDateOf", () => {
   it("takes an exact date only up to today", () => {

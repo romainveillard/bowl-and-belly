@@ -10,6 +10,18 @@ export function formatReadingKg(weightG: number, locale: string): string {
   }).format(weightG / 1000);
 }
 
+/**
+ * A figure to prefill an input with: the locale's decimal mark, no grouping and
+ * no trailing zeros, "4,5" in French. The parsers accept either mark.
+ */
+export function formatInputNumber(
+  value: number,
+  locale: string,
+  maximumFractionDigits = 2,
+): string {
+  return new Intl.NumberFormat(locale, { useGrouping: false, maximumFractionDigits }).format(value);
+}
+
 /** Whole kcal and grams, grouped as the locale does: "1,500", "1 500". */
 export function formatNumber(value: number, locale: string): string {
   return new Intl.NumberFormat(locale).format(value);

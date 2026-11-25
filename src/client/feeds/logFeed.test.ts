@@ -32,8 +32,9 @@ describe("servedGrams", () => {
 
 describe("amountIn", () => {
   it("keeps the same quantity when switching between grams and portions", () => {
-    expect(amountIn(170, "portion", 85)).toBe("2");
-    expect(amountIn(100, "portion", 85)).toBe("1.18");
-    expect(amountIn(100, "g", 85)).toBe("100");
+    expect(amountIn(170, "portion", 85, "en-GB")).toBe("2");
+    expect(amountIn(100, "portion", 85, "en-GB")).toBe("1.18");
+    expect(amountIn(100, "g", 85, "en-GB")).toBe("100");
+    expect(amountIn(100, "portion", 85, "fr")).toBe("1,18");
   });
 });

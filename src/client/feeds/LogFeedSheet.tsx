@@ -170,7 +170,7 @@ function LogFeedForm({
               hideLabel
               value={amounts.unit}
               onChange={(unit) =>
-                setAmounts({ amount: amountIn(servedG, unit, food.portionG), unit })
+                setAmounts({ amount: amountIn(servedG, unit, food.portionG, i18n.language), unit })
               }
               options={[
                 { value: "g", label: t("logFeed.grams") },

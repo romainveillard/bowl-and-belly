@@ -24,8 +24,8 @@ import {
   type FoodDetail,
   type KcalBackfill,
 } from "./foods.js";
-import { parseAmount, plain, stockGramsOf, stockText } from "./foodForm.js";
-import { parsePositive } from "../lib/format.js";
+import { parseAmount, stockGramsOf, stockText } from "./foodForm.js";
+import { formatInputNumber, parsePositive } from "../lib/format.js";
 import { petTypeLabel, usePets, usePetTypes } from "../pets/pets.js";
 import { useDemo } from "../lib/instance.js";
 import { useSelectedPet } from "../pets/selectedPet.js";
@@ -70,14 +70,14 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
       photoId: food?.photoId ?? null,
       foodTypeId: food?.foodTypeId ?? null,
       petTypeId: food ? food.petTypeId : undefined,
-      kcal: food ? plain(food.kcalPerKg / 10) : "",
+      kcal: food ? formatInputNumber(food.kcalPerKg / 10, i18n.language) : "",
       per: "100g",
       usePortion: food ? food.portionName !== null : false,
       portion: known ?? (food?.portionName ? "other" : "pouch"),
       otherPortion: known ? "" : (food?.portionName ?? ""),
       portionG: food?.portionG ? String(food.portionG) : "",
       countIn: food?.stockUnit ?? "portion",
-      ...(food ? stockText(food) : { stock: "", stockIn: "g" }),
+      ...(food ? stockText(food, i18n.language) : { stock: "", stockIn: "g" }),
     };
   });
   const [stockTouched, setStockTouched] = useState(false);

@@ -1,5 +1,5 @@
 import { ageInMonths } from "../../shared/target.js";
-import { parsePositive } from "../lib/format.js";
+import { formatInputNumber, parsePositive } from "../lib/format.js";
 import type { PetBody, PetDetail } from "./pets.js";
 
 export type AgeMode = PetBody["birthDatePrecision"];
@@ -21,14 +21,15 @@ export interface PetFormState {
   ownTargetKcal: string;
 }
 
-const kgText = (weightG: number | null | undefined) => (weightG ? String(weightG / 1000) : "");
+const kgText = (weightG: number | null | undefined, locale: string) =>
+  weightG ? formatInputNumber(weightG / 1000, locale, 3) : "";
 
 type Born = Pick<PetDetail, "birthDate" | "birthDatePrecision" | "today">;
 
 const ageYearsText = (pet: Born) => String(Math.floor(ageInMonths(pet.birthDate, pet.today) / 12));
 
 /** The pet form's fields for a pet being edited, or blank for a new one. */
-export function initialPetForm(pet: PetDetail | undefined): PetFormState {
+export function initialPetForm(pet: PetDetail | undefined, locale: string): PetFormState {
   const target = pet?.targets[0];
   return {
     name: pet?.name ?? "",
@@ -41,8 +42,8 @@ export function initialPetForm(pet: PetDetail | undefined): PetFormState {
     neutered: pet?.neutered ?? true,
     activityLevel: pet?.activityLevel ?? "normal",
     goal: pet?.goal ?? "maintain",
-    targetWeight: kgText(pet?.targetWeightG),
-    weight: kgText(pet?.weights[0]?.weightG),
+    targetWeight: kgText(pet?.targetWeightG, locale),
+    weight: kgText(pet?.weights[0]?.weightG, locale),
     ownTarget: target?.source === "manual",
     ownTargetKcal: target?.source === "manual" ? String(target.kcalPerDay) : "",
   };

@@ -6,7 +6,12 @@ import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field } from "../components/ui/forms/Field.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
 import { appDayOf, type DaySettings } from "../../shared/app-day.js";
-import { formatInstantDay, formatReadingKg, parsePositive } from "../lib/format.js";
+import {
+  formatInputNumber,
+  formatInstantDay,
+  formatReadingKg,
+  parsePositive,
+} from "../lib/format.js";
 import type { PetDetail } from "./pets.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
 import { bigChangeFrom, useSaveWeight, type WeighInPrompt } from "./weights.js";
@@ -34,7 +39,9 @@ export function LogWeightSheet({
   const { t, i18n } = useTranslation();
   const save = useSaveWeight(pet.id, editing?.id);
   const dayOf = (reading: Reading) => appDayOf(new Date(reading.measuredAt), daySettings);
-  const [weight, setWeight] = useState(editing ? String(editing.weightG / 1000) : "");
+  const [weight, setWeight] = useState(
+    editing ? formatInputNumber(editing.weightG / 1000, i18n.language, 3) : "",
+  );
   const [date, setDate] = useState(editing ? dayOf(editing) : pet.today);
 
   const kg = parsePositive(weight);

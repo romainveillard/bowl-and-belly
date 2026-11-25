@@ -43,12 +43,12 @@ const FIELD_ORDER: FieldName[] = ["name", "birth", "targetWeight", "weight", "ow
 const BIRTH_ERROR = { exact: "birthDate", year: "birthYear", estimated: "age" } as const;
 
 function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { data: petTypes } = usePetTypes();
   const demo = useDemo();
   const save = useSavePet(pet?.id);
-  const [form, setForm] = useState(() => initialPetForm(pet));
+  const [form, setForm] = useState(() => initialPetForm(pet, i18n.language));
   const showSnackbar = useSnackbar();
   const set = <Key extends keyof PetFormState>(key: Key, value: PetFormState[Key]) =>
     setForm((current) => ({ ...current, [key]: value }));

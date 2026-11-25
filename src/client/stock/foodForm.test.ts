@@ -3,24 +3,28 @@ import { parseAmount, stockGramsOf, stockText } from "./foodForm.js";
 
 describe("stockText", () => {
   it("shows portion-counted stock in portions, to one decimal", () => {
-    expect(stockText({ stockG: 725, stockUnit: "portion", portionG: 85 })).toMatchObject({
+    expect(stockText({ stockG: 725, stockUnit: "portion", portionG: 85 }, "en-GB")).toMatchObject({
       stock: "8.5",
     });
   });
 
   it("switches gram-counted stock to kg from 1,000 g", () => {
-    expect(stockText({ stockG: 999, stockUnit: "g", portionG: null })).toEqual({
+    expect(stockText({ stockG: 999, stockUnit: "g", portionG: null }, "en-GB")).toEqual({
       stock: "999",
       stockIn: "g",
     });
-    expect(stockText({ stockG: 1450, stockUnit: "g", portionG: null })).toEqual({
+    expect(stockText({ stockG: 1450, stockUnit: "g", portionG: null }, "en-GB")).toEqual({
       stock: "1.45",
       stockIn: "kg",
     });
   });
 
+  it("writes the decimal the way the language does", () => {
+    expect(stockText({ stockG: 1450, stockUnit: "g", portionG: null }, "fr").stock).toBe("1,45");
+  });
+
   it("shows stock that ran below zero as none", () => {
-    expect(stockText({ stockG: -40, stockUnit: "g", portionG: null })).toEqual({
+    expect(stockText({ stockG: -40, stockUnit: "g", portionG: null }, "en-GB")).toEqual({
       stock: "0",
       stockIn: "g",
     });

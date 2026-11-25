@@ -1,5 +1,5 @@
 import type { PickerFood } from "./feeds.js";
-import { parsePositive } from "../lib/format.js";
+import { formatInputNumber, parsePositive } from "../lib/format.js";
 
 export type AmountUnit = "g" | "portion";
 type PortionFood = Pick<PickerFood, "stockUnit" | "portionG">;
@@ -38,9 +38,14 @@ export function servedGrams(amount: string, unit: AmountUnit, food: PortionFood)
 }
 
 /** The same quantity counted in `unit`, for when the toggle switches. */
-export function amountIn(grams: number | null, unit: AmountUnit, portionG: number | null): string {
+export function amountIn(
+  grams: number | null,
+  unit: AmountUnit,
+  portionG: number | null,
+  locale: string,
+): string {
   if (grams === null || !portionG) {
     return "";
   }
-  return unit === "g" ? String(grams) : String(Math.round((grams / portionG) * 100) / 100);
+  return formatInputNumber(unit === "g" ? grams : grams / portionG, locale);
 }
