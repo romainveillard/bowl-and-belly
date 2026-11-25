@@ -1,5 +1,4 @@
 import type { TFunction } from "i18next";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { addDays, addMonths, appDayOf } from "../../shared/app-day.js";
 import { periodIntake, rollingAverage } from "../../shared/insights.js";
@@ -28,9 +27,9 @@ function trendNote(averagesG: number[], locale: string, t: TFunction): string | 
   return t(trend.direction === "up" ? "insights.up" : "insights.down", { weight });
 }
 
-export function MonthInsights({ petId, today, onPeriod }: PeriodViewProps) {
+export function MonthInsights({ petId, today, from, onPeriod, onFrom }: PeriodViewProps) {
   const { t, i18n } = useTranslation();
-  const [start, setStart] = useState(() => `${today.slice(0, 7)}-01`);
+  const start = `${from.slice(0, 7)}-01`;
   const next = addMonths(start, 1);
   const end = addDays(next, -1);
   const { data } = useInsights(petId, start, end, addDays(start, -7));
@@ -46,8 +45,8 @@ export function MonthInsights({ petId, today, onPeriod }: PeriodViewProps) {
       label={month}
       previousLabel={t("insights.previousMonth")}
       nextLabel={t("insights.nextMonth")}
-      onPrevious={() => setStart(addMonths(start, -1))}
-      onNext={() => setStart(next)}
+      onPrevious={() => onFrom(addMonths(start, -1))}
+      onNext={() => onFrom(next)}
       atLatest={isCurrentMonth}
     />
   );

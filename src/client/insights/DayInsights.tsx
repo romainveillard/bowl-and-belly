@@ -16,9 +16,8 @@ import { Stat, TargetStat } from "./Stat.js";
 import { useSettings } from "../settings/settings.js";
 
 /** One day's intake and feeds, inside a FeedSheetsProvider. */
-export function DayInsights({ petId, today, onPeriod }: PeriodViewProps) {
+export function DayInsights({ petId, today, from: day, onPeriod, onFrom }: PeriodViewProps) {
   const { t, i18n } = useTranslation();
-  const [day, setDay] = useState(today);
   const [openedAt] = useState(() => Date.now());
   const isDesktop = useIsDesktop();
   const { data: summary, isPending } = useDay(petId, day);
@@ -35,8 +34,8 @@ export function DayInsights({ petId, today, onPeriod }: PeriodViewProps) {
       label={format(isDesktop ? "long" : "short")}
       previousLabel={t("insights.previousDay")}
       nextLabel={t("insights.nextDay")}
-      onPrevious={() => setDay(addDays(day, -1))}
-      onNext={() => setDay(addDays(day, 1))}
+      onPrevious={() => onFrom(addDays(day, -1))}
+      onNext={() => onFrom(addDays(day, 1))}
       atLatest={day === today}
     />
   );

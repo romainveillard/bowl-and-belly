@@ -1,14 +1,17 @@
 import { useTranslation } from "react-i18next";
 import { BackIcon, ChevronRightIcon } from "../components/icons.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
-
-export type Period = "day" | "week" | "month";
+import type { Period } from "./period.js";
 
 /** What each period's view gets from the Insights screen. */
 export interface PeriodViewProps {
   petId: number;
   today: string;
+  /** A day in the period shown, from the address. */
+  from: string;
   onPeriod: (period: Period) => void;
+  /** Shows the period around another day. */
+  onFrom: (day: string) => void;
 }
 
 export function PeriodBar({

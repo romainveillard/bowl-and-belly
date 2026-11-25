@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { addDays } from "../../shared/app-day.js";
 import { periodIntake, weekStart } from "../../shared/insights.js";
@@ -13,9 +12,9 @@ import { AverageStat, Stat, TargetStat } from "./Stat.js";
 import { useInsights } from "./useInsights.js";
 import { useSettings } from "../settings/settings.js";
 
-export function WeekInsights({ petId, today, onPeriod }: PeriodViewProps) {
+export function WeekInsights({ petId, today, from, onPeriod, onFrom }: PeriodViewProps) {
   const { t, i18n } = useTranslation();
-  const [start, setStart] = useState(() => weekStart(today));
+  const start = weekStart(from);
   const end = addDays(start, 6);
   const { data } = useInsights(petId, start, end);
   const { data: pet } = usePet(petId);
@@ -31,8 +30,8 @@ export function WeekInsights({ petId, today, onPeriod }: PeriodViewProps) {
       label={range}
       previousLabel={t("insights.previousWeek")}
       nextLabel={t("insights.nextWeek")}
-      onPrevious={() => setStart(addDays(start, -7))}
-      onNext={() => setStart(addDays(start, 7))}
+      onPrevious={() => onFrom(addDays(start, -7))}
+      onNext={() => onFrom(addDays(start, 7))}
       atLatest={isCurrentWeek}
     />
   );

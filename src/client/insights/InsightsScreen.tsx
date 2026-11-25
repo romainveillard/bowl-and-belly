@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router";
 import { PageHeader } from "../components/ui/layout/PageHeader.js";
 import { FeedSheetsProvider } from "../feeds/FeedSheetsProvider.js";
 import { usePets } from "../pets/pets.js";
@@ -7,7 +7,8 @@ import { PetChip } from "../pets/PetChip.js";
 import { useSelectedPet } from "../pets/selectedPet.js";
 import { DayInsights } from "./DayInsights.js";
 import { MonthInsights } from "./MonthInsights.js";
-import type { Period, PeriodViewProps } from "./PeriodBar.js";
+import type { PeriodViewProps } from "./PeriodBar.js";
+import { insightsAddress, type Period } from "./period.js";
 import { WeekInsights } from "./WeekInsights.js";
 
 const PERIOD_KEY = "insightsPeriod";
@@ -25,23 +26,29 @@ export function InsightsScreen() {
   const { t } = useTranslation();
   const { data: pets } = usePets();
   const { pet } = useSelectedPet();
-  // Per device, like the selected pet and the language.
-  const [period, setPeriod] = useState(readPeriod);
+  // In the address, so it survives a tab switch and can be linked to or reached with Back.
+  const [search, setSearch] = useSearchParams();
 
   if (!pets || !pet) {
     return null;
   }
+  // The default period is per device, like the selected pet and the language.
+  const { period, from } = insightsAddress(search, pets.today, readPeriod());
+  const show = (next: Period, day: string) =>
+    setSearch(day === pets.today ? { period: next } : { period: next, from: day });
   const view: PeriodViewProps = {
     petId: pet.id,
     today: pets.today,
+    from,
     onPeriod: (next) => {
-      setPeriod(next);
       try {
         localStorage.setItem(PERIOD_KEY, next);
       } catch {
-        // The period resets on the next visit; harmless.
+        // The default period resets on the next visit; harmless.
       }
+      show(next, from);
     },
+    onFrom: (day) => show(period, day),
   };
   return (
     <div className="flex flex-col gap-3.5 desktop:gap-6">
