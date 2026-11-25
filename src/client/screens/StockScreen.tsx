@@ -4,8 +4,8 @@ import { Link } from "react-router";
 import { FoodTypeBadge, FoodTypeTile } from "../components/FoodTypeMark.js";
 import { EmptyState } from "../components/EmptyState.js";
 import { ChevronRightIcon, PlusIcon, SearchIcon, StockIcon } from "../components/icons.js";
-import { button } from "../components/ui/button.js";
-import { inputClass } from "../components/ui/Field.js";
+import { button } from "../components/ui/forms/button.js";
+import { inputClass } from "../components/ui/forms/Field.js";
 import {
   foodTypeLabel,
   isOutOfStock,

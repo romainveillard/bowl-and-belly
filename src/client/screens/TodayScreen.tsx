@@ -5,7 +5,7 @@ import { BowlIcon, CheckIcon, LogoMark, PlusIcon, SettingsIcon } from "../compon
 import { FeedRow } from "../components/FeedRow.js";
 import { PetChip } from "../components/PetChip.js";
 import { WeightCard } from "../components/WeightCard.js";
-import { button } from "../components/ui/button.js";
+import { button } from "../components/ui/forms/button.js";
 import { useDay, useDaySettings, type DaySummary } from "../lib/feeds.js";
 import { foodTypeLabel } from "../lib/foods.js";
 import { formatAppDay } from "../lib/format.js";

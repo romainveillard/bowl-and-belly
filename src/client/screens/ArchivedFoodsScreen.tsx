@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 import { FoodTypeTile } from "../components/FoodTypeMark.js";
 import { BackIcon } from "../components/icons.js";
-import { button } from "../components/ui/button.js";
+import { button } from "../components/ui/forms/button.js";
 import { foodTypeLabel, useArchivedFoods, useSetFoodArchived } from "../lib/foods.js";
 import { formatDay } from "../lib/format.js";
 import { usePets } from "../lib/pets.js";

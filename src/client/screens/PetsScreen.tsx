@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router";
 import { ChevronRightIcon, PetsIcon, PlusIcon } from "../components/icons.js";
 import { PetAvatar } from "../components/PetAvatar.js";
 import { TargetProgress } from "../components/TargetProgress.js";
-import { button } from "../components/ui/button.js";
+import { button } from "../components/ui/forms/button.js";
 import { formatAge, formatKg, petTypeLabel } from "../lib/format.js";
 import { usePets } from "../lib/pets.js";
 import { PetProfile } from "./PetProfile.js";

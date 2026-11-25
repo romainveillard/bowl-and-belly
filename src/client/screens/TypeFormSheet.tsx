@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { InfoIcon } from "../components/icons.js";
-import { button } from "../components/ui/button.js";
-import { ConfirmDialog } from "../components/ui/ConfirmDialog.js";
-import { ErrorSummary } from "../components/ui/ErrorSummary.js";
-import { Field } from "../components/ui/Field.js";
-import { Segmented } from "../components/ui/Segmented.js";
-import { Sheet } from "../components/ui/Sheet.js";
+import { button } from "../components/ui/forms/button.js";
+import { ConfirmDialog } from "../components/ui/overlays/ConfirmDialog.js";
+import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
+import { Field } from "../components/ui/forms/Field.js";
+import { Segmented } from "../components/ui/forms/Segmented.js";
+import { Sheet } from "../components/ui/overlays/Sheet.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
 import {
   useSaveFoodType,

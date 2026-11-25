@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { LockIcon, LogoMark, RefreshIcon } from "../components/icons.js";
-import { button } from "../components/ui/button.js";
-import { Field } from "../components/ui/Field.js";
+import { button } from "../components/ui/forms/button.js";
+import { Field } from "../components/ui/forms/Field.js";
 import { useLogIn } from "../lib/auth.js";
 
 // Full-page on a phone, a card in the middle of the page on desktop.

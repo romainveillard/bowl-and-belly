@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 import { BackIcon, PetsIcon } from "../components/icons.js";
-import { button } from "../components/ui/button.js";
+import { button } from "../components/ui/forms/button.js";
 import { formatDay, petTypeLabel } from "../lib/format.js";
 import { useArchivedPets, usePets, useSetArchived } from "../lib/pets.js";
 

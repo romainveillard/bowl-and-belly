@@ -8,7 +8,7 @@ import { IntakeChart } from "../components/charts/IntakeChart.js";
 import { WeightChart } from "../components/charts/WeightChart.js";
 import { BackIcon, ChevronRightIcon } from "../components/icons.js";
 import { PetChip } from "../components/PetChip.js";
-import { Segmented } from "../components/ui/Segmented.js";
+import { Segmented } from "../components/ui/forms/Segmented.js";
 import { FeedRow } from "../components/FeedRow.js";
 import { dayStatus, isOnTarget, isOverTarget } from "../lib/dayStatus.js";
 import { useDay, useDaySettings } from "../lib/feeds.js";

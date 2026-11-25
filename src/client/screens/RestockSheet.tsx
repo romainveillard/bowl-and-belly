@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MinusIcon, PlusIcon } from "../components/icons.js";
-import { button } from "../components/ui/button.js";
-import { Field } from "../components/ui/Field.js";
-import { Segmented } from "../components/ui/Segmented.js";
-import { Sheet } from "../components/ui/Sheet.js";
+import { button } from "../components/ui/forms/button.js";
+import { Field } from "../components/ui/forms/Field.js";
+import { Segmented } from "../components/ui/forms/Segmented.js";
+import { Sheet } from "../components/ui/overlays/Sheet.js";
 import {
   isOutOfStock,
   portionPlural,

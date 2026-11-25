@@ -1,8 +1,8 @@
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { EditIcon, TrashIcon } from "../components/icons.js";
-import { Sheet } from "../components/ui/Sheet.js";
-import { useSnackbar } from "../components/ui/Snackbar.js";
+import { Sheet } from "../components/ui/overlays/Sheet.js";
+import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
 import { useDaySettings } from "../lib/feeds.js";
 import { formatDay, formatReadingKg } from "../lib/format.js";
 import { usePet, type PetDetail } from "../lib/pets.js";

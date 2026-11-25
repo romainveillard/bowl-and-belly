@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertIcon } from "../components/icons.js";
-import { button } from "../components/ui/button.js";
-import { ErrorSummary } from "../components/ui/ErrorSummary.js";
-import { Field } from "../components/ui/Field.js";
-import { Sheet } from "../components/ui/Sheet.js";
+import { button } from "../components/ui/forms/button.js";
+import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
+import { Field } from "../components/ui/forms/Field.js";
+import { Sheet } from "../components/ui/overlays/Sheet.js";
 import { appDayOf, type DaySettings } from "../../shared/app-day.js";
 import { formatDay, formatReadingKg, parsePositive } from "../lib/format.js";
 import type { PetDetail } from "../lib/pets.js";

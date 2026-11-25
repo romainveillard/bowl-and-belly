@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useSnackbar } from "../components/ui/Snackbar.js";
+import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
 import { formatTime } from "./format.js";
 import {
   useDaySettings,

@@ -5,7 +5,7 @@ import { FoodTypeTile } from "../components/FoodTypeMark.js";
 import { EmptyState } from "../components/EmptyState.js";
 import { ChevronDownIcon, HistoryIcon, PlusIcon } from "../components/icons.js";
 import { PetChip } from "../components/PetChip.js";
-import { button } from "../components/ui/button.js";
+import { button } from "../components/ui/forms/button.js";
 import { dayStatus } from "../lib/dayStatus.js";
 import { useDaySettings, useHistory, type DaySummary, type FeedEntry } from "../lib/feeds.js";
 import { foodTypeLabel } from "../lib/foods.js";

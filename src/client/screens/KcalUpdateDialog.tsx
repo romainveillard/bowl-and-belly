@@ -1,7 +1,7 @@
 import { AlertDialog } from "radix-ui";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { inputClass } from "../components/ui/Field.js";
+import { inputClass } from "../components/ui/forms/Field.js";
 import type { KcalBackfill } from "../lib/foods.js";
 
 interface KcalUpdateDialogProps {

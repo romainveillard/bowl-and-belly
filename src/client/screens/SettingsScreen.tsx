@@ -8,11 +8,11 @@ import {
   ChevronRightIcon,
   DownloadIcon,
 } from "../components/icons.js";
-import { button } from "../components/ui/button.js";
-import { Card, CardHeading } from "../components/ui/Card.js";
-import { Field, inputClass } from "../components/ui/Field.js";
-import { Segmented } from "../components/ui/Segmented.js";
-import { Switch } from "../components/ui/Switch.js";
+import { button } from "../components/ui/forms/button.js";
+import { Card, CardHeading } from "../components/ui/layout/Card.js";
+import { Field, inputClass } from "../components/ui/forms/Field.js";
+import { Segmented } from "../components/ui/forms/Segmented.js";
+import { Switch } from "../components/ui/forms/Switch.js";
 import { useAuth, useLogOut } from "../lib/auth.js";
 import { formatTime, formatWhen } from "../lib/format.js";
 import { useDemo } from "../lib/instance.js";

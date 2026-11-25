@@ -1,7 +1,7 @@
 import { Dialog } from "radix-ui";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { CloseIcon } from "../icons.js";
+import { CloseIcon } from "../../icons.js";
 
 interface SheetProps {
   open: boolean;

@@ -4,7 +4,7 @@ import type { PickerFood } from "../lib/feeds.js";
 import { foodTypeLabel, isOutOfStock, stockLeftLabel } from "../lib/foods.js";
 import { FoodTypeBadge, FoodTypeTile } from "./FoodTypeMark.js";
 import { SearchIcon } from "./icons.js";
-import { inputClass } from "./ui/Field.js";
+import { inputClass } from "./ui/forms/Field.js";
 
 const chip =
   "h-9 flex-none cursor-pointer rounded-full border border-border bg-card px-3.5 text-sm font-medium aria-pressed:border-primary-strong aria-pressed:bg-accent-soft aria-pressed:font-semibold";

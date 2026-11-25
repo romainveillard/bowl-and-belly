@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { PlusIcon } from "./icons.js";
-import { button } from "./ui/button.js";
+import { button } from "./ui/forms/button.js";
 
 interface EmptyStateProps {
   /** The tab's own title, shown above the message as on its normal screen. */

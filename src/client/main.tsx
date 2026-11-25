@@ -3,7 +3,7 @@ import { lazy, StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { App } from "./App.js";
-import { SnackbarProvider } from "./components/ui/Snackbar.js";
+import { SnackbarProvider } from "./components/ui/feedback/Snackbar.js";
 import "./i18n/index.js";
 import "./styles.css";
 

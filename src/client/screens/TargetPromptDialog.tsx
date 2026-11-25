@@ -1,6 +1,6 @@
 import { AlertDialog } from "radix-ui";
 import { useTranslation } from "react-i18next";
-import { useSnackbar } from "../components/ui/Snackbar.js";
+import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
 import { formatReadingKg } from "../lib/format.js";
 import { useSetTarget } from "../lib/pets.js";
 import { useAnswerAgePrompt, type TargetPrompt } from "../lib/weights.js";

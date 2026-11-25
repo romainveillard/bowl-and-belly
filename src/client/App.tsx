@@ -5,7 +5,7 @@ import { DemoBanner } from "./components/DemoBanner.js";
 import { EmptyState } from "./components/EmptyState.js";
 import { HistoryIcon, InsightsIcon } from "./components/icons.js";
 import { BottomNav, Sidebar } from "./components/Navigation.js";
-import { useSnackbar } from "./components/ui/Snackbar.js";
+import { useSnackbar } from "./components/ui/feedback/Snackbar.js";
 import { onDemoLimit, onUnreachable, useAccess } from "./lib/access.js";
 import { useAuth } from "./lib/auth.js";
 import { useDemo } from "./lib/instance.js";

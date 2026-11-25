@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { AlertIcon } from "../icons.js";
+import { AlertIcon } from "../../icons.js";
 
 /** "2 things to fix before saving: name and current weight." Nothing when the list is empty. */
 export function ErrorSummary({ names, inSheet = false }: { names: string[]; inSheet?: boolean }) {

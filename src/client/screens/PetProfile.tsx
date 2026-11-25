@@ -5,9 +5,9 @@ import { addDays } from "../../shared/app-day.js";
 import { BackIcon, EditIcon, PlusIcon, TrashIcon } from "../components/icons.js";
 import { PetAvatar } from "../components/PetAvatar.js";
 import { SPARKLINE_READINGS, Sparkline } from "../components/Sparkline.js";
-import { button } from "../components/ui/button.js";
-import { Card, CardHeading } from "../components/ui/Card.js";
-import { ConfirmDialog } from "../components/ui/ConfirmDialog.js";
+import { button } from "../components/ui/forms/button.js";
+import { Card, CardHeading } from "../components/ui/layout/Card.js";
+import { ConfirmDialog } from "../components/ui/overlays/ConfirmDialog.js";
 import {
   formatAge,
   formatDay,
