@@ -12,7 +12,10 @@ if (!root) {
   throw new Error("Missing #root element");
 }
 
-const queryClient = new QueryClient();
+// Many components read the same queries, settings in about twenty places, so a
+// short freshness window stops each new one from refetching. Focus still
+// refetches anything older, so changes from another device arrive.
+const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 30_000 } } });
 
 // UI review annotations, for development only: the constant condition lets
 // the production build drop the import, so the package never ships.
