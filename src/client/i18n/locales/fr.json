@@ -152,7 +152,13 @@
     "basedOnTargetGain": "D’après le poids cible, pendant la prise de poids.",
     "needsWeight": "Ajoutez un poids pour voir une suggestion.",
     "sinceToday": "Depuis aujourd’hui",
-    "changed": "Objectif quotidien désormais de {kcal} kcal à partir d’aujourd’hui"
+    "changed": "Objectif quotidien désormais de {kcal} kcal à partir d’aujourd’hui",
+    "errors": {
+      "kcal": "Saisissez un objectif d’au moins 1 kcal"
+    },
+    "errorNames": {
+      "kcal": "objectif quotidien"
+    }
   },
   "weight": {
     "title": "Poids",
@@ -289,7 +295,13 @@
     "out": "Rupture de stock",
     "emptyTitle": "Pas encore d’aliments",
     "emptyBody": "Ajoutez les aliments que vous avez dans le placard, avec les calories de l’étiquette. Vous les choisirez en notant un repas.",
-    "addFirst": "Ajouter votre premier aliment"
+    "addFirst": "Ajouter votre premier aliment",
+    "errors": {
+      "amount": "Saisissez une quantité supérieure à 0"
+    },
+    "errorNames": {
+      "amount": "quantité"
+    }
   },
   "foodForm": {
     "add": "Ajouter un aliment",
@@ -360,7 +372,13 @@
     "sinceLabel": "Mettre à jour les repas depuis",
     "none": "Aucun",
     "noneHint": "Seuls les nouveaux repas utilisent la nouvelle valeur",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "errors": {
+      "day": "Saisissez une date, aujourd’hui ou avant"
+    },
+    "errorNames": {
+      "day": "date"
+    }
   },
   "history": {
     "emptyTitle": "Pas encore d’historique",

@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { button } from "../components/ui/forms/button.js";
+import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field } from "../components/ui/forms/Field.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
 import { parsePositive } from "../lib/format.js";
+import { useFormErrors } from "../lib/useFormErrors.js";
 import { useSetTarget } from "./pets.js";
+
+const ORDER = ["kcal"] as const;
 
 interface ManualTargetSheetProps {
   petId: number;
@@ -25,6 +29,9 @@ export function ManualTargetSheet({
   const [kcal, setKcal] = useState(currentKcal === null ? "" : String(currentKcal));
   const setTarget = useSetTarget(petId);
   const value = parsePositive(kcal);
+  // 0.3 kcal would round to a target of 0.
+  const valid = value !== null && Math.round(value) >= 1;
+  const errors = useFormErrors(new Map(valid ? [] : [["kcal", "kcal"] as const]), ORDER, "target");
   const save = (manualTargetKcal: number | null) =>
     setTarget.mutate(manualTargetKcal, { onSuccess: onClose });
 
@@ -43,8 +50,12 @@ export function ManualTargetSheet({
           <button
             type="button"
             className={button.sheetPrimary}
-            disabled={value === null || setTarget.isPending}
-            onClick={() => value !== null && save(Math.round(value))}
+            disabled={setTarget.isPending}
+            onClick={() => {
+              if (!errors.reject() && value !== null) {
+                save(Math.round(value));
+              }
+            }}
           >
             {t("target.save")}
           </button>
@@ -61,14 +72,20 @@ export function ManualTargetSheet({
         </>
       }
     >
-      <Field
-        label={t("target.field")}
-        value={kcal}
-        onChange={setKcal}
-        suffix="kcal"
-        inputMode="numeric"
-        hint={t("target.appliesFromToday")}
-      />
+      <div className="flex flex-col gap-4">
+        <ErrorSummary inSheet names={errors.shown.map(() => t("target.errorNames.kcal"))} />
+        <Field
+          id={errors.idOf("kcal")}
+          label={t("target.field")}
+          value={kcal}
+          onChange={setKcal}
+          onBlur={errors.recheck("kcal")}
+          error={errors.problemOf("kcal") && t("target.errors.kcal")}
+          suffix="kcal"
+          inputMode="numeric"
+          hint={t("target.appliesFromToday")}
+        />
+      </div>
     </Sheet>
   );
 }

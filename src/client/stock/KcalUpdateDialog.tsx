@@ -1,9 +1,13 @@
 import { AlertDialog } from "radix-ui";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { inputClass } from "../components/ui/forms/Field.js";
+import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
+import { FieldError, Input } from "../components/ui/forms/Field.js";
 import { Dialog, dialogButton } from "../components/ui/overlays/Dialog.js";
+import { useFormErrors } from "../lib/useFormErrors.js";
 import type { KcalBackfill } from "./foods.js";
+
+const ORDER = ["day"] as const;
 
 interface KcalUpdateDialogProps {
   /** "Salmon kibbles changed from 370 to 365 kcal per 100 g." */
@@ -18,6 +22,11 @@ export function KcalUpdateDialog({ description, today, onSave, onCancel }: KcalU
   const { t } = useTranslation();
   const [scope, setScope] = useState<KcalBackfill["scope"]>("since");
   const [day, setDay] = useState(today);
+  // The picker stops at today, but a typed date can still be later.
+  const dayValid = scope !== "since" || (day !== "" && day <= today);
+  const errors = useFormErrors(new Map(dayValid ? [] : [["day", "day"] as const]), ORDER, "kcal");
+  const dayError = errors.problemOf("day") && t("kcalUpdate.errors.day");
+  const dayId = errors.idOf("day");
   const options = [
     { value: "all", label: t("kcalUpdate.all"), hint: t("kcalUpdate.allHint") },
     { value: "since", label: t("kcalUpdate.since"), hint: t("kcalUpdate.sinceHint") },
@@ -35,8 +44,11 @@ export function KcalUpdateDialog({ description, today, onSave, onCancel }: KcalU
           <button
             type="button"
             className={dialogButton.primary}
-            disabled={scope === "since" && day === ""}
-            onClick={() => onSave(scope === "since" ? { scope, day } : { scope })}
+            onClick={() => {
+              if (!errors.reject()) {
+                onSave(scope === "since" ? { scope, day } : { scope });
+              }
+            }}
           >
             {t("kcalUpdate.save")}
           </button>
@@ -46,6 +58,7 @@ export function KcalUpdateDialog({ description, today, onSave, onCancel }: KcalU
         </>
       }
     >
+      <ErrorSummary inSheet names={errors.shown.map(() => t("kcalUpdate.errorNames.day"))} />
       <fieldset className="flex flex-col gap-2">
         <legend className="sr-only">{t("kcalUpdate.legend")}</legend>
         {options.map((option) => (
@@ -68,17 +81,20 @@ export function KcalUpdateDialog({ description, today, onSave, onCancel }: KcalU
             </label>
             {option.value === "since" && scope === "since" && (
               <div className="pl-8">
-                <label htmlFor="kcal-since" className="sr-only">
+                <label htmlFor={dayId} className="sr-only">
                   {t("kcalUpdate.sinceLabel")}
                 </label>
-                <input
-                  id="kcal-since"
+                <Input
+                  id={dayId}
                   type="date"
                   max={today}
                   value={day}
                   onChange={(event) => setDay(event.target.value)}
-                  className={inputClass}
+                  onBlur={errors.recheck("day")}
+                  aria-invalid={dayError ? true : undefined}
+                  aria-describedby={dayError ? `${dayId}-error` : undefined}
                 />
+                {dayError && <FieldError id={`${dayId}-error`}>{dayError}</FieldError>}
               </div>
             )}
           </div>

@@ -152,7 +152,13 @@
     "basedOnTargetGain": "Based on the target weight while gaining weight.",
     "needsWeight": "Add a weight to see a suggestion.",
     "sinceToday": "Since today",
-    "changed": "Daily target now {kcal} kcal from today"
+    "changed": "Daily target now {kcal} kcal from today",
+    "errors": {
+      "kcal": "Enter a target of at least 1 kcal"
+    },
+    "errorNames": {
+      "kcal": "daily target"
+    }
   },
   "weight": {
     "title": "Weight",
@@ -289,7 +295,13 @@
     "out": "Out of stock",
     "emptyTitle": "No foods yet",
     "emptyBody": "Add the foods you keep in the cupboard, with calories from the label. You’ll pick from them when you log a feed.",
-    "addFirst": "Add your first food"
+    "addFirst": "Add your first food",
+    "errors": {
+      "amount": "Enter an amount above 0"
+    },
+    "errorNames": {
+      "amount": "amount"
+    }
   },
   "foodForm": {
     "add": "Add food",
@@ -360,7 +372,13 @@
     "sinceLabel": "Update feeds since",
     "none": "None",
     "noneHint": "Only new feeds use the new value",
-    "save": "Save"
+    "save": "Save",
+    "errors": {
+      "day": "Enter a date, today or earlier"
+    },
+    "errorNames": {
+      "day": "date"
+    }
   },
   "history": {
     "emptyTitle": "No history yet",
