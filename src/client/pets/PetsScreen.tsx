@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
 import { ArchivedLink } from "../components/ArchivedLink.js";
@@ -11,6 +12,7 @@ import { PageTitle } from "../components/ui/layout/PageHeader.js";
 import { formatAge, formatKg } from "../lib/format.js";
 import { petTypeLabel, usePets } from "./pets.js";
 import { PetProfile } from "./PetProfile.js";
+import { useSelectedPet } from "./selectedPet.js";
 import { LogWeightButton, WeightSheetsProvider } from "./WeightSheetsProvider.js";
 
 /**
@@ -22,8 +24,18 @@ export function PetsScreen() {
   const locale = i18n.language;
   const params = useParams();
   const { data } = usePets();
+  const { pet: selectedPet, select } = useSelectedPet();
   const openId = params.petId === undefined ? undefined : Number(params.petId);
-  const selectedId = openId ?? data?.pets[0]?.id;
+  // The pet followed across screens, unless the address names another.
+  const selectedId = openId ?? selectedPet?.id;
+  const openIsActive = data?.pets.some((pet) => pet.id === openId) ?? false;
+
+  // Opening a pet here makes it the one the other screens follow.
+  useEffect(() => {
+    if (openId !== undefined && openIsActive) {
+      select(openId);
+    }
+  }, [openId, openIsActive, select]);
 
   if (!data) {
     return null;
