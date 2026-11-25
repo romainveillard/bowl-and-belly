@@ -14,8 +14,10 @@
   --color-card: #ffffff;
   --color-muted: #eef0f4;
   --color-border: #e3e6ec;
+  /* Darker than border, so an input stands out from its card. */
+  --color-input-border: #8a92a3;
   --color-muted-foreground: #5b6478;
-  --color-success: #2f7d53;
+  --color-success: #2a7049;
   --color-success-soft: #ddf1e5;
   --color-warning: #9a6412;
   --color-danger: #b93a32;
