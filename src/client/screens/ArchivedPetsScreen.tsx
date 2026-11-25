@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { PetsIcon } from "../components/icons.js";
+import { PetAvatar } from "../components/PetAvatar.js";
 import { button } from "../components/ui/forms/button.js";
 import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { formatDay, petTypeLabel } from "../lib/format.js";
@@ -34,20 +34,12 @@ export function ArchivedPetsScreen() {
               key={pet.id}
               className="flex min-h-[68px] items-center gap-3 border-t border-border py-2.5 pr-3 pl-4 first:border-t-0 desktop:min-h-[72px] desktop:gap-3.5 desktop:px-[22px] desktop:py-3"
             >
-              {pet.photoId === null ? (
-                <span
-                  aria-hidden="true"
-                  className="flex size-11 flex-none items-center justify-center rounded-full bg-muted text-primary-strong desktop:size-12"
-                >
-                  <PetsIcon />
-                </span>
-              ) : (
-                <img
-                  src={`/api/images/${pet.photoId}`}
-                  alt=""
-                  className="size-11 flex-none rounded-full object-cover desktop:size-12"
-                />
-              )}
+              <span className="desktop:hidden">
+                <PetAvatar photoId={pet.photoId} size={44} archived />
+              </span>
+              <span className="hidden desktop:block">
+                <PetAvatar photoId={pet.photoId} size={48} archived />
+              </span>
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span className="truncate text-base font-semibold">{pet.name}</span>
                 <span className="text-[13px] text-muted-foreground">

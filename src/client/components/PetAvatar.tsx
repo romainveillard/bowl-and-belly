@@ -6,9 +6,11 @@ interface PetAvatarProps {
   size: number;
   /** White instead of peach, for use on a selected (peach) card. */
   onAccent?: boolean;
+  /** Grey instead of peach, for a pet that is archived. */
+  archived?: boolean;
 }
 
-export function PetAvatar({ photoId, size, onAccent = false }: PetAvatarProps) {
+export function PetAvatar({ photoId, size, onAccent = false, archived = false }: PetAvatarProps) {
   if (photoId !== null) {
     return (
       <img
@@ -24,7 +26,7 @@ export function PetAvatar({ photoId, size, onAccent = false }: PetAvatarProps) {
   return (
     <span
       aria-hidden="true"
-      className={`flex flex-none items-center justify-center rounded-full text-primary-strong ${onAccent ? "bg-card" : "bg-accent-soft"}`}
+      className={`flex flex-none items-center justify-center rounded-full text-primary-strong ${archived ? "bg-muted" : onAccent ? "bg-card" : "bg-accent-soft"}`}
       style={{ width: size, height: size }}
     >
       <PetsIcon size={Math.round(size / 2)} />
