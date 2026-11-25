@@ -45,7 +45,7 @@ export function RowHoverActions({
 export function List({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <div
-      className={`overflow-hidden rounded-xl bg-card inset-ring inset-ring-border desktop:rounded-[14px] ${className}`}
+      className={`edge-border overflow-hidden rounded-xl bg-card desktop:rounded-[14px] ${className}`}
     >
       {children}
     </div>

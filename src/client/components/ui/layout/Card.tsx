@@ -18,7 +18,7 @@ export function Card({ children, className = "", size = "default", label }: Card
   return (
     <section
       aria-label={label}
-      className={`flex flex-col rounded-xl bg-card inset-ring inset-ring-border desktop:rounded-[14px] ${sizes[size]} ${className}`}
+      className={`edge-border flex flex-col rounded-xl bg-card desktop:rounded-[14px] ${sizes[size]} ${className}`}
     >
       {children}
     </section>

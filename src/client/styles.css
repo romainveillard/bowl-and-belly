@@ -112,6 +112,21 @@ body {
   }
 }
 
+/* A box's 1 px edge, drawn over its content: rows that run to the edges of a
+   card or list would otherwise cover a ring drawn beneath them. */
+@utility edge-border {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px var(--color-border);
+    pointer-events: none;
+  }
+}
+
 /* For a row that fills a box clipping its overflow, which would hide an
    outline drawn outside it. */
 @utility focus-inset {
