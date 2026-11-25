@@ -47,39 +47,60 @@ export function EmptyState({
   footer,
   size = "default",
 }: EmptyStateProps) {
-  const style = sizes[size];
-
   return (
     <div className="flex min-h-[calc(100dvh-var(--bottom-bar-height)-env(safe-area-inset-bottom))] flex-col desktop:min-h-0 desktop:gap-6">
       <PageHeader title={heading} />
-      <section
-        className={`flex flex-1 flex-col items-center justify-center text-center desktop:flex-none desktop:rounded-[14px] desktop:bg-card desktop:px-8 desktop:py-20 desktop:inset-ring desktop:inset-ring-border ${style.section}`}
-      >
-        <span
-          aria-hidden="true"
-          className={`flex items-center justify-center bg-accent-soft text-primary-strong ${style.icon}`}
-        >
-          {icon}
-        </span>
-        <h2 className={`font-display font-semibold ${style.title}`}>{title}</h2>
-        <p
-          className={`text-[15px] leading-[22px] text-muted-foreground desktop:text-base desktop:leading-6 ${style.body}`}
-        >
-          {body}
-        </p>
-        {"to" in action ? (
-          <Link to={action.to} className={style.action}>
-            <PlusIcon size={style.plus} />
-            {action.label}
-          </Link>
-        ) : (
-          <button type="button" onClick={action.onClick} className={style.action}>
-            <PlusIcon size={style.plus} />
-            {action.label}
-          </button>
-        )}
-      </section>
+      <EmptyMessage
+        size={size}
+        picture={
+          <span
+            aria-hidden="true"
+            className={`flex items-center justify-center bg-accent-soft text-primary-strong ${sizes[size].icon}`}
+          >
+            {icon}
+          </span>
+        }
+        title={title}
+        body={body}
+        action={action}
+      />
       {footer && <div className="px-5 desktop:p-0">{footer}</div>}
     </div>
+  );
+}
+
+type EmptyMessageProps = Pick<EmptyStateProps, "title" | "body" | "action"> & {
+  size: NonNullable<EmptyStateProps["size"]>;
+  /** Above the title: an icon in its circle, or the logo. */
+  picture: ReactNode;
+};
+
+/** The message of an empty state, for a screen that shows it among other things. */
+export function EmptyMessage({ size, picture, title, body, action }: EmptyMessageProps) {
+  const style = sizes[size];
+
+  return (
+    <section
+      className={`flex flex-1 flex-col items-center justify-center text-center desktop:flex-none desktop:rounded-[14px] desktop:bg-card desktop:px-8 desktop:py-20 desktop:inset-ring desktop:inset-ring-border ${style.section}`}
+    >
+      {picture}
+      <h2 className={`font-display font-semibold ${style.title}`}>{title}</h2>
+      <p
+        className={`text-[15px] leading-[22px] text-muted-foreground desktop:text-base desktop:leading-6 ${style.body}`}
+      >
+        {body}
+      </p>
+      {"to" in action ? (
+        <Link to={action.to} className={style.action}>
+          <PlusIcon size={style.plus} />
+          {action.label}
+        </Link>
+      ) : (
+        <button type="button" onClick={action.onClick} className={style.action}>
+          <PlusIcon size={style.plus} />
+          {action.label}
+        </button>
+      )}
+    </section>
   );
 }

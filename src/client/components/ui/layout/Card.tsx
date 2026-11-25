@@ -1,9 +1,24 @@
 import type { ReactNode } from "react";
 
-export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
+const sizes = {
+  default: "gap-3.5 p-[18px] desktop:gap-4 desktop:p-[22px]",
+  /** A small figure, such as an Insights stat tile. */
+  compact: "gap-1 p-3.5 desktop:p-[18px]",
+};
+
+interface CardProps {
+  children: ReactNode;
+  className?: string;
+  size?: keyof typeof sizes;
+  /** Names the card for screen readers when it has no visible heading. */
+  label?: string;
+}
+
+export function Card({ children, className = "", size = "default", label }: CardProps) {
   return (
     <section
-      className={`flex flex-col gap-3.5 rounded-xl bg-card p-[18px] inset-ring inset-ring-border desktop:gap-4 desktop:rounded-[14px] desktop:p-[22px] ${className}`}
+      aria-label={label}
+      className={`flex flex-col rounded-xl bg-card inset-ring inset-ring-border desktop:rounded-[14px] ${sizes[size]} ${className}`}
     >
       {children}
     </section>

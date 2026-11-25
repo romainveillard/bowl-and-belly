@@ -8,6 +8,7 @@ import { IntakeChart } from "../components/charts/IntakeChart.js";
 import { WeightChart } from "../components/charts/WeightChart.js";
 import { BackIcon, ChevronRightIcon } from "../components/icons.js";
 import { PetChip } from "../components/PetChip.js";
+import { Card } from "../components/ui/layout/Card.js";
 import { PageHeader } from "../components/ui/layout/PageHeader.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { FeedRow } from "../components/FeedRow.js";
@@ -45,7 +46,7 @@ function Stat({
   className?: string;
 }) {
   return (
-    <div className={`${card} flex flex-1 flex-col gap-1 p-3.5 desktop:p-[18px] ${className}`}>
+    <Card size="compact" className={`flex-1 ${className}`}>
       <span className="text-caption text-muted-foreground desktop:text-[13px]">{label}</span>
       <span className="flex items-baseline gap-1">
         <span className="font-display text-2xl font-semibold tabular-nums desktop:text-[30px]">
@@ -56,7 +57,7 @@ function Stat({
       {note && (
         <span className="text-caption text-muted-foreground desktop:text-[13px]">{note}</span>
       )}
-    </div>
+    </Card>
   );
 }
 
@@ -225,9 +226,7 @@ function DayInsights({ petId, today, onPeriod }: ViewProps) {
         />
       </div>
 
-      <section
-        className={`${card} flex flex-col gap-3 px-[18px] py-4 desktop:gap-4 desktop:p-[22px]`}
-      >
+      <Card>
         <div className="flex flex-col gap-0.5">
           <h2 className="text-[15px] font-semibold desktop:text-base">
             {t("insights.throughDay")}
@@ -245,7 +244,7 @@ function DayInsights({ petId, today, onPeriod }: ViewProps) {
           now={openedAt}
           label={t("insights.dayLabel", { date: format("long"), kcal: eatenKcal })}
         />
-      </section>
+      </Card>
 
       <section className={`${card} flex flex-col gap-1 pt-4 desktop:pt-[22px]`}>
         <h2 className="px-[18px] text-[15px] font-semibold desktop:px-[22px] desktop:text-base">
@@ -379,9 +378,7 @@ function MonthInsights({ petId, today, onPeriod }: ViewProps) {
         />
       </div>
 
-      <section
-        className={`${card} flex flex-col gap-3 px-[18px] py-4 desktop:gap-4 desktop:p-[22px]`}
-      >
+      <Card>
         <div className="flex flex-col gap-0.5">
           <h2 className="text-[15px] font-semibold desktop:text-base">{t("insights.calories")}</h2>
           <span className="text-[13px] text-muted-foreground">{t("insights.oneBarPerDay")}</span>
@@ -393,12 +390,10 @@ function MonthInsights({ petId, today, onPeriod }: ViewProps) {
           height={180}
           label={t("insights.monthLabel", { month })}
         />
-      </section>
+      </Card>
 
       {inMonth.length > 0 && (
-        <section
-          className={`${card} flex flex-col gap-3 px-[18px] py-4 desktop:gap-4 desktop:p-[22px]`}
-        >
+        <Card>
           <div className="flex flex-col gap-0.5">
             <h2 className="text-[15px] font-semibold desktop:text-base">
               {t("insights.weightChart")}
@@ -416,7 +411,7 @@ function MonthInsights({ petId, today, onPeriod }: ViewProps) {
             height={150}
             label={t("insights.monthWeightLabel", { month })}
           />
-        </section>
+        </Card>
       )}
     </>
   );
@@ -532,21 +527,17 @@ function WeekInsights({ petId, today, onPeriod }: ViewProps) {
         />
       </div>
 
-      <section
-        className={`${card} flex flex-col gap-3 px-[18px] py-4 desktop:gap-4 desktop:p-[22px]`}
-      >
+      <Card>
         <h2 className="text-[15px] font-semibold desktop:text-base">{t("insights.calories")}</h2>
         <IntakeChart
           days={data.days}
           today={data.today}
           label={t("insights.caloriesLabel", { range })}
         />
-      </section>
+      </Card>
 
       {data.weights.length > 0 && (
-        <section
-          className={`${card} flex flex-col gap-3 px-[18px] py-4 desktop:gap-4 desktop:p-[22px]`}
-        >
+        <Card>
           <div className="flex flex-col gap-0.5">
             <h2 className="text-[15px] font-semibold desktop:text-base">
               {t("insights.weightChart")}
@@ -563,7 +554,7 @@ function WeekInsights({ petId, today, onPeriod }: ViewProps) {
             timeZone={timeZone}
             label={t("insights.weightLabel")}
           />
-        </section>
+        </Card>
       )}
     </>
   );

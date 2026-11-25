@@ -1,10 +1,11 @@
 import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+import { EmptyMessage } from "../components/EmptyState.js";
 import { BowlIcon, CheckIcon, LogoMark, PlusIcon, SettingsIcon } from "../components/icons.js";
 import { FeedRow } from "../components/FeedRow.js";
 import { PetChip } from "../components/PetChip.js";
-import { Card } from "../components/ui/layout/Card.js";
+import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageHeader } from "../components/ui/layout/PageHeader.js";
 import { WeightCard } from "../components/WeightCard.js";
@@ -72,29 +73,22 @@ function NoPets() {
 
   return (
     <div className="grid gap-4 desktop:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] desktop:items-start desktop:gap-6">
-      <section
-        className={`${card} flex flex-col items-center gap-3 rounded-2xl px-[22px] pt-8 pb-[26px] text-center desktop:gap-3.5 desktop:px-10 desktop:pt-12 desktop:pb-10`}
-      >
-        <span className="desktop:hidden">
-          <LogoMark width={110} />
-        </span>
-        <span className="hidden desktop:block">
-          <LogoMark width={140} />
-        </span>
-        <h2 className="mt-1.5 font-display text-[26px] leading-8 font-semibold desktop:text-[30px] desktop:leading-9">
-          {t("today.welcomeTitle")}
-        </h2>
-        <p className="text-[15px] leading-[22px] text-muted-foreground desktop:max-w-[420px] desktop:text-base desktop:leading-6">
-          {t("today.welcomeBody")}
-        </p>
-        <Link
-          to="/pets/new"
-          className={`${button.primaryLarge} mt-1.5 desktop:mt-2 desktop:w-auto desktop:rounded-full desktop:px-[26px]`}
-        >
-          <PlusIcon size={20} />
-          {t("today.addFirstPet")}
-        </Link>
-      </section>
+      <EmptyMessage
+        size="large"
+        picture={
+          <>
+            <span className="desktop:hidden">
+              <LogoMark width={110} />
+            </span>
+            <span className="hidden desktop:block">
+              <LogoMark width={140} />
+            </span>
+          </>
+        }
+        title={t("today.welcomeTitle")}
+        body={t("today.welcomeBody")}
+        action={{ label: t("today.addFirstPet"), to: "/pets/new" }}
+      />
       <Card>
         <h2 className="text-caption font-medium tracking-[0.6px] text-muted-foreground uppercase desktop:text-base desktop:font-semibold desktop:tracking-normal desktop:text-foreground desktop:normal-case">
           {t("today.gettingStarted")}
@@ -119,10 +113,7 @@ function CaloriesCard({
   const over = targetKcal !== null && eatenKcal > targetKcal;
 
   return (
-    <section
-      aria-label={t("today.caloriesLabel")}
-      className={`${card} flex flex-col gap-3 rounded-xl p-[18px] desktop:gap-4 desktop:rounded-[14px] desktop:p-[22px]`}
-    >
+    <Card label={t("today.caloriesLabel")}>
       <h2 className="hidden text-base font-semibold desktop:block">{t("today.caloriesToday")}</h2>
       <span className="flex items-baseline gap-2 tabular-nums">
         <span className="font-display text-4xl leading-10 font-semibold desktop:text-[44px] desktop:leading-[48px]">
@@ -165,7 +156,7 @@ function CaloriesCard({
           </span>
         </span>
       )}
-    </section>
+    </Card>
   );
 }
 
@@ -211,13 +202,10 @@ function TodayFeeds({ pet, today }: { pet: PetSummary; today: string }) {
           byType={summary.byType}
         />
         {entries.length > 0 && (
-          <section className="flex flex-col gap-2.5 desktop:gap-4 desktop:rounded-[14px] desktop:bg-card desktop:pt-[22px] desktop:inset-ring desktop:inset-ring-border">
-            <h2 className="text-caption font-medium tracking-[0.6px] text-muted-foreground uppercase desktop:px-[22px] desktop:text-base desktop:font-semibold desktop:tracking-normal desktop:text-foreground desktop:normal-case">
-              {t("feed.feeds", { count: entries.length })}
-            </h2>
-            <div
-              className={`${card} overflow-hidden rounded-xl desktop:rounded-t-none desktop:rounded-b-[14px] desktop:border-t desktop:border-border desktop:inset-ring-0`}
-            >
+          <Card>
+            <CardHeading title={t("feed.feeds", { count: entries.length })} />
+            {/* The rows run to the card's edges, so swipe and hover colours fill them. */}
+            <div className="-mx-[18px] -mb-[18px] overflow-hidden rounded-b-xl border-t border-border desktop:-mx-[22px] desktop:-mb-[22px] desktop:rounded-b-[14px]">
               {entries.map((entry, index) => (
                 <FeedRow
                   key={entry.id}
@@ -230,7 +218,7 @@ function TodayFeeds({ pet, today }: { pet: PetSummary; today: string }) {
                 />
               ))}
             </div>
-          </section>
+          </Card>
         )}
       </div>
       <div className="hidden min-w-0 flex-col gap-6 desktop:flex">
@@ -252,9 +240,7 @@ function NoFoods({ pet }: { pet: PetSummary }) {
   return (
     <div className="grid gap-4 desktop:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] desktop:items-start desktop:gap-6">
       <CaloriesCard eatenKcal={0} targetKcal={pet.targetKcal} byType={[]} />
-      <section
-        className={`${card} flex flex-col gap-3.5 rounded-2xl p-5 desktop:gap-4 desktop:p-6`}
-      >
+      <Card>
         <div className="flex items-center gap-3.5">
           <span
             aria-hidden="true"
@@ -279,7 +265,7 @@ function NoFoods({ pet }: { pet: PetSummary }) {
         </Link>
         <div className="h-px bg-border" />
         <GettingStarted petAdded />
-      </section>
+      </Card>
     </div>
   );
 }
