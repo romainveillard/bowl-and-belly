@@ -5,6 +5,7 @@ import { button } from "../components/ui/forms/button.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { listRow, RowHoverActions } from "../components/ui/layout/List.js";
 import { formatInstantDay, formatKg, formatReadingKg } from "../lib/format.js";
+import { useFocusNext } from "../lib/useFocusNext.js";
 import { useSettings } from "../settings/settings.js";
 import type { PetDetail } from "./pets.js";
 import { SPARKLINE_READINGS, Sparkline } from "./Sparkline.js";
@@ -19,6 +20,7 @@ export function WeighInsCard({ pet }: { pet: PetDetail }) {
   const locale = i18n.language;
   const weightSheets = useWeightSheets();
   const [showAll, setShowAll] = useState(false);
+  const focusNext = useFocusNext();
   const latest = pet.weights[0];
   const { data: settings } = useSettings();
   const day = (measuredAt: string) =>
@@ -54,7 +56,11 @@ export function WeighInsCard({ pet }: { pet: PetDetail }) {
           {pet.weights.slice(0, showAll ? undefined : LATEST_READINGS).map((reading) => {
             const date = day(reading.measuredAt);
             return (
-              <div key={reading.id} className={`group relative ${listRow}`}>
+              <div
+                key={reading.id}
+                data-reading={reading.id}
+                className={`group relative ${listRow}`}
+              >
                 <button
                   type="button"
                   onClick={() => weightSheets.openActions(reading)}
@@ -87,7 +93,11 @@ export function WeighInsCard({ pet }: { pet: PetDetail }) {
           {!showAll && pet.weights.length > LATEST_READINGS && (
             <button
               type="button"
-              onClick={() => setShowAll(true)}
+              onClick={() => {
+                setShowAll(true);
+                const first = pet.weights[LATEST_READINGS]?.id;
+                focusNext(() => document.querySelector(`[data-reading="${first}"] button`));
+              }}
               className="flex min-h-11 w-full cursor-pointer items-center border-t border-border text-sm font-semibold"
             >
               {t("weight.showAll", { count: pet.weights.length })}

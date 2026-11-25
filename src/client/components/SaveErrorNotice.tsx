@@ -3,8 +3,12 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { failureReason } from "../lib/apiError.js";
 import { useSnackbar } from "./ui/feedback/Snackbar.js";
+import { reportInOpenSheet } from "./ui/overlays/sheetErrors.js";
 
-/** Says what failed and why, in the error snackbar, for every save that names what it does. */
+/**
+ * Says what failed and why, for every save that names what it does: in the
+ * open sheet, or else in the error snackbar.
+ */
 export function SaveErrorNotice() {
   const { t } = useTranslation();
   const showSnackbar = useSnackbar();
@@ -21,8 +25,12 @@ export function SaveErrorNotice() {
           return;
         }
         const reason = failureReason(event.action.error, t);
-        if (reason !== null) {
-          showSnackbar({ tone: "error", message: t(`errors.failed.${failed}`), detail: reason });
+        if (reason === null) {
+          return;
+        }
+        const error = { message: t(`errors.failed.${failed}`), detail: reason };
+        if (!reportInOpenSheet(error)) {
+          showSnackbar({ tone: "error", ...error });
         }
       }),
     [queryClient, showSnackbar, t],

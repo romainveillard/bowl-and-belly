@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { flushSync } from "react-dom";
 
 /** What a checked field's input takes from its form, for a card that holds the field. */
 export interface CheckedField {
@@ -52,8 +53,12 @@ export function useFormErrors<Field extends string, Problem extends string>(
       if (!firstInvalid) {
         return false;
       }
-      setShown(problems);
-      setAttempted(true);
+      // Committed before focus moves, so the field is already marked invalid and
+      // described by its error when a screen reader announces it.
+      flushSync(() => {
+        setShown(problems);
+        setAttempted(true);
+      });
       document.getElementById(idOf(firstInvalid))?.focus();
       return true;
     },

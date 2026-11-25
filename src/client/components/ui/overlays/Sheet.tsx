@@ -1,7 +1,9 @@
 import { Dialog } from "radix-ui";
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { CloseIcon } from "../../icons.js";
+import { Notice } from "../feedback/Notice.js";
+import { useSheetError } from "./sheetErrors.js";
 
 interface SheetProps {
   open: boolean;
@@ -35,6 +37,8 @@ export function Sheet({
   flush = false,
 }: SheetProps) {
   const { t } = useTranslation();
+  const error = useSheetError(open);
+  const body = useRef<HTMLDivElement>(null);
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -42,6 +46,16 @@ export function Sheet({
         <Dialog.Overlay className="fixed inset-0 z-10 bg-overlay" />
         <Dialog.Content
           aria-describedby={undefined}
+          // A form sheet starts on its first field rather than on Close or the
+          // pet chip; a sheet of actions starts on its first action.
+          onOpenAutoFocus={(event) => {
+            const field =
+              footer && body.current?.querySelector<HTMLElement>("input, select, textarea");
+            if (field) {
+              event.preventDefault();
+              field.focus();
+            }
+          }}
           className={`fixed inset-x-0 bottom-0 z-20 flex flex-col rounded-t-3xl bg-card pb-[env(safe-area-inset-bottom)] desktop:inset-x-auto desktop:top-24 desktop:bottom-auto desktop:left-1/2 desktop:-translate-x-1/2 desktop:overflow-hidden desktop:rounded-2xl desktop:pb-0 desktop:shadow-[0_20px_48px_rgba(31,42,68,0.3)] ${tall ? "top-9 desktop:max-h-[calc(100dvh-128px)] desktop:w-[min(560px,calc(100%-32px))]" : "desktop:w-[min(460px,calc(100%-32px))]"}`}
         >
           <div className="flex-none px-5 pt-2.5 pb-2 desktop:px-6 desktop:pt-5 desktop:pb-3">
@@ -72,12 +86,18 @@ export function Sheet({
             </div>
           </div>
           <div
+            ref={body}
             className={
               flush
                 ? "flex flex-col pt-1 pb-6 desktop:pb-3"
                 : `flex flex-col gap-2 px-5 pt-2 pb-1 desktop:gap-[18px] desktop:px-6 desktop:pt-1 desktop:pb-5 ${tall ? "min-h-0 flex-1 gap-[18px] overflow-y-auto pt-1 pb-4" : ""}`
             }
           >
+            {error && (
+              <Notice tone="danger" role="alert">
+                <strong>{error.message}</strong> {error.detail}
+              </Notice>
+            )}
             {children}
           </div>
           {footer && (

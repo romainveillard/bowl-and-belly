@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { kcalIn, leftoverFits } from "../../shared/feeds.js";
 import { FoodPicker } from "./FoodPicker.js";
+import { useFocusNext } from "../lib/useFocusNext.js";
 import { FoodRow } from "../stock/FoodRow.js";
 import { button } from "../components/ui/forms/button.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
@@ -32,6 +33,8 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
   const [openedAt] = useState(() => new Date());
   const [newFood, setNewFood] = useState<PickerFood | null>(null);
   const [changing, setChanging] = useState(false);
+  const changeButton = useRef<HTMLButtonElement>(null);
+  const focusNext = useFocusNext();
   const [served, setServed] = useState(String(entry.servedG));
   const [leftover, setLeftover] = useState(entry.leftoverG === null ? "" : String(entry.leftoverG));
   // The entry keeps its own instant unless the user changes the date or time.
@@ -118,6 +121,7 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
             onChoose={(food) => {
               setNewFood(food.id === entry.food.id ? null : food);
               setChanging(false);
+              focusNext(() => changeButton.current);
             }}
           />
         ) : (
@@ -129,9 +133,13 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
                 onAccent
                 trailing={
                   <button
+                    ref={changeButton}
                     type="button"
                     className={`${button.outline} hit-area h-10 flex-none px-3.5 text-sm`}
-                    onClick={() => setChanging(true)}
+                    onClick={() => {
+                      setChanging(true);
+                      focusNext(() => document.getElementById("edit-food"));
+                    }}
                   >
                     {t("editFeed.change")}
                   </button>

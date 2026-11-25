@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { useUploadPhoto } from "../lib/images.js";
+import { useFocusNext } from "../lib/useFocusNext.js";
 import { CameraIcon } from "./icons.js";
 import { button } from "./ui/forms/button.js";
 
@@ -23,6 +24,8 @@ type PhotoPickerProps = {
 export function PhotoPicker(props: PhotoPickerProps) {
   const { photoId, onChange, label, alt, hint, shape } = props;
   const fileInput = useRef<HTMLInputElement>(null);
+  const emptySlot = useRef<HTMLButtonElement>(null);
+  const focusNext = useFocusNext();
   const upload = useUploadPhoto();
   const choose = () => fileInput.current?.click();
   const photo = photoId === null ? null : `/api/images/${photoId}`;
@@ -50,7 +53,14 @@ export function PhotoPicker(props: PhotoPickerProps) {
             <button type="button" className={button.outline} onClick={choose}>
               {props.changeLabel}
             </button>
-            <button type="button" className={button.dangerGhost} onClick={() => onChange(null)}>
+            <button
+              type="button"
+              className={button.dangerGhost}
+              onClick={() => {
+                onChange(null);
+                focusNext(() => emptySlot.current);
+              }}
+            >
               {props.removeLabel}
             </button>
           </div>
@@ -58,6 +68,7 @@ export function PhotoPicker(props: PhotoPickerProps) {
       ) : (
         <div className={`flex items-center gap-3.5 ${shape === "round" ? "desktop:gap-4" : ""}`}>
           <button
+            ref={emptySlot}
             type="button"
             onClick={choose}
             className={`flex size-[88px] flex-none cursor-pointer flex-col items-center justify-center gap-1.5 border-[1.5px] border-dashed border-outline bg-background text-[13px] font-medium text-muted-foreground ${shape === "round" ? "overflow-hidden rounded-full desktop:size-24" : "rounded-xl"}`}

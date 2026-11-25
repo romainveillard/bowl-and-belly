@@ -10,6 +10,7 @@ import { foodTypeLabel, useFoodTypes } from "../stock/foods.js";
 import { petTypeLabel, usePetTypes } from "../pets/pets.js";
 import { useSetTypeArchived, type TypeKind } from "./types.js";
 import { TypeFormSheet, type CustomType } from "./TypeFormSheet.js";
+import { useFocusNext } from "../lib/useFocusNext.js";
 
 interface Row {
   id: number;
@@ -82,6 +83,7 @@ function TypesScreen({ kind, allRows }: { kind: TypeKind; allRows: Row[] | undef
   const [showArchived, setShowArchived] = useState(false);
   const restore = useSetTypeArchived(kind, "restore");
   const showSnackbar = useSnackbar();
+  const focusNext = useFocusNext();
 
   if (!allRows) {
     return null;
@@ -110,6 +112,7 @@ function TypesScreen({ kind, allRows }: { kind: TypeKind; allRows: Row[] | undef
               <button
                 key={row.id}
                 type="button"
+                data-type={row.id}
                 className={`${rowClass} cursor-pointer`}
                 onClick={() => setEditing(custom)}
               >
@@ -154,9 +157,13 @@ function TypesScreen({ kind, allRows }: { kind: TypeKind; allRows: Row[] | undef
                   disabled={restore.isPending}
                   onClick={() =>
                     restore.mutate(row.id, {
-                      onSuccess: (result) =>
-                        result === "name_taken" &&
-                        showSnackbar(t("types.restoreTaken", { name: row.label })),
+                      onSuccess: (result) => {
+                        if (result === "name_taken") {
+                          showSnackbar(t("types.restoreTaken", { name: row.label }));
+                        } else {
+                          focusNext(() => document.querySelector(`[data-type="${row.id}"]`));
+                        }
+                      },
                     })
                   }
                 >

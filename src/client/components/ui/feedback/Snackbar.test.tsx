@@ -139,6 +139,37 @@ it("takes focus to Undo when the deleted row took focus with it, and only then",
   expect(document.activeElement).toBe(screen.getByRole("button", { name: "Undo" }));
 });
 
+it("times out again once Undo is pressed, though no blur says it lost focus", () => {
+  renderButtons();
+
+  fireEvent.click(screen.getByRole("button", { name: "Delete" }));
+  const undo = screen.getByRole("button", { name: "Undo" });
+  fireEvent.focus(undo);
+  fireEvent.click(undo);
+  fireEvent.click(screen.getByRole("button", { name: "Info" }));
+  act(() => {
+    vi.advanceTimersByTime(5000);
+  });
+
+  expect(screen.getByRole("status").textContent).toBe("");
+});
+
+it("takes focus to Undo after an action made from the keyboard, not with a pointer", () => {
+  renderButtons();
+  const deleteButton = screen.getByRole("button", { name: "Delete" });
+  deleteButton.focus();
+
+  fireEvent.pointerDown(deleteButton);
+  fireEvent.click(deleteButton);
+  expect(document.activeElement).toBe(deleteButton);
+
+  fireEvent.click(screen.getByRole("button", { name: "Dismiss" }));
+  deleteButton.focus();
+  fireEvent.keyDown(deleteButton, { key: "Enter" });
+  fireEvent.click(deleteButton);
+  expect(document.activeElement).toBe(screen.getByRole("button", { name: "Undo" }));
+});
+
 it("stays announced while a sheet hides the rest of the page", () => {
   vi.useRealTimers();
   render(

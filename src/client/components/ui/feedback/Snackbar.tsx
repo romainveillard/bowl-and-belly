@@ -40,10 +40,33 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
   const [snack, setSnack] = useState<Snack | null>(null);
   const [paused, setPaused] = useState(false);
   const actionButton = useRef<HTMLButtonElement>(null);
+  const lastInput = useRef<"keyboard" | "pointer">("pointer");
   const messageId = useId();
   const show = useCallback((next: Snack | string) => {
     const shown = typeof next === "string" ? { message: next } : next;
     setSnack((current) => (current?.tone === "error" && shown.tone !== "error" ? current : shown));
+    setPaused(false);
+  }, []);
+  // A pressed or dismissed button leaves without a blur, which would leave the
+  // next snackbar paused for good.
+  const close = () => {
+    setSnack(null);
+    setPaused(false);
+  };
+
+  useEffect(() => {
+    const keyboard = () => {
+      lastInput.current = "keyboard";
+    };
+    const pointer = () => {
+      lastInput.current = "pointer";
+    };
+    document.addEventListener("keydown", keyboard, true);
+    document.addEventListener("pointerdown", pointer, true);
+    return () => {
+      document.removeEventListener("keydown", keyboard, true);
+      document.removeEventListener("pointerdown", pointer, true);
+    };
   }, []);
 
   // Never while hovered or focused: focus moves to Undo after a delete, so keyboard and
@@ -59,12 +82,11 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timer);
   }, [snack, paused]);
 
-  // After a delete the row that had focus is gone, so focus would be stranded on the page.
+  // After a delete the row that had focus is gone, so focus would be stranded on
+  // the page. From the keyboard, Undo would otherwise be the page's last stop.
   useEffect(() => {
-    if (
-      snack?.action &&
-      (document.activeElement === null || document.activeElement === document.body)
-    ) {
+    const focusLost = document.activeElement === null || document.activeElement === document.body;
+    if (snack?.action && (focusLost || lastInput.current === "keyboard")) {
       actionButton.current?.focus();
     }
   }, [snack]);
@@ -106,7 +128,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
                     className="h-11 cursor-pointer rounded-[10px] px-3.5 font-semibold text-accent"
                     onClick={() => {
                       info.action?.onClick();
-                      setSnack(null);
+                      close();
                     }}
                   >
                     {info.action.label}
@@ -115,7 +137,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
                     type="button"
                     aria-label={t("action.dismiss")}
                     className="flex size-11 cursor-pointer items-center justify-center rounded-full"
-                    onClick={() => setSnack(null)}
+                    onClick={close}
                   >
                     <CloseIcon size={20} />
                   </button>
@@ -138,7 +160,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
                 type="button"
                 aria-label={t("action.dismiss")}
                 className="flex size-11 flex-none cursor-pointer items-center justify-center rounded-full"
-                onClick={() => setSnack(null)}
+                onClick={close}
               >
                 <CloseIcon size={20} />
               </button>
