@@ -1,4 +1,5 @@
 import type { TFunction } from "i18next";
+import { addDays, appDayOf } from "../../shared/app-day.js";
 import { ageInMonths } from "../../shared/target.js";
 
 /** A reading as entered: trailing zeros stripped, but at least one decimal. */
@@ -25,6 +26,34 @@ export function formatTime(instant: string | Date, timeZone: string, locale: str
     hourCycle: "h23",
     timeZone,
   }).format(new Date(instant));
+}
+
+/**
+ * When a backup ran or will run, on the app's clock: "today at 03:30",
+ * "tomorrow at 03:30" or "yesterday at 03:30", then "Sunday at 03:30" ahead
+ * or "21 Nov at 03:30" behind.
+ */
+export function formatWhen(
+  instant: string | Date,
+  options: { now: Date; timeZone: string; future: boolean; locale: string },
+  t: TFunction,
+): string {
+  const { now, timeZone, future, locale } = options;
+  const calendar = { timeZone, dayStartsAt: "00:00" };
+  const today = appDayOf(now, calendar);
+  const day = appDayOf(new Date(instant), calendar);
+  const time = formatTime(instant, timeZone, locale);
+  if (day === today) {
+    return t("settings.when.today", { time });
+  }
+  if (day === addDays(today, future ? 1 : -1)) {
+    return t(future ? "settings.when.tomorrow" : "settings.when.yesterday", { time });
+  }
+  const date = new Intl.DateTimeFormat(locale, {
+    ...(future ? { weekday: "long" } : { day: "numeric", month: "short" }),
+    timeZone,
+  }).format(new Date(instant));
+  return t("settings.when.on", { date, time });
 }
 
 /** "2026-11-21", the calendar date on the app's clock, as a date input wants it. */

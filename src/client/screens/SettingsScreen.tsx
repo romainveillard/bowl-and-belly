@@ -1,7 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
-import { addDays, appDayOf } from "../../shared/app-day.js";
 import {
   AlertIcon,
   BackIcon,
@@ -15,6 +14,7 @@ import { Field, inputClass } from "../components/ui/Field.js";
 import { Segmented } from "../components/ui/Segmented.js";
 import { Switch } from "../components/ui/Switch.js";
 import { useAuth, useLogOut } from "../lib/auth.js";
+import { formatWhen } from "../lib/format.js";
 import { useDemo } from "../lib/instance.js";
 import {
   useBackUpNow,
@@ -109,35 +109,6 @@ function timeZones(current: string): string[] {
   return zones.includes(current) ? zones : [current, ...zones];
 }
 
-/** "today at 03:30", "tomorrow at 03:30", "Sunday at 03:30" or "21 Nov at 03:30". */
-function useWhen(timeZone: string, now: Date) {
-  const { t, i18n } = useTranslation();
-  const calendar = { timeZone, dayStartsAt: "00:00" };
-  const today = appDayOf(now, calendar);
-
-  return (iso: string, future: boolean) => {
-    const instant = new Date(iso);
-    const day = appDayOf(instant, calendar);
-    const time = new Intl.DateTimeFormat(i18n.language, {
-      hour: "2-digit",
-      minute: "2-digit",
-      hourCycle: "h23",
-      timeZone,
-    }).format(instant);
-    if (day === today) {
-      return t("settings.when.today", { time });
-    }
-    if (day === addDays(today, future ? 1 : -1)) {
-      return t(future ? "settings.when.tomorrow" : "settings.when.yesterday", { time });
-    }
-    const date = new Intl.DateTimeFormat(i18n.language, {
-      ...(future ? { weekday: "long" } : { day: "numeric", month: "short" }),
-      timeZone,
-    }).format(instant);
-    return t("settings.when.on", { date, time });
-  };
-}
-
 function SettingsForm({ settings }: { settings: Settings }) {
   const { t, i18n } = useTranslation();
   const save = useSaveSettings();
@@ -153,7 +124,12 @@ function SettingsForm({ settings }: { settings: Settings }) {
     new Set(),
   );
   const [openedAt] = useState(() => new Date());
-  const when = useWhen(settings.timeZone, openedAt);
+  const when = (iso: string, future: boolean) =>
+    formatWhen(
+      iso,
+      { now: openedAt, timeZone: settings.timeZone, future, locale: i18n.language },
+      t,
+    );
 
   const commit = (changes: Partial<SettingsBody>) => {
     const next = { ...saved, ...changes };
