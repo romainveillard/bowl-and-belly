@@ -26,7 +26,7 @@ export function InsightsScreen() {
   const { t } = useTranslation();
   const { data: pets } = usePets();
   const { pet } = useSelectedPet();
-  // In the address, so it survives a tab switch and can be linked to or reached with Back.
+  // In the address, so a link or a reload shows the same view.
   const [search, setSearch] = useSearchParams();
 
   if (!pets || !pet) {
@@ -35,7 +35,11 @@ export function InsightsScreen() {
   // The default period is per device, like the selected pet and the language.
   const { period, from } = insightsAddress(search, pets.today, readPeriod());
   const show = (next: Period, day: string) =>
-    setSearch(day === pets.today ? { period: next } : { period: next, from: day });
+    setSearch(day === pets.today ? { period: next } : { period: next, from: day }, {
+      // Back leaves Insights in one step, as it does any screen, rather than
+      // stepping through every period viewed: on Android it is the way out.
+      replace: true,
+    });
   const view: PeriodViewProps = {
     petId: pet.id,
     today: pets.today,
