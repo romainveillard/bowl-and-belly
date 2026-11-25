@@ -9,15 +9,8 @@ import { SPARKLINE_READINGS, Sparkline } from "./Sparkline.js";
 import { button } from "../components/ui/forms/button.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { ConfirmDialog } from "../components/ui/overlays/ConfirmDialog.js";
-import {
-  formatAge,
-  formatDay,
-  formatKg,
-  formatReadingKg,
-  formatSince,
-  petTypeLabel,
-} from "../lib/format.js";
-import { suggestionFor, targetBasis, usePet, useSetArchived } from "./pets.js";
+import { formatAge, formatDay, formatKg, formatReadingKg, formatSince } from "../lib/format.js";
+import { petTypeLabel, suggestionFor, targetBasis, usePet, useSetArchived } from "./pets.js";
 import { AgePrompt } from "./AgePrompt.js";
 import { ManualTargetSheet } from "./ManualTargetSheet.js";
 import type { useWeightSheets } from "./WeightSheets.js";

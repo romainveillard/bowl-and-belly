@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { InferRequestType, InferResponseType } from "hono/client";
+import type { TFunction } from "i18next";
 import { explainTarget } from "../../shared/target.js";
 import { api } from "../api.js";
 
@@ -121,26 +122,11 @@ export function useSetTarget(id: number) {
   });
 }
 
-export async function uploadPhoto(photo: File): Promise<number> {
-  const response = await api.api.images.$post({ form: { photo } });
-  if (!response.ok) {
-    throw new Error("Could not upload the photo");
-  }
-  return (await response.json()).id;
-}
-
-/** How many foods are in use; none means the first-run steps are not finished. */
-export function useFoodCount() {
-  return useQuery({
-    queryKey: ["foods", "count"],
-    queryFn: async () => {
-      const response = await api.api.foods.count.$get();
-      if (!response.ok) {
-        throw new Error("Could not count foods");
-      }
-      return response.json();
-    },
-  });
+export function petTypeLabel(
+  type: { systemKey: "cat" | "dog" | null; name: string | null },
+  t: TFunction,
+): string {
+  return type.systemKey ? t(`petType.${type.systemKey}`) : (type.name ?? "");
 }
 
 /** What the target formula reads from a pet. */

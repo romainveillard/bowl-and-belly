@@ -120,13 +120,6 @@ export function formatAge(pet: Age, today: string, t: TFunction): string {
   return pet.birthDatePrecision === "exact" ? age : t("age.about", { age });
 }
 
-export function petTypeLabel(
-  type: { systemKey: "cat" | "dog" | null; name: string | null },
-  t: TFunction,
-): string {
-  return type.systemKey ? t(`petType.${type.systemKey}`) : (type.name ?? "");
-}
-
 /** Parses "4.5" or "4,5"; null when it is not a positive number. */
 export function parsePositive(text: string): number | null {
   const value = Number(text.trim().replace(",", "."));

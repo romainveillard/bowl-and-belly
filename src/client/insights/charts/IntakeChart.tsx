@@ -12,6 +12,7 @@ import {
 import type { DayIntake } from "../../../shared/insights.js";
 import { isOverTarget } from "../../lib/dayStatus.js";
 import { formatAppDay } from "../../lib/format.js";
+import { LegendItem } from "./Legend.js";
 
 const colours = {
   primary: "var(--color-primary)",
@@ -21,15 +22,6 @@ const colours = {
   muted: "var(--color-muted-foreground)",
   axis: "var(--color-border)",
 };
-
-export function LegendItem({ label, line }: { label: string; line: string }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground">
-      <span aria-hidden="true" className={`h-0 w-4 ${line}`} />
-      {label}
-    </span>
-  );
-}
 
 function Legend() {
   const { t } = useTranslation();

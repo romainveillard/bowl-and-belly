@@ -7,8 +7,8 @@ import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
 import { Switch } from "../components/ui/forms/Switch.js";
 import { foodTypeLabel, useFoodTypes } from "../stock/foods.js";
-import { petTypeLabel } from "../lib/format.js";
-import { usePetTypes } from "../pets/pets.js";
+
+import { petTypeLabel, usePetTypes } from "../pets/pets.js";
 import { useSetTypeArchived, type TypeKind } from "./types.js";
 import { TypeFormSheet, type CustomType } from "./TypeFormSheet.js";
 

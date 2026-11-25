@@ -13,12 +13,20 @@ import { Field } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
 import { SwitchRow } from "../components/ui/forms/SwitchRow.js";
-import { parsePositive, petTypeLabel } from "../lib/format.js";
+import { parsePositive } from "../lib/format.js";
 import { useDemo } from "../lib/instance.js";
 import { offeredTypes, optionLabel } from "../settings/types.js";
 import { birthDateOf, initialPetForm, type PetFormState } from "./petForm.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
-import { usePet, usePets, usePetTypes, useSavePet, type PetBody, type PetDetail } from "./pets.js";
+import {
+  petTypeLabel,
+  usePet,
+  usePets,
+  usePetTypes,
+  useSavePet,
+  type PetBody,
+  type PetDetail,
+} from "./pets.js";
 
 type FieldName = "name" | "birth" | "targetWeight" | "weight" | "ownTarget";
 type ErrorKey =

@@ -2,8 +2,8 @@ import { Popover } from "radix-ui";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
-import { petTypeLabel } from "../lib/format.js";
-import { usePets, type PetSummary } from "./pets.js";
+
+import { petTypeLabel, usePets, type PetSummary } from "./pets.js";
 import { useSelectedPet } from "./selectedPet.js";
 import { useIsDesktop } from "../lib/useIsDesktop.js";
 import { CheckIcon, ChevronDownIcon, ChevronRightIcon } from "../components/icons.js";

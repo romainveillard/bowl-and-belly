@@ -8,8 +8,8 @@ import { TargetProgress } from "../components/TargetProgress.js";
 import { button } from "../components/ui/forms/button.js";
 import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageTitle } from "../components/ui/layout/PageHeader.js";
-import { formatAge, formatKg, petTypeLabel } from "../lib/format.js";
-import { usePets } from "./pets.js";
+import { formatAge, formatKg } from "../lib/format.js";
+import { petTypeLabel, usePets } from "./pets.js";
 import { PetProfile } from "./PetProfile.js";
 import { useWeightSheets } from "./WeightSheets.js";
 

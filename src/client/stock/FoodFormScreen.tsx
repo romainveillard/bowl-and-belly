@@ -27,8 +27,8 @@ import {
   type KcalBackfill,
 } from "./foods.js";
 import { parseAmount, plain, stockGramsOf, stockText } from "./foodForm.js";
-import { parsePositive, petTypeLabel } from "../lib/format.js";
-import { usePets, usePetTypes } from "../pets/pets.js";
+import { parsePositive } from "../lib/format.js";
+import { petTypeLabel, usePets, usePetTypes } from "../pets/pets.js";
 import { useDemo } from "../lib/instance.js";
 import { useSelectedPet } from "../pets/selectedPet.js";
 import { offeredTypes, optionLabel } from "../settings/types.js";

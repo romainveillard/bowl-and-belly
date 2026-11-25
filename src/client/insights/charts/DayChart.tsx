@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import type { FeedEntry } from "../../feeds/feeds.js";
 import { formatTime } from "../../lib/format.js";
-import { LegendItem } from "./IntakeChart.js";
+import { LegendItem } from "./Legend.js";
 
 const HOUR_MS = 3_600_000;
 

@@ -3,8 +3,8 @@ import { useNavigate } from "react-router";
 import { ArchivedList } from "../components/ArchivedList.js";
 import { PetAvatar } from "./PetAvatar.js";
 import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
-import { formatDay, petTypeLabel } from "../lib/format.js";
-import { useArchivedPets, usePets, useSetArchived } from "./pets.js";
+import { formatDay } from "../lib/format.js";
+import { petTypeLabel, useArchivedPets, usePets, useSetArchived } from "./pets.js";
 
 export function ArchivedPetsScreen() {
   const { t, i18n } = useTranslation();

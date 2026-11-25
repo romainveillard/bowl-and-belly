@@ -227,3 +227,17 @@ export function stockLeftLabel(food: Stocked, i18n: I18n): string {
     ? i18n.t("stock.out")
     : i18n.t("stock.left", { stock: stockLabel(food, i18n) });
 }
+
+/** How many foods are in use; none means the first-run steps are not finished. */
+export function useFoodCount() {
+  return useQuery({
+    queryKey: ["foods", "count"],
+    queryFn: async () => {
+      const response = await foods.count.$get();
+      if (!response.ok) {
+        throw new Error("Could not count foods");
+      }
+      return response.json();
+    },
+  });
+}
