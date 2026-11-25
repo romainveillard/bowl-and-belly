@@ -1,9 +1,26 @@
+# Not needed to build the image
 .git
 .github
 .claude
-node_modules
-dist
-data
-assets
 docs
 *.md
+
+# The rest mirrors .gitignore, so local files never enter the build context
+node_modules
+dist
+*.tsbuildinfo
+vite.config.ts.timestamp-*
+data
+data-demo
+*.db
+*.db-shm
+*.db-wal
+coverage
+.env
+.env.*
+*.log
+.idea
+.vscode
+*.swp
+.DS_Store
+Thumbs.db
