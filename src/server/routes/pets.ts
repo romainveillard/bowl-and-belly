@@ -1,4 +1,5 @@
 import { grams, kcalPerDay, validate } from "../validate.js";
+import { logCurrentWeight } from "../weights/readings.js";
 import { and, count, desc, eq, isNotNull, isNull } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
@@ -155,11 +156,7 @@ export const petsRoutes = new Hono()
     const body = c.req.valid("json");
     const id = db.transaction((tx) => {
       const created = tx.insert(pet).values(profileOf(body)).returning({ id: pet.id }).get();
-      if (body.weightG !== null) {
-        tx.insert(weightEntry)
-          .values({ petId: created.id, measuredAt: new Date(), weightG: body.weightG })
-          .run();
-      }
+      logCurrentWeight(tx, created.id, body.weightG, new Date());
       chooseTarget(tx, created.id, today(tx), body.manualTargetKcal);
       return created.id;
     });
@@ -178,16 +175,11 @@ export const petsRoutes = new Hono()
       if (before.photoId !== null && before.photoId !== body.photoId) {
         tx.delete(image).where(eq(image.id, before.photoId)).run();
       }
-      const newWeightG = body.weightG === latestWeightG(tx, id) ? null : body.weightG;
-      if (newWeightG !== null) {
-        tx.insert(weightEntry)
-          .values({ petId: id, measuredAt: new Date(), weightG: newWeightG })
-          .run();
-      }
+      const weighed = logCurrentWeight(tx, id, body.weightG, new Date());
       return {
         targetKcal: chooseTargetAfterEdit(tx, id, today(tx), {
           before: inputs,
-          weighed: newWeightG !== null,
+          weighed,
           manualKcal: body.manualTargetKcal,
         }),
       };
