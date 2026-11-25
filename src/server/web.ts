@@ -2,11 +2,13 @@ import { Hono } from "hono";
 import { compress } from "hono/compress";
 import { secureHeaders } from "hono/secure-headers";
 import { app } from "./app.js";
+import { knownHostsOnly } from "./auth/hosts.js";
 import { staticFiles } from "./staticFiles.js";
 
 const clientDir = "dist/client";
 
 export const web = new Hono()
+  .use(knownHostsOnly)
   .use(
     secureHeaders({
       contentSecurityPolicy: {

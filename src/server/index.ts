@@ -1,8 +1,22 @@
 import { serve } from "@hono/node-server";
+import { configuredPasswordProblem, passwordRequired } from "./auth/access.js";
+import { listedHosts } from "./auth/hosts.js";
 import { startBackups } from "./backups/scheduler.js";
 import { demo, startDemoResets } from "./demo/mode.js";
 import { db } from "./db/client.js";
 import { web } from "./web.js";
+
+if (configuredPasswordProblem) {
+  console.error(`Not starting: ${configuredPasswordProblem}`);
+  process.exit(1);
+}
+
+if (!passwordRequired) {
+  const listed = listedHosts.length > 0 ? listedHosts.join(", ") : "none";
+  console.log(
+    `No BOWL_PASSWORD: answering only localhost, IP addresses and the names in BOWL_HOSTS (${listed}).`,
+  );
+}
 
 if (demo) {
   startDemoResets(db);

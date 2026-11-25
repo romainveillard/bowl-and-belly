@@ -30,7 +30,7 @@ services:
       - "3000:3000"
     environment:
       TZ: Europe/London
-      BOWL_PASSWORD: change-me
+      BOWL_PASSWORD: ${BOWL_PASSWORD:?Set BOWL_PASSWORD in .env}
     volumes:
       - data:/data
 
@@ -38,11 +38,12 @@ volumes:
   data:
 ```
 
-Then run `docker compose up -d` (or `podman compose up -d`) and open http://localhost:3000.
+Put the password in a `.env` file next to `compose.yaml` (`BOWL_PASSWORD=` followed by at least 12 characters), then run `docker compose up -d` (or `podman compose up -d`) and open http://localhost:3000.
 
 | Variable | Default | What it does |
 | --- | --- | --- |
-| `BOWL_PASSWORD` | unset | The password for the login page. Unset means no login at all. |
+| `BOWL_PASSWORD` | unset | The password for the login page, at least 12 characters. Unset means no login at all. |
+| `BOWL_HOSTS` | unset | Without a password, the app only answers requests addressed to `localhost` or an IP address, so a web page can't reach it through a domain of its own. List any other names it's reached by, separated by commas, for example `nas.home.arpa,pets.example.org`. Not needed with a password. |
 | `BOWL_TRUST_PROXY` | unset | Set to `cloudflare` when the app sits behind Cloudflare, so login attempts are limited per visitor (using `CF-Connecting-IP`) rather than for everyone at once. Only set it if every request really comes through Cloudflare, since the header is easy to fake otherwise. |
 | `TZ` | `UTC` | The time zone the app starts with. You can change it later in Settings. |
 | `PORT` | `3000` | The port the app listens on inside the container. |
@@ -59,6 +60,8 @@ Tags: `latest` and `x.y.z` / `x.y` follow releases; `edge` follows the main bran
 With a password set, the app's data is only served to devices that have logged in. A login lasts a year and is renewed whenever the app is used, so a phone that opens it regularly stays signed in. Changing the password signs every device out. Wrong passwords are slowed down and limited to ten a minute.
 
 <!-- Screenshot: the login page, on a phone and on desktop. The public demo has no password, so this is the only place visitors see it. -->
+
+When a tunnel or reverse proxy on the same machine is the way in, publish the port on the loopback interface only (`"127.0.0.1:3000:3000"`), or leave out `ports:` when the tunnel runs on the same compose network. Otherwise the app is also reachable directly, past whatever the proxy checks. Without a password, also list the public hostname in `BOWL_HOSTS`.
 
 If you put Cloudflare Access (or another login proxy) in front of the app, give it a long session duration too. When that outer session runs out, the app can't renew it itself: it shows a "Your session has expired" page asking you to reopen or reload it.
 
@@ -92,7 +95,7 @@ Logins are kept, since the session secret isn't part of the database. A backup f
 
 ## Running a public demo
 
-`BOWL_DEMO=true` turns an instance into a demo: three pets with three months of history, replaced with fresh data at start-up and every night at 03:00 (London time), a banner on every screen, and no photo uploads or backups. Visitors can add a handful of pets, foods and feeds between resets. Run it as its own container with its own volume, never on the one holding your real data, and without `BOWL_PASSWORD`.
+`BOWL_DEMO=true` turns an instance into a demo: three pets with three months of history, replaced with fresh data at start-up and every night at 03:00 (London time), a banner on every screen, and no photo uploads or backups. Visitors can add a handful of pets, foods and feeds between resets. Run it as its own container with its own volume, never on the one holding your real data, and without `BOWL_PASSWORD`. Set `BOWL_HOSTS` to the demo's public hostname.
 
 To try the same data locally, run `npm run demo` (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 

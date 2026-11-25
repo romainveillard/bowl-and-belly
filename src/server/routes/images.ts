@@ -9,6 +9,9 @@ import { image } from "../db/schema.js";
 
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 const MAX_SIDE_PX = 800;
+// Photo formats only: sharp also reads SVG, PDF and others, each a parser
+// exposed to uploads for no use. HEIC and AVIF both report "heif".
+const PHOTO_FORMATS = new Set(["jpeg", "png", "webp", "gif", "heif"]);
 
 export const imagesRoutes = new Hono()
   .post(
@@ -22,7 +25,12 @@ export const imagesRoutes = new Hono()
       const { photo } = c.req.valid("form");
       let data: Buffer;
       try {
-        data = await sharp(await photo.arrayBuffer())
+        const input = sharp(await photo.arrayBuffer());
+        const { format } = await input.metadata();
+        if (!PHOTO_FORMATS.has(format)) {
+          return c.json({ code: "invalid_image" as const }, 400);
+        }
+        data = await input
           // Phone photos carry their orientation as metadata, which WebP output drops.
           .rotate()
           .resize({

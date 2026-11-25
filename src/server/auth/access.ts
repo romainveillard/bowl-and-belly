@@ -13,6 +13,23 @@ const limiter = loginLimiter();
 
 export const passwordRequired = password !== null;
 
+/** Why the server won't start with this password, for the log. */
+export function passwordProblem(value: string | null): string | null {
+  if (value === null) {
+    return null;
+  }
+  if (value === "change-me") {
+    return "BOWL_PASSWORD is still the README's example. Choose your own.";
+  }
+  // Characters as a person counts them, so an emoji counts once.
+  if ([...new Intl.Segmenter().segment(value)].length < 12) {
+    return "BOWL_PASSWORD must be at least 12 characters long.";
+  }
+  return null;
+}
+
+export const configuredPasswordProblem = passwordProblem(password);
+
 // Behind a proxy every request comes from the proxy, so the limit is global
 // unless the operator says Cloudflare's client address header can be trusted.
 function clientKey(c: Context): string {
