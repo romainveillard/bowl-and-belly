@@ -5,13 +5,11 @@ import { OfTarget } from "../components/Figures.js";
 import { FeedRow } from "./FeedRow.js";
 import { FoodTypeTile } from "../stock/FoodTypeMark.js";
 import { EmptyState } from "../components/EmptyState.js";
-import { ChevronDownIcon, HistoryIcon, PlusIcon } from "../components/icons.js";
+import { ChevronDownIcon, HistoryIcon } from "../components/icons.js";
 import { PetChip } from "../pets/PetChip.js";
 import { Badge } from "../components/ui/feedback/Badge.js";
 import { ProgressBar } from "../components/ui/feedback/ProgressBar.js";
-import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageHeader } from "../components/ui/layout/PageHeader.js";
-import { button } from "../components/ui/forms/button.js";
 import { dayStatus, isOverTarget } from "../lib/dayStatus.js";
 import { useHistory, type DaySummary, type FeedEntry } from "./feeds.js";
 import { foodTypeLabel } from "../stock/foods.js";
@@ -21,7 +19,6 @@ import { useFoodCount } from "../stock/foods.js";
 import { useSelectedPet } from "../pets/selectedPet.js";
 import { FeedSheetsProvider, useFeedSheets } from "./FeedSheetsProvider.js";
 import { LogFeedSheet } from "./LogFeedSheet.js";
-import { LogWeightButton, WeightSheetsProvider } from "../pets/WeightSheetsProvider.js";
 import { useSettings } from "../settings/settings.js";
 
 const typeBackground = { wet: "bg-wet-soft", dry: "bg-dry-soft", custom: "bg-background" };
@@ -208,33 +205,19 @@ export function HistoryScreen() {
 
   return (
     <FeedSheetsProvider petId={pet.id} today={pets.today}>
-      <WeightSheetsProvider petId={pet.id}>
-        <div className="flex flex-col desktop:gap-6">
-          <PageHeader title={t("nav.history")} extra={<PetChip />} />
-          <div className="flex flex-col gap-2.5 px-5 pt-1 pb-6 desktop:max-w-[720px] desktop:gap-3 desktop:p-0 desktop:pb-24">
-            <HistoryDays
-              days={days}
-              today={pets.today}
-              timeZone={settings.timeZone}
-              isExpanded={isExpanded}
-              onToggle={(day) => setToggled((current) => ({ ...current, [day]: !isExpanded(day) }))}
-            />
-            <div ref={end} />
-          </div>
-
-          {/* On a phone, History has no floating buttons: logging happens on Today. */}
-          <FloatingActions className="hidden desktop:flex">
-            <LogWeightButton />
-            {(foodCount ?? 0) > 0 && (
-              <button type="button" className={button.floating} onClick={() => setLogging(true)}>
-                <PlusIcon size={20} />
-                {t("feed.logFeed")}
-              </button>
-            )}
-          </FloatingActions>
-          {logFeedSheet}
+      <div className="flex flex-col desktop:gap-6">
+        <PageHeader title={t("nav.history")} extra={<PetChip />} />
+        <div className="flex flex-col gap-2.5 px-5 pt-1 pb-6 desktop:gap-3 desktop:p-0">
+          <HistoryDays
+            days={days}
+            today={pets.today}
+            timeZone={settings.timeZone}
+            isExpanded={isExpanded}
+            onToggle={(day) => setToggled((current) => ({ ...current, [day]: !isExpanded(day) }))}
+          />
+          <div ref={end} />
         </div>
-      </WeightSheetsProvider>
+      </div>
     </FeedSheetsProvider>
   );
 }
