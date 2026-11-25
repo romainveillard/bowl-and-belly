@@ -2,14 +2,15 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { kcalPerKg } from "../../shared/stock.js";
-import { CameraIcon, ChevronDownIcon } from "../components/icons.js";
+import { CameraIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
 import { Chip } from "../components/ui/forms/Chip.js";
+import { Select } from "../components/ui/forms/Select.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { ConfirmDialog } from "../components/ui/overlays/ConfirmDialog.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
-import { Field, FieldError, Input, inputClass } from "../components/ui/forms/Field.js";
+import { Field, FieldError, Input } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { Switch } from "../components/ui/forms/Switch.js";
 import {
@@ -280,31 +281,18 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
                 }))}
               />
             )}
-            <label className="flex flex-col gap-1.5 text-sm font-semibold">
-              {t("foodForm.for")}
-              <span className="relative font-normal">
-                <select
-                  value={petTypeId ?? ""}
-                  onChange={(event) =>
-                    set("petTypeId", event.target.value === "" ? null : Number(event.target.value))
-                  }
-                  className={`${inputClass} appearance-none pr-11`}
-                >
-                  {offeredTypes(petTypes ?? [], food?.petTypeId).map((type) => (
-                    <option key={type.id} value={type.id}>
-                      {optionLabel(petTypeLabel(type, t), type, t)}
-                    </option>
-                  ))}
-                  <option value="">{t("foodForm.anyPet")}</option>
-                </select>
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute top-3 right-3.5 text-muted-foreground"
-                >
-                  <ChevronDownIcon size={20} />
-                </span>
-              </span>
-            </label>
+            <Select
+              label={t("foodForm.for")}
+              value={petTypeId ?? ""}
+              onChange={(value) => set("petTypeId", value === "" ? null : Number(value))}
+            >
+              {offeredTypes(petTypes ?? [], food?.petTypeId).map((type) => (
+                <option key={type.id} value={type.id}>
+                  {optionLabel(petTypeLabel(type, t), type, t)}
+                </option>
+              ))}
+              <option value="">{t("foodForm.anyPet")}</option>
+            </Select>
           </Card>
 
           <Card>

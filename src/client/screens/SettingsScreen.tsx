@@ -1,11 +1,12 @@
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
-import { AlertIcon, ChevronDownIcon, ChevronRightIcon, DownloadIcon } from "../components/icons.js";
+import { AlertIcon, ChevronRightIcon, DownloadIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
+import { Select } from "../components/ui/forms/Select.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
-import { Field, inputClass } from "../components/ui/forms/Field.js";
+import { Field } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { Switch } from "../components/ui/forms/Switch.js";
 import { useAuth, useLogOut } from "../lib/auth.js";
@@ -28,50 +29,6 @@ const LANGUAGES = [
 const LANGUAGE_KEY = "i18nextLng";
 
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
-
-function Select({
-  id,
-  label,
-  value,
-  onChange,
-  hint,
-  disabled = false,
-  children,
-}: {
-  id: string;
-  label: string;
-  value: string | number;
-  onChange: (value: string) => void;
-  hint?: string;
-  disabled?: boolean;
-  children: ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-semibold">
-        {label}
-      </label>
-      <span className="relative">
-        <select
-          id={id}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          disabled={disabled}
-          className={`${inputClass} appearance-none pr-11`}
-        >
-          {children}
-        </select>
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute top-3 right-3.5 text-muted-foreground"
-        >
-          <ChevronDownIcon size={20} />
-        </span>
-      </span>
-      {hint && <span className="text-[13px] text-muted-foreground">{hint}</span>}
-    </div>
-  );
-}
 
 function TypeLink({ to, label }: { to: string; label: string }) {
   return (

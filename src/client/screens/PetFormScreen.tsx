@@ -3,12 +3,13 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { ACTIVITY_LEVELS, GOALS } from "../../shared/enums.js";
 import { explainTarget } from "../../shared/target.js";
-import { CameraIcon, ChevronDownIcon } from "../components/icons.js";
+import { CameraIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
+import { Select } from "../components/ui/forms/Select.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
-import { Field, inputClass } from "../components/ui/forms/Field.js";
+import { Field } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
 import { Switch } from "../components/ui/forms/Switch.js";
@@ -197,28 +198,17 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
                 value={form.name}
                 onChange={(name) => set("name", name)}
               />
-              <label className="flex flex-col gap-1.5 text-sm font-semibold">
-                {t("petForm.type")}
-                <span className="relative font-normal">
-                  <select
-                    value={petTypeId ?? ""}
-                    onChange={(event) => set("petTypeId", Number(event.target.value))}
-                    className={`${inputClass} appearance-none pr-11`}
-                  >
-                    {offeredTypes(petTypes ?? [], pet?.petTypeId).map((type) => (
-                      <option key={type.id} value={type.id}>
-                        {optionLabel(petTypeLabel(type, t), type, t)}
-                      </option>
-                    ))}
-                  </select>
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute top-3 right-3.5 text-muted-foreground"
-                  >
-                    <ChevronDownIcon size={20} />
-                  </span>
-                </span>
-              </label>
+              <Select
+                label={t("petForm.type")}
+                value={petTypeId ?? ""}
+                onChange={(value) => set("petTypeId", Number(value))}
+              >
+                {offeredTypes(petTypes ?? [], pet?.petTypeId).map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {optionLabel(petTypeLabel(type, t), type, t)}
+                  </option>
+                ))}
+              </Select>
             </div>
           </Card>
 
