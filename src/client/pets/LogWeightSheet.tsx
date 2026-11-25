@@ -111,7 +111,7 @@ export function LogWeightSheet({
               ? {
                   "aria-describedby": "weight-warning",
                   className:
-                    "h-11 w-full rounded-lg border-[1.5px] border-warning bg-card px-3 pr-14 text-base tabular-nums ring-[3px] ring-warning-soft focus:outline-none",
+                    "h-11 w-full rounded-lg border-[1.5px] border-warning bg-card px-3 pr-14 text-base tabular-nums ring-[3px] ring-warning-soft focus:outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-primary-strong",
                 }
               : {})}
           />

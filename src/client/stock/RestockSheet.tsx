@@ -115,7 +115,7 @@ export function RestockSheet({ food, onClose }: { food: FoodSummary; onClose: ()
                   onBlur={errors.recheck("amount")}
                   aria-invalid={amountError ? true : undefined}
                   aria-describedby={amountError ? `${amountId}-error` : undefined}
-                  className="w-full bg-transparent text-center font-display text-[44px] leading-[48px] font-semibold tabular-nums focus:outline-none"
+                  className="w-full rounded-lg bg-transparent text-center font-display text-[44px] leading-[48px] font-semibold tabular-nums focus:outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-primary-strong"
                 />
                 <span className="text-sm text-muted-foreground">{units}</span>
               </div>
