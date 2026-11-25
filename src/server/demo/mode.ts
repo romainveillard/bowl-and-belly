@@ -85,7 +85,7 @@ const rowsIn = (db: Db, table: SQLiteTable) =>
   db.select({ rows: count() }).from(table).get()?.rows ?? 0;
 
 /** Replaces everything with fresh demo data ending now. */
-export function resetDemo(db: Db): void {
+function resetDemo(db: Db): void {
   db.transaction((tx) => {
     // Children before parents, for the foreign keys.
     for (const table of [feedEntry, weightEntry, petTarget, pet, food, image, petType, foodType]) {

@@ -13,7 +13,7 @@ export interface FeedValues {
 }
 
 /** What an entry took out of stock: what was served, less any leftover put back. */
-export function takenFromStockG(entry: Omit<FeedValues, "petId" | "foodId" | "fedAt">): number {
+function takenFromStockG(entry: Omit<FeedValues, "petId" | "foodId" | "fedAt">): number {
   return entry.servedG - (entry.leftoverReturnedToStock ? (entry.leftoverG ?? 0) : 0);
 }
 

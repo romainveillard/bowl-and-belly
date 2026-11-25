@@ -9,7 +9,7 @@ export interface DayIntake {
   fed: boolean;
 }
 
-export interface PeriodIntake {
+interface PeriodIntake {
   /** First day of the week (a Monday) or of the month. */
   start: string;
   /** Average daily kcal over the days counted, or null when none counts. */
