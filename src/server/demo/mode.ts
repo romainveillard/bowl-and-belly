@@ -1,7 +1,7 @@
 import { count, sql } from "drizzle-orm";
 import type { SQLiteTable } from "drizzle-orm/sqlite-core";
 import type { MiddlewareHandler } from "hono";
-import { routePath } from "hono/route";
+import { matchedRoutes } from "hono/route";
 import { nextBackupAt } from "../backups/schedule.js";
 import type { Db } from "../db/open.js";
 import {
@@ -78,6 +78,9 @@ export const ADDS_NO_ROWS = new Set([
   "PUT /api/weights/:id",
 ]);
 
+const WRITES = new Set(["POST", "PUT", "PATCH"]);
+const LISTED = new Set([...DISABLED, ...ADDS_ROWS.keys(), ...ADDS_NO_ROWS]);
+
 /** Rows in each limited table just after the last reset. */
 const atReset = new Map<SQLiteTable, number>();
 
@@ -135,9 +138,13 @@ export function demoGuard(db: Db): MiddlewareHandler {
   return async (c, next) => {
     // Hono answers HEAD with the GET handler, which runs in full.
     const method = c.req.method === "HEAD" ? "GET" : c.req.method;
-    // The pattern of the route the request reached, such as "/api/pets/:id".
-    const route = `${method} ${routePath(c, -1)}`;
-    if (DISABLED.has(route)) {
+    // The pattern of the route that will answer, such as "/api/pets/:id".
+    // Middleware is registered for ALL methods, and so are the catch-alls the
+    // web app adds after the API, so the first match with a method answers.
+    const answering = matchedRoutes(c).find((matched) => matched.method !== "ALL");
+    const route = `${method} ${answering?.path ?? ""}`;
+    // Fails closed: a write the lists don't place is refused.
+    if (DISABLED.has(route) || (WRITES.has(method) && !LISTED.has(route))) {
       return c.json({ code: "demo_disabled" as const }, 403);
     }
     const tables = ADDS_ROWS.get(route) ?? [];

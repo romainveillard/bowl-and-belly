@@ -1,14 +1,28 @@
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { Hono, type Context } from "hono";
-import { describe, expect, it } from "vitest";
-import { openDatabase } from "../db/open.js";
-import { pet, weightEntry } from "../db/schema.js";
-import { ADDS_NO_ROWS, ADDS_ROWS, DISABLED, demoGuard } from "./mode.js";
+import { beforeEach, describe, expect, it } from "vitest";
+import { pet, petTarget, weightEntry } from "../db/schema.js";
 
-function demoWithWeighIns(weighIns: number) {
-  const db = openDatabase(":memory:");
+// Read when the modules load, so set before importing them. The app opens its
+// database on import, so it gets a folder of its own.
+process.env.BOWL_DEMO = "true";
+process.env.DATA_DIR = mkdtempSync(path.join(tmpdir(), "bowl-demo-"));
+const { web } = await import("../web.js");
+const { app } = await import("../app.js");
+const { db } = await import("../db/client.js");
+const { ADDS_NO_ROWS, ADDS_ROWS, DISABLED } = await import("./mode.js");
+
+function send(method: string, url: string, body?: unknown) {
+  return web.request(url, {
+    method,
+    headers: { "content-type": "application/json" },
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+  });
+}
+
+// No reset has run, so every weigh-in counts against the demo's 200.
+function petWithWeighIns(weighIns: number) {
   const { id } = db
     .insert(pet)
     .values({
@@ -22,71 +36,82 @@ function demoWithWeighIns(weighIns: number) {
     })
     .returning({ id: pet.id })
     .get();
-  db.insert(weightEntry)
-    .values(
-      Array.from({ length: weighIns }, (_, i) => ({
-        petId: id,
-        measuredAt: new Date(Date.UTC(2026, 0, 1 + i)),
-        weightG: 4000,
-      })),
-    )
-    .run();
-  return { db, petId: id };
+  if (weighIns > 0) {
+    db.insert(weightEntry)
+      .values(
+        Array.from({ length: weighIns }, (_, i) => ({
+          petId: id,
+          measuredAt: new Date(Date.UTC(2026, 0, 1 + i)),
+          weightG: 4000,
+        })),
+      )
+      .run();
+  }
+  return id;
 }
 
-const created = (c: Context) => c.body(null, 201);
-
-// A pet with the demo's 200 extra weigh-ins already logged, behind routes
-// registered with the app's own patterns.
-function demoWithWeighInsFull() {
-  const { db } = demoWithWeighIns(200);
-  const app = new Hono()
-    .use(demoGuard(db))
-    .post("/api/pets", created)
-    .put("/api/pets/:id", created)
-    .post("/api/pets/:id/archive", created)
-    .post("/api/weights", created)
-    .post("/api/weights/restore", created)
-    .post("/api/feeds/restore", created)
-    .get("/api/backups/download", created);
-  return { db, app };
-}
+beforeEach(() => {
+  for (const table of [weightEntry, petTarget, pet]) {
+    db.delete(table).run();
+  }
+});
 
 describe("demoGuard", () => {
+  it("refuses every disabled route, and a backup download asked for with HEAD", async () => {
+    const answers = await Promise.all(
+      [...DISABLED].map(async (route) => {
+        const [method = "", url = ""] = route.split(" ");
+        const response = await send(method, url, method === "GET" ? undefined : {});
+        return [route, await response.json()];
+      }),
+    );
+
+    expect(answers).toEqual([...DISABLED].map((route) => [route, { code: "demo_disabled" }]));
+    expect((await send("HEAD", "/api/backups/download")).status).toBe(403);
+  });
+
+  it("refuses a write to a route the lists don't place", async () => {
+    const response = await send("POST", "/api/nothing-here", {});
+
+    expect(await response.json()).toEqual({ code: "demo_disabled" });
+  });
+
   it("counts weigh-ins against the limit whichever route adds them", async () => {
-    const { app } = demoWithWeighInsFull();
+    const petId = petWithWeighIns(200);
 
     for (const [method, url] of [
       ["POST", "/api/weights"],
       ["POST", "/api/weights/restore"],
-      ["PUT", "/api/pets/1"],
+      ["PUT", `/api/pets/${petId}`],
       ["POST", "/api/pets"],
     ] as const) {
-      const response = await app.request(url, { method });
+      const response = await send(method, url, {});
       expect(await response.json(), `${method} ${url}`).toEqual({ code: "demo_limit" });
     }
   });
 
   it("leaves other tables open while one is full", async () => {
-    const { app } = demoWithWeighInsFull();
+    const petId = petWithWeighIns(200);
 
-    expect((await app.request("/api/feeds/restore", { method: "POST" })).status).toBe(201);
-    expect((await app.request("/api/pets/1/archive", { method: "POST" })).status).toBe(201);
+    // Refused by validation, so the guard let it through.
+    expect((await send("POST", "/api/feeds/restore", {})).status).toBe(400);
+    expect((await send("POST", `/api/pets/${petId}/archive`)).status).toBe(204);
   });
 
   it("holds a place for requests still arriving, so parallel ones can't overshoot", async () => {
-    const { db, petId } = demoWithWeighIns(195);
-    const app = new Hono().use(demoGuard(db)).post("/api/weights", async (c) => {
-      // Stands in for a body that takes a while to arrive.
-      await new Promise((resolve) => setTimeout(resolve, 10));
-      db.insert(weightEntry).values({ petId, measuredAt: new Date(), weightG: 4000 }).run();
-      return c.body(null, 201);
-    });
+    const petId = petWithWeighIns(195);
 
     const statuses = await Promise.all(
       Array.from(
         { length: 10 },
-        async () => (await app.request("/api/weights", { method: "POST" })).status,
+        async () =>
+          (
+            await send("POST", "/api/weights/restore", {
+              petId,
+              measuredAt: new Date().toISOString(),
+              weightG: 4000,
+            })
+          ).status,
       ),
     );
 
@@ -94,35 +119,17 @@ describe("demoGuard", () => {
     expect(db.select().from(weightEntry).all()).toHaveLength(200);
   });
 
-  it("refuses a backup download asked for with HEAD as well as GET", async () => {
-    const { app } = demoWithWeighInsFull();
-
-    const statuses = await Promise.all(
-      ["GET", "HEAD"].map(
-        async (method) => (await app.request("/api/backups/download", { method })).status,
-      ),
-    );
-
-    expect(statuses).toEqual([403, 403]);
-  });
-
   it("frees the place of a request that fails", async () => {
-    const { db } = demoWithWeighIns(199);
-    const app = new Hono()
-      .use(demoGuard(db))
-      .post("/api/weights", (c) => c.json({ code: "invalid_request" }, 400));
+    petWithWeighIns(199);
 
-    await app.request("/api/weights", { method: "POST" });
+    await send("POST", "/api/weights/restore", {});
 
-    expect((await app.request("/api/weights", { method: "POST" })).status).toBe(400);
+    expect((await send("POST", "/api/weights/restore", {})).status).toBe(400);
   });
 });
 
 describe("the demo's route lists", () => {
-  it("place every route that writes in exactly one list, and only routes that exist", async () => {
-    // The app opens its database on import, so it gets a folder of its own.
-    process.env.DATA_DIR = mkdtempSync(path.join(tmpdir(), "bowl-demo-routes-"));
-    const { app } = await import("../app.js");
+  it("place every route that writes in exactly one list, and only routes that exist", () => {
     const writes = new Set(
       app.routes
         .filter((route) => ["POST", "PUT", "PATCH"].includes(route.method))
