@@ -52,7 +52,7 @@ export function WeighInsCard({ pet }: { pet: PetDetail }) {
         />
       )}
       {pet.weights.length > 0 && (
-        <div>
+        <div className="desktop:flex desktop:flex-1 desktop:flex-col">
           {pet.weights.slice(0, showAll ? undefined : LATEST_READINGS).map((reading) => {
             const date = day(reading.measuredAt);
             return (
@@ -98,7 +98,8 @@ export function WeighInsCard({ pet }: { pet: PetDetail }) {
                 const first = pet.weights[LATEST_READINGS]?.id;
                 focusNext(() => document.querySelector(`[data-reading="${first}"] button`));
               }}
-              className="flex min-h-11 w-full cursor-pointer items-center border-t border-border text-sm font-semibold"
+              // Beside the Daily target card on desktop, both cards' actions line up at the bottom.
+              className="flex min-h-11 w-full cursor-pointer items-center border-t border-border text-sm font-semibold desktop:mt-auto desktop:w-auto desktop:self-start desktop:border-t-0"
             >
               {t("weight.showAll", { count: pet.weights.length })}
             </button>
