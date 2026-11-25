@@ -12,7 +12,7 @@ Thanks for helping out. Bowl & Belly is a small, self-hosted app, so the aim is 
 You need Node 24 (see `.nvmrc`).
 
 - Install: `npm install`
-- Run locally: `npm run dev`, then open http://localhost:5173. The API runs on port 3000 and stores its SQLite file in `data/`.
+- Run locally: `npm run dev`, then open http://localhost:5173. The API runs on port 3000 and stores its SQLite file in `data/`, or in the folder `DATA_DIR` names.
 - Try it with data: `npm run demo` writes three pets and three months of history into `data-demo/` (replacing what was there), then starts the same dev servers on it.
 - Test: `npm test`
 - Lint and typecheck: `npm run lint`, `npm run format:check` and `npm run typecheck`. `npm run format` fixes formatting.

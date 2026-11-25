@@ -16,10 +16,9 @@ data-demo/
 # Test coverage
 coverage/
 
-# Environment files (the auth password will live here)
+# Environment files, such as the .env a compose file reads BOWL_PASSWORD from
 .env
 .env.*
-!.env.example
 
 # Logs
 *.log

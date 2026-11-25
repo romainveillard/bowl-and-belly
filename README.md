@@ -47,6 +47,8 @@ Put the password in a `.env` file next to `compose.yaml` (`BOWL_PASSWORD=` follo
 | `BOWL_TRUST_PROXY` | unset | Set to `cloudflare` when the app sits behind Cloudflare, so login attempts are limited per visitor (using `CF-Connecting-IP`) rather than for everyone at once. Only set it if every request really comes through Cloudflare, since the header is easy to fake otherwise. |
 | `TZ` | `UTC` | The time zone the app starts with. You can change it later in Settings. |
 | `PORT` | `3000` | The port the app listens on inside the container. |
+| `DATA_DIR` | `/data` | Where the database, backups and login secret are kept. The image's volume is there, so leave it unless you mount it elsewhere. |
+| `BOWL_DEMO` | unset | `true` runs the public demo: see [Running a public demo](#running-a-public-demo). |
 
 Everything the app keeps lives in `/data`: the database, backups, and the secret that signs login sessions. The container runs as the `node` user (uid 1000), so a bind-mounted folder must be writable by that user.
 
