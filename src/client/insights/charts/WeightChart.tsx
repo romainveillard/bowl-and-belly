@@ -4,6 +4,7 @@ import { addDays } from "../../../shared/app-day.js";
 import { rollingAverage, type Reading } from "../../../shared/insights.js";
 import { formatDateInput, formatKg } from "../../lib/format.js";
 import { ChartTable } from "./ChartTable.js";
+import { markColour } from "./colours.js";
 import { LegendItem } from "./Legend.js";
 
 const DAY_MS = 86_400_000;
@@ -90,7 +91,7 @@ export function WeightChart({
             <Scatter dataKey="kg" fill="var(--color-foreground)" isAnimationActive={false} />
             <Line
               dataKey="averageKg"
-              stroke="var(--color-primary)"
+              stroke={markColour("weightAverage")}
               strokeWidth={3}
               strokeLinecap="round"
               dot={false}
@@ -101,7 +102,10 @@ export function WeightChart({
       </div>
       <div className="flex gap-4">
         <LegendItem label={t("insights.legendReadings")} line="border-t-[3px] border-foreground" />
-        <LegendItem label={t("insights.legendAverage")} line="border-t-[3px] border-primary" />
+        <LegendItem
+          label={t("insights.legendAverage")}
+          line="border-t-[3px] border-primary-strong"
+        />
       </div>
     </div>
   );

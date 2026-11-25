@@ -13,6 +13,7 @@ import type { DayIntake } from "../../../shared/insights.js";
 import { isOverTarget } from "../../lib/dayStatus.js";
 import { formatAppDay } from "../../lib/format.js";
 import { ChartTable } from "./ChartTable.js";
+import { markColour } from "./colours.js";
 import { LegendItem } from "./Legend.js";
 
 const colours = {
@@ -123,7 +124,7 @@ export function IntakeChart({
                 <Cell
                   key={day.day}
                   // An outline lifts pale bars to 3:1 against the card.
-                  stroke={day.day > today ? "none" : colours.over}
+                  stroke={day.day > today ? "none" : markColour("barOutline")}
                   strokeWidth={1}
                   fill={
                     day.day > today

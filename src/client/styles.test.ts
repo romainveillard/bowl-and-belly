@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { expect, it } from "vitest";
+import { markTokens } from "./insights/charts/colours.js";
 
 const css = fs.readFileSync(path.join(import.meta.dirname, "styles.css"), "utf8");
 
@@ -33,7 +34,14 @@ it.each([
   ["success", "success-soft", 4.5, "the On target badge"],
   ["muted-foreground", "card", 4.5, "hints and placeholders"],
   ["input-border", "card", 3, "an input's edge"],
-  ["primary-strong", "card", 3, "the focus ring and chart bar outlines"],
+  ["primary-strong", "card", 3, "the focus ring"],
 ])("keeps %s on %s at %s:1 for %s", (foreground, background, minimum) => {
   expect(contrast(foreground, background)).toBeGreaterThanOrEqual(minimum);
 });
+
+it.each(Object.entries(markTokens))(
+  "draws the chart mark %s at 3:1 against the card",
+  (_mark, colour) => {
+    expect(contrast(colour, "card")).toBeGreaterThanOrEqual(3);
+  },
+);

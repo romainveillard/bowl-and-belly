@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import type { FeedEntry } from "../../feeds/feeds.js";
 import { formatTime } from "../../lib/format.js";
+import { markColour } from "./colours.js";
 import { LegendItem } from "./Legend.js";
 
 const HOUR_MS = 3_600_000;
@@ -86,7 +87,7 @@ export function DayChart({
             <Area
               dataKey="total"
               type="stepAfter"
-              stroke="var(--color-primary)"
+              stroke={markColour("runningTotal")}
               strokeWidth={3}
               fill="var(--color-accent-soft)"
               fillOpacity={1}
@@ -123,7 +124,10 @@ export function DayChart({
         </ResponsiveContainer>
       </div>
       <div className="flex flex-wrap gap-x-3 gap-y-1">
-        <LegendItem label={t("insights.legendRunning")} line="border-t-[3px] border-primary" />
+        <LegendItem
+          label={t("insights.legendRunning")}
+          line="border-t-[3px] border-primary-strong"
+        />
         <Dot label={t("insights.legendWet")} colour="bg-wet-foreground" />
         <Dot label={t("insights.legendDry")} colour="bg-dry-foreground" />
         {dots.some((dot) => dot.kind === "custom") && (
