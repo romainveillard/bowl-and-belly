@@ -1,3 +1,4 @@
+import { AlertDialog } from "radix-ui";
 import { useTranslation } from "react-i18next";
 import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
 import { Dialog, dialogButton } from "../components/ui/overlays/Dialog.js";
@@ -77,14 +78,17 @@ export function TargetPromptDialog({
           >
             {t("targetPrompt.update", { kcal: prompt.suggestedKcal })}
           </button>
-          <button
-            type="button"
-            className={dialogButton.secondary}
-            disabled={answering}
-            onClick={() => answer(false)}
-          >
-            {t("targetPrompt.keep", { kcal: prompt.currentKcal })}
-          </button>
+          {/* Radix focuses the Cancel part when the dialog opens: keeping the target is the safe default. */}
+          <AlertDialog.Cancel asChild>
+            <button
+              type="button"
+              className={dialogButton.secondary}
+              disabled={answering}
+              onClick={() => answer(false)}
+            >
+              {t("targetPrompt.keep", { kcal: prompt.currentKcal })}
+            </button>
+          </AlertDialog.Cancel>
         </>
       }
     >
