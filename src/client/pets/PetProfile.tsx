@@ -75,7 +75,7 @@ export function PetProfile({ petId, opened }: { petId: number; opened: boolean }
           </Link>
         </Card>
 
-        <div className="grid gap-3.5 desktop:grid-cols-2 desktop:items-start desktop:gap-6">
+        <div className="grid gap-3.5 desktop:grid-cols-2 desktop:gap-6">
           <ProfileTargetCard pet={pet} />
           <WeighInsCard pet={pet} />
         </div>
