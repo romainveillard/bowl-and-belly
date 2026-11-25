@@ -8,6 +8,9 @@
   "rules": {
     "react/react-in-jsx-scope": "off",
     "typescript/no-misused-promises": "error",
+    // Every hit is deliberate ARIA the native tag can't replace: role="img" on
+    // composed bars and chart wrappers, the stock table that becomes cards on a
+    // phone, and the pet chip's listbox.
     "jsx-a11y/prefer-tag-over-role": "off",
     "jsx-a11y/label-has-associated-control": ["error", { "depth": 3 }],
     "import/no-unassigned-import": "off",
