@@ -51,13 +51,12 @@ const FoodTypesScreen = lazy(() =>
   later.types().then((module) => ({ default: module.FoodTypesScreen })),
 );
 
-/** Fetches the screens loaded later, once the first one is up and the browser idle. */
+/** Fetches the screens loaded later, Insights included, once the first one is up and the browser idle. */
 function usePrefetchLater() {
   useEffect(() => {
+    // Insights last: it brings the charting library, the largest of them.
     const prefetch = () => {
-      for (const load of Object.values(later)) {
-        void load();
-      }
+      void Promise.allSettled(Object.values(later).map((load) => load())).then(loadInsights);
     };
     // Safari has no requestIdleCallback.
     if ("requestIdleCallback" in window) {
@@ -69,9 +68,10 @@ function usePrefetchLater() {
   }, []);
 }
 
-// The charting library only loads with the screen that needs it.
+// The charting library stays out of the first load, and is fetched with Insights.
+const loadInsights = () => import("./insights/InsightsScreen.js");
 const InsightsScreen = lazy(() =>
-  import("./insights/InsightsScreen.js").then((module) => ({ default: module.InsightsScreen })),
+  loadInsights().then((module) => ({ default: module.InsightsScreen })),
 );
 
 // Forms and Settings take the whole phone screen, without the tabs.

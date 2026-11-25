@@ -229,7 +229,7 @@ Used on Today and History. A food-type tile on the left (blue drop for wet, peac
 - **Primary buttons** use navy text on orange (about 5.3:1). White on the brand orange fails contrast.
 - **Controls:** switches only turn a feature on or off (portions, own target). Facts and choices (neutered, activity, goal, units) use segmented controls or chips.
 - **Type:** Outfit SemiBold for headings and figures (tabular numbers), Inter for everything else. Both fonts are bundled with the app, so nothing is fetched from a font service. 4 px spacing grid, touch targets at least 44 px, radii from 8 px (inputs) to 24 px (sheet tops).
-- **Charts:** intake bars in primary, days over target (beyond the same 5% band as "On target") in primary-strong, today's partial bar in accent and left out of averages, target as a dashed navy line that steps if the target changed within the period; weight as faint raw points with a primary rolling-average line. The charting library loads only with the screens that draw charts.
+- **Charts:** intake bars in primary, days over target (beyond the same 5% band as "On target") in primary-strong, today's partial bar in accent and left out of averages, target as a dashed navy line that steps if the target changed within the period; weight as faint raw points with a primary-strong rolling-average line. The charting library is left out of the first load and fetched with Insights once the browser is idle, after the other screens.
 - **Dark mode** is out of scope for the MVP, but every colour is a token so it can be added later.
 
 ## Translations
