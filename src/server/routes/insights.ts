@@ -5,7 +5,7 @@ import { addDays, appDayStart } from "../../shared/app-day.js";
 import { db } from "../db/client.js";
 import { weightEntry } from "../db/schema.js";
 import { daySummaries } from "../feeds/days.js";
-import { targetOn } from "../pets/targets.js";
+import { targetHistory, targetIn } from "../pets/targets.js";
 import { daySettings, today } from "../settings.js";
 import { validate } from "../validate.js";
 
@@ -37,13 +37,14 @@ export const insightsRoutes = new Hono().get(
     );
 
     // Every day of the range, fed or not, each with the target in force that day.
+    const targets = targetHistory(db, petId);
     const days = [];
     for (let date = from; date <= to; date = addDays(date, 1)) {
       const summary = summaries.get(date);
       days.push({
         day: date,
         eatenKcal: summary?.eatenKcal ?? 0,
-        targetKcal: summary ? summary.targetKcal : (targetOn(db, petId, date)?.kcalPerDay ?? null),
+        targetKcal: targetIn(targets, date)?.kcalPerDay ?? null,
         fed: summary !== undefined,
       });
     }

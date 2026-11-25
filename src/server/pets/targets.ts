@@ -22,6 +22,25 @@ export function targetOn(db: DbOrTx, petId: number, day: string) {
     .get();
 }
 
+/** A pet's whole target history, newest first, for looking up many days at once. */
+export function targetHistory(db: DbOrTx, petId: number) {
+  return db
+    .select({
+      effectiveFrom: petTarget.effectiveFrom,
+      kcalPerDay: petTarget.kcalPerDay,
+      source: petTarget.source,
+    })
+    .from(petTarget)
+    .where(eq(petTarget.petId, petId))
+    .orderBy(desc(petTarget.effectiveFrom))
+    .all();
+}
+
+/** The target in force on `day`, from a history newest first. */
+export function targetIn(history: ReturnType<typeof targetHistory>, day: string) {
+  return history.find((target) => target.effectiveFrom <= day);
+}
+
 export function latestWeightG(db: DbOrTx, petId: number): number | null {
   const row = db
     .select({ weightG: weightEntry.weightG })

@@ -2,7 +2,7 @@ import { and, asc, desc, eq, gte, lt } from "drizzle-orm";
 import { addDays, appDayOf, appDayStart } from "../../shared/app-day.js";
 import type { DbOrTx } from "../db/open.js";
 import { feedEntry, food, foodType } from "../db/schema.js";
-import { targetOn } from "../pets/targets.js";
+import { targetHistory, targetIn } from "../pets/targets.js";
 import { daySettings } from "../settings.js";
 
 const eatenG = (entry: { servedG: number; leftoverG: number | null }) =>
@@ -50,9 +50,15 @@ export function daySummaries(db: DbOrTx, petId: number, from: string, to: string
   }
   for (const entry of entries) {
     const day = appDayOf(entry.fedAt, settings);
-    byDay.set(day, [...(byDay.get(day) ?? []), entry]);
+    const dayEntries = byDay.get(day);
+    if (dayEntries) {
+      dayEntries.push(entry);
+    } else {
+      byDay.set(day, [entry]);
+    }
   }
 
+  const targets = targetHistory(db, petId);
   return [...byDay.entries()]
     .toSorted(([a], [b]) => b.localeCompare(a))
     .map(([day, dayEntries]) => {
@@ -69,7 +75,7 @@ export function daySummaries(db: DbOrTx, petId: number, from: string, to: string
       }
       return {
         day,
-        targetKcal: targetOn(db, petId, day)?.kcalPerDay ?? null,
+        targetKcal: targetIn(targets, day)?.kcalPerDay ?? null,
         // Rounded once from the exact sum, so it can differ by one from the rows added up.
         eatenKcal: Math.round(dayEntries.reduce((sum, entry) => sum + kcalOf(entry), 0)),
         byType: [...types.values()]
