@@ -20,6 +20,12 @@ it("has nothing to say without a target", () => {
   expect(dayStatus({ day: "2026-11-21", eatenKcal: 200, targetKcal: null }, today)).toBeNull();
 });
 
+it("never calls a day both on target and over it", () => {
+  // About 103%: past 100%, inside the band, so badged on target with a normal bar.
+  expect(dayStatus(yesterday(268), today)).toBe("onTarget");
+  expect(isOverTarget(268, 260)).toBe(false);
+});
+
 it("counts a day as over target only beyond the on-target band", () => {
   expect(isOverTarget(273, 260)).toBe(false);
   expect(isOverTarget(274, 260)).toBe(true);

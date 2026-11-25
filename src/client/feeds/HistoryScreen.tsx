@@ -7,10 +7,11 @@ import { EmptyState } from "../components/EmptyState.js";
 import { ChevronDownIcon, HistoryIcon, PlusIcon } from "../components/icons.js";
 import { PetChip } from "../pets/PetChip.js";
 import { Badge } from "../components/ui/feedback/Badge.js";
+import { ProgressBar } from "../components/ui/feedback/ProgressBar.js";
 import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageHeader } from "../components/ui/layout/PageHeader.js";
 import { button } from "../components/ui/forms/button.js";
-import { dayStatus } from "../lib/dayStatus.js";
+import { dayStatus, isOverTarget } from "../lib/dayStatus.js";
 import { useHistory, type DaySummary, type FeedEntry } from "./feeds.js";
 import { foodTypeLabel } from "../stock/foods.js";
 import { formatAppDay } from "../lib/format.js";
@@ -88,16 +89,18 @@ function DayCard({
           {status === "onTarget" && <Badge tone="success">{t("history.onTarget")}</Badge>}
         </span>
         {summary.targetKcal !== null && (
-          <span
-            role="img"
-            aria-label={t("history.progress", { percent })}
-            className="relative block h-1.5 w-full rounded-full bg-muted"
-          >
-            <span
-              className={`absolute inset-y-0 left-0 rounded-full ${isToday ? "bg-accent" : percent > 100 ? "bg-primary-strong" : "bg-primary"}`}
-              style={{ width: `${Math.min(percent, 100)}%` }}
-            />
-          </span>
+          <ProgressBar
+            percent={percent}
+            tone={
+              isToday
+                ? "soFar"
+                : isOverTarget(summary.eatenKcal, summary.targetKcal)
+                  ? "over"
+                  : "default"
+            }
+            label={t("history.progress", { percent })}
+            className="h-1.5 w-full"
+          />
         )}
       </button>
       {expanded && summary.entries.length > 0 && (

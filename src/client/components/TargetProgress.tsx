@@ -1,4 +1,6 @@
 import { useTranslation } from "react-i18next";
+import { isOverTarget } from "../lib/dayStatus.js";
+import { ProgressBar } from "./ui/feedback/ProgressBar.js";
 
 interface TargetProgressProps {
   eatenKcal: number;
@@ -22,16 +24,12 @@ export function TargetProgress({ eatenKcal, targetKcal, onAccent = false }: Targ
         </span>
       </span>
       {targetKcal !== null && (
-        <span
-          role="img"
-          aria-label={t("pets.progress", { percent })}
-          className={`relative block h-2 rounded-full ${onAccent ? "bg-muted desktop:bg-card" : "bg-muted"}`}
-        >
-          <span
-            className="absolute inset-y-0 left-0 rounded-full bg-primary"
-            style={{ width: `${Math.min(percent, 100)}%` }}
-          />
-        </span>
+        <ProgressBar
+          percent={percent}
+          tone={isOverTarget(eatenKcal, targetKcal) ? "over" : "default"}
+          label={t("pets.progress", { percent })}
+          className={onAccent ? "h-2 desktop:bg-card" : "h-2"}
+        />
       )}
     </span>
   );

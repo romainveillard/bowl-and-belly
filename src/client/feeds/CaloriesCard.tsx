@@ -1,5 +1,7 @@
 import { useTranslation } from "react-i18next";
+import { ProgressBar } from "../components/ui/feedback/ProgressBar.js";
 import { Card } from "../components/ui/layout/Card.js";
+import { isOverTarget } from "../lib/dayStatus.js";
 import { foodTypeLabel } from "../stock/foods.js";
 import type { DaySummary } from "./feeds.js";
 
@@ -16,6 +18,8 @@ export function CaloriesCard({
   const { t } = useTranslation();
   const percent = targetKcal ? Math.round((eatenKcal / targetKcal) * 100) : 0;
   const over = targetKcal !== null && eatenKcal > targetKcal;
+  // Warn only past the on-target band, like the bar and History.
+  const overBand = isOverTarget(eatenKcal, targetKcal);
 
   return (
     <Card label={t("today.caloriesLabel")}>
@@ -29,16 +33,12 @@ export function CaloriesCard({
         </span>
       </span>
       {targetKcal !== null && (
-        <span
-          role="img"
-          aria-label={t("pets.progress", { percent })}
-          className="relative block h-2.5 rounded-full bg-muted desktop:h-3"
-        >
-          <span
-            className={`absolute inset-y-0 left-0 rounded-full ${over ? "bg-primary-strong" : "bg-primary"}`}
-            style={{ width: `${Math.min(percent, 100)}%` }}
-          />
-        </span>
+        <ProgressBar
+          percent={percent}
+          tone={overBand ? "over" : "default"}
+          label={t("pets.progress", { percent })}
+          className="h-2.5 desktop:h-3"
+        />
       )}
       {byType.length === 0 ? (
         <span className="text-[13px] text-muted-foreground desktop:text-sm">
@@ -46,7 +46,7 @@ export function CaloriesCard({
         </span>
       ) : (
         <span className="flex justify-between gap-3 text-[13px] text-muted-foreground tabular-nums desktop:text-sm">
-          <span className={over ? "font-semibold text-warning" : ""}>
+          <span className={overBand ? "font-semibold text-warning" : ""}>
             {targetKcal !== null &&
               (over
                 ? t("feed.kcalOver", { kcal: eatenKcal - targetKcal })
