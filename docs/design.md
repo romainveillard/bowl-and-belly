@@ -85,7 +85,7 @@ Stock is a running total stored in grams for every food. Each food has a stock u
 - **Portion-counted stock** is shown as whole portions plus what is left of an open one ("8 pouches + 45 g"), or in plain grams under one portion. A suggested portion name is counted and translated properly ("1 tin", "3 boîtes"); a typed one takes a plain "s" in the plural.
 - **Out of stock:** stock at or below zero is never shown as a number, only as "Out of stock" in the warning colour.
 - **Restocking** adds to the current stock: a stepper in portions starting at 1, or an amount with a g/kg toggle (kg by default), with the new total shown. Stock that had run below zero counts as an empty shelf.
-- **Correcting the count:** Current stock on the Edit food form sets the stock directly, for when the count is wrong. It keeps no history and leaves past feeds untouched.
+- **Correcting the count:** Current stock on the Edit food form sets the stock directly, for when the count is wrong. It keeps no history and leaves past feeds untouched. Saving the form without touching Current stock leaves the stock as it is on the server, so feeds logged from another device while the form was open still count.
 - **"For"** on the food form defaults to the type of the currently selected pet and can be set to "Any pet".
 - **Empty Stock tab:** "No foods yet" with "Add your first food", and the Archived foods link if any.
 

@@ -33,7 +33,7 @@ const backfill = z.discriminatedUnion("scope", [
 type FoodBody = z.infer<typeof foodBody>;
 
 /** The row to store, or null when the food type does not exist. */
-function rowOf(body: FoodBody) {
+function rowOf<Body extends Omit<FoodBody, "stockG">>(body: Body) {
   const type = db
     .select({ systemKey: foodType.systemKey })
     .from(foodType)
@@ -127,7 +127,16 @@ export const foodsRoutes = new Hono()
   .put(
     "/:id",
     validate("param", idParam),
-    validate("json", foodBody.extend({ kcalBackfill: backfill })),
+    validate(
+      "json",
+      foodBody.extend({
+        // Only sent when the user corrected the count. Otherwise the stock
+        // stays as it is now, not as it was when the form opened, so feeds
+        // logged meanwhile from another device still count.
+        stockG: stockGrams.optional(),
+        kcalBackfill: backfill,
+      }),
+    ),
     (c) => {
       const { id } = c.req.valid("param");
       const { kcalBackfill, ...body } = c.req.valid("json");
