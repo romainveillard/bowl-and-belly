@@ -1,15 +1,10 @@
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
-import {
-  AlertIcon,
-  BackIcon,
-  ChevronDownIcon,
-  ChevronRightIcon,
-  DownloadIcon,
-} from "../components/icons.js";
+import { AlertIcon, ChevronDownIcon, ChevronRightIcon, DownloadIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
+import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { Field, inputClass } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { Switch } from "../components/ui/forms/Switch.js";
@@ -402,17 +397,7 @@ export function SettingsScreen() {
 
   return (
     <div className="flex flex-col desktop:gap-6">
-      <header className="flex items-center gap-2 px-3 pt-3.5 pb-2.5 desktop:hidden">
-        <Link to="/" aria-label={t("settings.back")} className={button.icon}>
-          <BackIcon />
-        </Link>
-        <h1 className="font-display text-[26px] font-semibold">{t("nav.settings")}</h1>
-      </header>
-      <header className="hidden desktop:block">
-        <h1 className="font-display text-[34px] leading-10 font-semibold tracking-[-0.5px]">
-          {t("nav.settings")}
-        </h1>
-      </header>
+      <SubPageHeader title={t("nav.settings")} phoneLink={{ to: "/", label: t("settings.back") }} />
       {settings && <SettingsForm settings={settings} />}
     </div>
   );

@@ -5,6 +5,7 @@ import { FoodTypeBadge, FoodTypeTile } from "../components/FoodTypeMark.js";
 import { EmptyState } from "../components/EmptyState.js";
 import { ChevronRightIcon, PlusIcon, SearchIcon, StockIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
+import { PageTitle } from "../components/ui/layout/PageHeader.js";
 import { inputClass } from "../components/ui/forms/Field.js";
 import {
   foodTypeLabel,
@@ -84,9 +85,7 @@ export function StockScreen() {
   return (
     <div className="flex flex-col desktop:gap-6">
       <header className="flex flex-col gap-3 px-5 pt-5 pb-2 desktop:gap-6 desktop:p-0">
-        <h1 className="font-display text-display font-semibold desktop:text-[34px] desktop:leading-10">
-          {t("nav.stock")}
-        </h1>
+        <PageTitle>{t("nav.stock")}</PageTitle>
         <div className="flex flex-col gap-3 desktop:flex-row desktop:flex-wrap desktop:items-center">
           <div className="relative desktop:max-w-[420px] desktop:min-w-60 desktop:flex-1">
             <label htmlFor="stock-search" className="sr-only">

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
-import { BackIcon, ChevronRightIcon, LockIcon, PlusIcon } from "../components/icons.js";
+import { ChevronRightIcon, LockIcon, PlusIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
+import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
 import { Switch } from "../components/ui/forms/Switch.js";
 import { foodTypeLabel, useFoodTypes } from "../lib/foods.js";
@@ -85,22 +85,12 @@ export function TypesScreen({ kind }: { kind: TypeKind }) {
 
   return (
     <div className="flex flex-col desktop:gap-6">
-      <header className="flex items-center gap-2 px-3 pt-3.5 pb-2.5 desktop:hidden">
-        <Link to="/settings" aria-label={t("types.backToSettings")} className={button.icon}>
-          <BackIcon />
-        </Link>
-        <h1 className="font-display text-[26px] font-semibold">{title}</h1>
-      </header>
-      <header className="hidden flex-col gap-1 desktop:flex">
-        <Link to="/settings" className="inline-flex items-center gap-1 text-sm font-semibold">
-          <BackIcon size={16} />
-          {t("nav.settings")}
-        </Link>
-        <h1 className="font-display text-[34px] leading-10 font-semibold tracking-[-0.5px]">
-          {title}
-        </h1>
-        <span className="text-[15px] text-muted-foreground">{hint}</span>
-      </header>
+      <SubPageHeader
+        title={title}
+        hint={hint}
+        phoneLink={{ to: "/settings", label: t("types.backToSettings") }}
+        desktopLink={{ to: "/settings", label: t("nav.settings") }}
+      />
 
       <div className="flex flex-col gap-3 px-5 pt-1 pb-6 desktop:max-w-[720px] desktop:gap-4 desktop:p-0">
         <p className="text-sm text-muted-foreground desktop:hidden">{hint}</p>

@@ -8,6 +8,7 @@ import { IntakeChart } from "../components/charts/IntakeChart.js";
 import { WeightChart } from "../components/charts/WeightChart.js";
 import { BackIcon, ChevronRightIcon } from "../components/icons.js";
 import { PetChip } from "../components/PetChip.js";
+import { PageHeader } from "../components/ui/layout/PageHeader.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { FeedRow } from "../components/FeedRow.js";
 import { dayStatus, isOnTarget, isOverTarget } from "../lib/dayStatus.js";
@@ -592,12 +593,7 @@ export function InsightsScreen() {
   };
   return (
     <div className="flex flex-col gap-3.5 desktop:gap-6">
-      <header className="flex items-center justify-between gap-4 px-5 pt-5 desktop:p-0">
-        <h1 className="font-display text-display font-semibold desktop:text-[34px] desktop:leading-10">
-          {t("nav.insights")}
-        </h1>
-        <PetChip />
-      </header>
+      <PageHeader title={t("nav.insights")} extra={<PetChip />} spaceBelow={false} />
       <div className="flex flex-col gap-3.5 px-5 pb-6 desktop:gap-6 desktop:p-0 desktop:pb-10">
         {period === "day" && <DayInsights key={pet.id} {...view} />}
         {period === "week" && <WeekInsights key={pet.id} {...view} />}

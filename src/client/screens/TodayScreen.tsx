@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import { BowlIcon, CheckIcon, LogoMark, PlusIcon, SettingsIcon } from "../components/icons.js";
 import { FeedRow } from "../components/FeedRow.js";
 import { PetChip } from "../components/PetChip.js";
+import { PageHeader } from "../components/ui/layout/PageHeader.js";
 import { WeightCard } from "../components/WeightCard.js";
 import { button } from "../components/ui/forms/button.js";
 import { useDay, useDaySettings, type DaySummary } from "../lib/feeds.js";
@@ -311,27 +312,29 @@ export function TodayScreen() {
 
   return (
     <div className="flex flex-col desktop:gap-6">
-      <header className="flex items-center justify-between gap-4 px-5 pt-5 pb-3 desktop:p-0">
-        <div className="flex flex-col gap-0.5 desktop:gap-1">
-          <h1 className="font-display text-display font-semibold desktop:text-[34px] desktop:leading-10">
-            {t("nav.today")}
-          </h1>
-          <span className="text-sm text-muted-foreground desktop:hidden">{date("short")}</span>
-          <span className="hidden text-[15px] text-muted-foreground desktop:inline">
-            {date("long")}
-          </span>
-        </div>
-        <div className="flex items-center gap-2 desktop:gap-3">
-          <PetChip />
-          <Link
-            to="/settings"
-            aria-label={t("today.settings")}
-            className={`${button.icon} ${card} desktop:hidden`}
-          >
-            <SettingsIcon />
-          </Link>
-        </div>
-      </header>
+      <PageHeader
+        title={t("nav.today")}
+        subtitle={
+          <>
+            <span className="text-sm text-muted-foreground desktop:hidden">{date("short")}</span>
+            <span className="hidden text-[15px] text-muted-foreground desktop:inline">
+              {date("long")}
+            </span>
+          </>
+        }
+        extra={
+          <div className="flex items-center gap-2 desktop:gap-3">
+            <PetChip />
+            <Link
+              to="/settings"
+              aria-label={t("today.settings")}
+              className={`${button.icon} ${card} desktop:hidden`}
+            >
+              <SettingsIcon />
+            </Link>
+          </div>
+        }
+      />
       <div className={`px-5 pt-1 desktop:p-0 ${canLog ? "pb-24" : "pb-5"}`}>{content}</div>
       {canLog && (
         <div className="fixed right-5 bottom-[calc(86px+env(safe-area-inset-bottom))] flex items-center gap-2.5 desktop:right-8 desktop:bottom-8">

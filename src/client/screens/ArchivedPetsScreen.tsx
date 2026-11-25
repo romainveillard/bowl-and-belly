@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router";
-import { BackIcon, PetsIcon } from "../components/icons.js";
+import { useNavigate } from "react-router";
+import { PetsIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
+import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { formatDay, petTypeLabel } from "../lib/format.js";
 import { useArchivedPets, usePets, useSetArchived } from "../lib/pets.js";
 
@@ -18,22 +19,12 @@ export function ArchivedPetsScreen() {
 
   return (
     <div className="flex flex-col desktop:gap-6">
-      <header className="flex items-center gap-2 px-3 pt-3.5 pb-2.5 desktop:hidden">
-        <Link to="/pets" aria-label={t("pets.back")} className={button.icon}>
-          <BackIcon />
-        </Link>
-        <h1 className="font-display text-[26px] font-semibold">{t("pets.archivedTitle")}</h1>
-      </header>
-      <header className="hidden flex-col gap-1 desktop:flex">
-        <Link to="/pets" className="inline-flex items-center gap-1 text-sm font-semibold">
-          <BackIcon size={16} />
-          {t("nav.pets")}
-        </Link>
-        <h1 className="font-display text-[34px] leading-10 font-semibold tracking-[-0.5px]">
-          {t("pets.archivedTitle")}
-        </h1>
-        <span className="text-[15px] text-muted-foreground">{t("pets.archivedHint")}</span>
-      </header>
+      <SubPageHeader
+        title={t("pets.archivedTitle")}
+        hint={t("pets.archivedHint")}
+        phoneLink={{ to: "/pets", label: t("pets.back") }}
+        desktopLink={{ to: "/pets", label: t("nav.pets") }}
+      />
 
       <div className="flex flex-col gap-3 px-5 pt-1 desktop:p-0">
         <p className="text-sm text-muted-foreground desktop:hidden">{t("pets.archivedHint")}</p>

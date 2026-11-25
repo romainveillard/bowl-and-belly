@@ -5,6 +5,7 @@ import { FoodTypeTile } from "../components/FoodTypeMark.js";
 import { EmptyState } from "../components/EmptyState.js";
 import { ChevronDownIcon, HistoryIcon, PlusIcon } from "../components/icons.js";
 import { PetChip } from "../components/PetChip.js";
+import { PageHeader } from "../components/ui/layout/PageHeader.js";
 import { button } from "../components/ui/forms/button.js";
 import { dayStatus } from "../lib/dayStatus.js";
 import { useDaySettings, useHistory, type DaySummary, type FeedEntry } from "../lib/feeds.js";
@@ -204,12 +205,7 @@ export function HistoryScreen() {
 
   return (
     <div className="flex flex-col desktop:gap-6">
-      <header className="flex items-center justify-between gap-4 px-5 pt-5 pb-3 desktop:p-0">
-        <h1 className="font-display text-display font-semibold desktop:text-[34px] desktop:leading-10">
-          {t("nav.history")}
-        </h1>
-        <PetChip />
-      </header>
+      <PageHeader title={t("nav.history")} extra={<PetChip />} />
       <div className="flex flex-col gap-2.5 px-5 pt-1 pb-6 desktop:max-w-[720px] desktop:gap-3 desktop:p-0 desktop:pb-24">
         {days.map((summary) => (
           <DayCard

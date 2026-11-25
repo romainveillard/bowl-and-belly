@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { PlusIcon } from "./icons.js";
 import { button } from "./ui/forms/button.js";
+import { PageHeader } from "./ui/layout/PageHeader.js";
 
 interface EmptyStateProps {
   /** The tab's own title, shown above the message as on its normal screen. */
@@ -21,11 +22,7 @@ const actionClass = `${button.primary} mt-1.5 h-12 rounded-full px-[22px]`;
 export function EmptyState({ heading, icon, title, body, action, footer }: EmptyStateProps) {
   return (
     <div className="flex min-h-[calc(100dvh-68px-env(safe-area-inset-bottom))] flex-col desktop:min-h-0 desktop:gap-6">
-      <header className="px-5 pt-5 pb-3 desktop:p-0">
-        <h1 className="font-display text-display font-semibold desktop:text-[34px] desktop:leading-10">
-          {heading}
-        </h1>
-      </header>
+      <PageHeader title={heading} />
       <section className="flex flex-1 flex-col items-center justify-center gap-3 px-7 pb-[60px] text-center desktop:flex-none desktop:rounded-[14px] desktop:bg-card desktop:px-8 desktop:py-20 desktop:inset-ring desktop:inset-ring-border">
         <span
           aria-hidden="true"

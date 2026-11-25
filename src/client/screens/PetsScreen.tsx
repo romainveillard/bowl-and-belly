@@ -4,6 +4,7 @@ import { ChevronRightIcon, PetsIcon, PlusIcon } from "../components/icons.js";
 import { PetAvatar } from "../components/PetAvatar.js";
 import { TargetProgress } from "../components/TargetProgress.js";
 import { button } from "../components/ui/forms/button.js";
+import { PageHeader, PageTitle } from "../components/ui/layout/PageHeader.js";
 import { formatAge, formatKg, petTypeLabel } from "../lib/format.js";
 import { usePets } from "../lib/pets.js";
 import { PetProfile } from "./PetProfile.js";
@@ -39,11 +40,7 @@ export function PetsScreen() {
   if (data.pets.length === 0) {
     return (
       <div className="flex min-h-[calc(100dvh-68px-env(safe-area-inset-bottom))] flex-col desktop:min-h-0 desktop:gap-6">
-        <header className="px-5 pt-5 pb-3 desktop:p-0">
-          <h1 className="font-display text-display font-semibold desktop:text-[34px] desktop:leading-10">
-            {t("nav.pets")}
-          </h1>
-        </header>
+        <PageHeader title={t("nav.pets")} />
         <section className="flex flex-1 flex-col items-center justify-center gap-3.5 px-8 pb-10 text-center desktop:flex-none desktop:rounded-[14px] desktop:bg-card desktop:px-8 desktop:py-20 desktop:inset-ring desktop:inset-ring-border">
           <span
             aria-hidden="true"
@@ -73,9 +70,7 @@ export function PetsScreen() {
   return (
     <div className="flex flex-col desktop:gap-6">
       <header className={`px-5 pt-5 pb-3 desktop:block desktop:p-0 ${openId ? "hidden" : ""}`}>
-        <h1 className="font-display text-display font-semibold desktop:text-[34px] desktop:leading-10">
-          {t("nav.pets")}
-        </h1>
+        <PageTitle>{t("nav.pets")}</PageTitle>
       </header>
 
       <div className="desktop:grid desktop:grid-cols-[340px_minmax(0,1fr)] desktop:items-start desktop:gap-6">

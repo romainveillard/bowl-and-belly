@@ -3,9 +3,10 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { ACTIVITY_LEVELS, GOALS } from "../../shared/enums.js";
 import { explainTarget } from "../../shared/target.js";
-import { BackIcon, CameraIcon, ChevronDownIcon, CloseIcon } from "../components/icons.js";
+import { CameraIcon, ChevronDownIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
+import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field, inputClass } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
@@ -140,21 +141,11 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
 
   return (
     <div className="flex min-h-dvh flex-col desktop:min-h-0 desktop:gap-6">
-      <header className="flex items-center gap-2 px-3 pt-3.5 pb-2.5 desktop:hidden">
-        <Link to={closeLink} aria-label={t("action.close")} className={button.icon}>
-          <CloseIcon />
-        </Link>
-        <h1 className="font-display text-title font-semibold">{title}</h1>
-      </header>
-      <header className="hidden flex-col gap-1 desktop:flex">
-        <Link to="/pets" className="inline-flex items-center gap-1 text-sm font-semibold">
-          <BackIcon size={16} />
-          {t("nav.pets")}
-        </Link>
-        <h1 className="font-display text-[34px] leading-10 font-semibold tracking-[-0.5px]">
-          {title}
-        </h1>
-      </header>
+      <SubPageHeader
+        title={title}
+        phoneLink={{ to: closeLink, label: t("action.close"), close: true }}
+        desktopLink={{ to: "/pets", label: t("nav.pets") }}
+      />
 
       <ErrorSummary names={errors.shown.map((problem) => t(`petForm.errorNames.${problem}`))} />
 
