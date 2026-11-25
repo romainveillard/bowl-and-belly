@@ -24,7 +24,7 @@ export function RowHoverActions({
 }) {
   return (
     <span
-      className={`absolute top-1/2 hidden -translate-y-1/2 gap-1 desktop:group-focus-within:flex desktop:group-hover:flex ${className}`}
+      className={`absolute top-1/2 hidden -translate-y-1/2 gap-2 desktop:group-focus-within:flex desktop:group-hover:flex ${className}`}
     >
       {actions.map((action) => (
         <button
@@ -32,7 +32,7 @@ export function RowHoverActions({
           type="button"
           aria-label={action.label}
           onClick={action.onClick}
-          className={`flex size-9 cursor-pointer items-center justify-center rounded-lg bg-muted ${action.danger ? "text-danger" : ""}`}
+          className={`hit-area flex size-9 cursor-pointer items-center justify-center rounded-lg bg-muted ${action.danger ? "text-danger" : ""}`}
         >
           {action.icon}
         </button>

@@ -133,7 +133,7 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
                 trailing={
                   <button
                     type="button"
-                    className={`${button.outline} h-10 flex-none px-3.5 text-sm`}
+                    className={`${button.outline} hit-area h-10 flex-none px-3.5 text-sm`}
                     onClick={() => setChanging(true)}
                   >
                     {t("editFeed.change")}

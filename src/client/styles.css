@@ -78,6 +78,21 @@ body {
 
 /* Phone: full width above the bottom bar. Desktop: centred on the content
    column, clear of the floating buttons on the right. */
+/* Extends a control's tap area to at least 44 × 44 px without changing how it looks. */
+@utility hit-area {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+}
+
 .snackbar {
   position: fixed;
   z-index: 30;

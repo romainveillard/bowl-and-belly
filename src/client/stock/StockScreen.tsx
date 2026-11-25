@@ -179,7 +179,7 @@ export function StockScreen() {
                       <button
                         type="button"
                         aria-label={t("stock.restockNamed", { name: food.name })}
-                        className={`${button.outline} h-9 px-3 text-sm`}
+                        className={`${button.outline} hit-area h-9 px-3 text-sm`}
                         onClick={() => setRestocking(food)}
                       >
                         <PlusIcon size={16} />
