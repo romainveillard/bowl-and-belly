@@ -10,6 +10,29 @@ export type AgePrompt = NonNullable<
 >;
 export type TargetPrompt = WeighInPrompt | AgePrompt;
 
+/** A reading this far from the one before is more likely a typo than a change. */
+const BIG_CHANGE = 0.2;
+
+/**
+ * The reading a weigh-in dated `date` is a big change from, if it is one: the
+ * latest reading on or before that day, else the latest of all. `others` is
+ * newest first and leaves out the reading being edited.
+ */
+export function bigChangeFrom<Reading extends { weightG: number }>(
+  weightG: number | null,
+  date: string,
+  others: readonly Reading[],
+  dayOf: (reading: Reading) => string,
+): Reading | undefined {
+  const previous = others.find((reading) => dayOf(reading) <= date) ?? others[0];
+  if (weightG === null || weightG <= 0 || previous === undefined) {
+    return undefined;
+  }
+  return Math.abs(weightG - previous.weightG) > previous.weightG * BIG_CHANGE
+    ? previous
+    : undefined;
+}
+
 // Weigh-ins show on the pet and on the Insights weight chart, kept under "feeds".
 const refresh = (queryClient: QueryClient) =>
   Promise.all(["pets", "feeds"].map((key) => queryClient.invalidateQueries({ queryKey: [key] })));

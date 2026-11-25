@@ -9,14 +9,11 @@ import { appDayOf, type DaySettings } from "../../shared/app-day.js";
 import { formatDay, formatReadingKg, parsePositive } from "../lib/format.js";
 import type { PetDetail } from "../lib/pets.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
-import { useSaveWeight, type WeighInPrompt } from "../lib/weights.js";
+import { bigChangeFrom, useSaveWeight, type WeighInPrompt } from "../lib/weights.js";
 
 type Reading = PetDetail["weights"][number];
 type FieldName = "weight" | "date";
 const ORDER: FieldName[] = ["weight", "date"];
-
-/** A reading this far from the one before is more likely a typo than a change. */
-const BIG_CHANGE = 0.2;
 
 interface LogWeightSheetProps {
   pet: Pick<PetDetail, "id" | "name" | "weights" | "today">;
@@ -44,13 +41,8 @@ export function LogWeightSheet({
   const weightG = kg === null ? null : Math.round(kg * 1000);
   const others = pet.weights.filter((reading) => reading.id !== editing?.id);
   const last = others[0];
-  // The reading just before this one in time, which a typo would jump away from.
-  const previous = others.find((reading) => dayOf(reading) <= date) ?? last;
-  const bigChange =
-    weightG !== null &&
-    weightG > 0 &&
-    previous !== undefined &&
-    Math.abs(weightG - previous.weightG) > previous.weightG * BIG_CHANGE;
+  const changedFrom = bigChangeFrom(weightG, date, others, dayOf);
+  const bigChange = changedFrom !== undefined;
 
   const problems = new Map<FieldName, FieldName>();
   if (weightG === null || weightG === 0) {
@@ -139,7 +131,7 @@ export function LogWeightSheet({
             hint={date === pet.today ? t("logWeight.today") : undefined}
           />
         </div>
-        {bigChange && previous && kg !== null && (
+        {changedFrom && kg !== null && (
           <div
             id="weight-warning"
             role="status"
@@ -150,7 +142,7 @@ export function LogWeightSheet({
             </span>
             <span>
               {t("logWeight.bigChange", {
-                previous: formatReadingKg(previous.weightG, i18n.language),
+                previous: formatReadingKg(changedFrom.weightG, i18n.language),
                 // As typed, so "45" reads back as 45 kg rather than 45.0.
                 weight: new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 3 }).format(
                   kg,
