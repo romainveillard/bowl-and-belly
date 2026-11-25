@@ -121,7 +121,7 @@ export function PetChip() {
           <Popover.Content
             align="end"
             sideOffset={8}
-            className="z-30 flex w-80 flex-col gap-1 rounded-[14px] bg-card p-2 shadow-[inset_0_0_0_1px_var(--color-border),0_16px_36px_rgba(31,42,68,0.18)]"
+            className="dialog-motion z-30 flex w-80 origin-(--radix-popover-content-transform-origin) flex-col gap-1 rounded-[14px] bg-card p-2 shadow-[inset_0_0_0_1px_var(--color-border),0_16px_36px_rgba(31,42,68,0.18)]"
           >
             <PetOptions onChosen={() => setOpen(false)} />
           </Popover.Content>
