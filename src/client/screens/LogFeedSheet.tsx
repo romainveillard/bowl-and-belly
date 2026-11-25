@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { kcalIn, leftoverFits } from "../../shared/feeds.js";
 import { FoodPicker } from "../components/FoodPicker.js";
+import { LeftoverPrompt } from "../components/LeftoverPrompt.js";
 import { PetChip } from "../components/PetChip.js";
 import { button } from "../components/ui/forms/button.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
-import { Field, FieldError, Input, inputClass } from "../components/ui/forms/Field.js";
+import { Field, inputClass } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
 import {
@@ -127,38 +128,15 @@ function LogFeedForm({
       />
 
       {previous && (
-        <div className="flex flex-col gap-1.5">
-          <div className="flex items-center gap-2.5 rounded-xl bg-accent-soft p-3 desktop:gap-3 desktop:px-3.5">
-            <label htmlFor="log-leftover" className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <span className="truncate text-sm font-semibold">
-                {t("logFeed.leftoverQuestion", {
-                  time: formatTime(previous.fedAt, timeZone, i18n.language),
-                })}
-              </span>
-              <span className="truncate text-[13px] text-accent-foreground">
-                {t("logFeed.leftoverFood", {
-                  name: previous.foodName ?? "",
-                  served: previous.servedG,
-                })}
-              </span>
-            </label>
-            <Input
-              id="log-leftover"
-              inputMode="numeric"
-              placeholder="0"
-              suffix="g"
-              boxClassName="w-24 flex-none desktop:w-[110px]"
-              value={leftover}
-              onChange={(event) => setLeftover(event.target.value)}
-              onBlur={errors.recheck("leftover")}
-              aria-invalid={errorFor("leftover") ? true : undefined}
-              aria-describedby={errorFor("leftover") ? "log-leftover-error" : undefined}
-            />
-          </div>
-          {errorFor("leftover") && (
-            <FieldError id="log-leftover-error">{errorFor("leftover")}</FieldError>
-          )}
-        </div>
+        <LeftoverPrompt
+          id="log-leftover"
+          previous={previous}
+          timeZone={timeZone}
+          value={leftover}
+          onChange={setLeftover}
+          onBlur={errors.recheck("leftover")}
+          error={errorFor("leftover")}
+        />
       )}
 
       <FoodPicker
