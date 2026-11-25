@@ -148,7 +148,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
       <SubPageHeader
         title={title}
         phoneLink={{ to: closeLink, label: t("action.close"), close: true }}
-        desktopLink={{ to: "/pets", label: t("nav.pets") }}
+        desktopLink={{ to: closeLink, label: t("nav.pets") }}
       />
 
       <ErrorSummary names={errors.shown.map((problem) => t(`petForm.errorNames.${problem}`))} />
