@@ -5,6 +5,7 @@ import { FoodTypeTile } from "../components/FoodTypeMark.js";
 import { EmptyState } from "../components/EmptyState.js";
 import { ChevronDownIcon, HistoryIcon, PlusIcon } from "../components/icons.js";
 import { PetChip } from "../components/PetChip.js";
+import { Badge } from "../components/ui/feedback/Badge.js";
 import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageHeader } from "../components/ui/layout/PageHeader.js";
 import { button } from "../components/ui/forms/button.js";
@@ -80,16 +81,8 @@ function DayCard({
                 : t("pets.ofTarget", { target: summary.targetKcal })}
             </span>
           </span>
-          {status === "soFar" && (
-            <span className="inline-flex h-[22px] items-center rounded-full bg-muted px-2 text-caption font-semibold text-muted-foreground">
-              {t("history.soFar")}
-            </span>
-          )}
-          {status === "onTarget" && (
-            <span className="inline-flex h-[22px] items-center rounded-full bg-success-soft px-2 text-caption font-semibold text-success">
-              {t("history.onTarget")}
-            </span>
-          )}
+          {status === "soFar" && <Badge tone="neutral">{t("history.soFar")}</Badge>}
+          {status === "onTarget" && <Badge tone="success">{t("history.onTarget")}</Badge>}
         </span>
         {summary.targetKcal !== null && (
           <span

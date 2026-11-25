@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { foodTypeLabel } from "../lib/foods.js";
 import { BowlIcon, DryFoodIcon, WetFoodIcon } from "./icons.js";
+import { Badge } from "./ui/feedback/Badge.js";
 
 interface FoodType {
   systemKey: "wet" | "dry" | null;
@@ -34,11 +35,5 @@ export function FoodTypeTile({ type }: { type: FoodType }) {
 export function FoodTypeBadge({ type }: { type: FoodType }) {
   const { t } = useTranslation();
 
-  return (
-    <span
-      className={`inline-flex h-[22px] items-center rounded-full px-2 text-caption font-semibold ${colours[type.systemKey ?? "custom"]}`}
-    >
-      {foodTypeLabel(type, t)}
-    </span>
-  );
+  return <Badge tone={type.systemKey ?? "neutral"}>{foodTypeLabel(type, t)}</Badge>;
 }
