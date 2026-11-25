@@ -103,3 +103,19 @@ it("offers to undo a delete, which restores exactly what was deleted", async () 
     expect(typeof body === "string" && JSON.parse(body)).toEqual(deleted);
   });
 });
+
+it("gives focus back to the row once the edit sheet it led to closes", async () => {
+  vi.stubGlobal("fetch", fetchMock());
+  renderRow(today);
+  const row = screen.getByRole("button", { name: "Open row" });
+
+  row.focus();
+  fireEvent.click(row);
+  const actions = await screen.findByRole("dialog", { name: "Chicken pouch" });
+  fireEvent.click(within(actions).getByRole("button", { name: /^Edit/ }));
+  const edit = await screen.findByRole("dialog", { name: "Edit feed" });
+  fireEvent.click(within(edit).getByRole("button", { name: "Close" }));
+
+  await vi.waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  await vi.waitFor(() => expect(document.activeElement).toBe(row));
+});

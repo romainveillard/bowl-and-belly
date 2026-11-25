@@ -4,6 +4,7 @@ import { EditFeedSheet } from "./EditFeedSheet.js";
 import { FeedActionsSheet } from "./FeedActionsSheet.js";
 import { useFeedActions } from "./feedActions.js";
 import type { FeedEntry } from "./feeds.js";
+import { useFocusReturn } from "../components/ui/overlays/useFocusReturn.js";
 import { useSettings } from "../settings/settings.js";
 
 interface FeedSheets {
@@ -36,6 +37,7 @@ export function FeedSheetsProvider({
   const actions = useFeedActions(petId);
   const [opened, setOpened] = useState<Opened | null>(null);
   const close = () => setOpened(null);
+  const rememberOpener = useFocusReturn(opened !== null);
 
   let sheet = null;
   if (opened?.sheet === "actions") {
@@ -71,7 +73,10 @@ export function FeedSheetsProvider({
   return (
     <FeedSheetsContext
       value={{
-        open: (entry, day) => setOpened({ sheet: "actions", entry, day }),
+        open: (entry, day) => {
+          rememberOpener();
+          setOpened({ sheet: "actions", entry, day });
+        },
         logAgain: actions.logAgain,
         remove: actions.remove,
       }}

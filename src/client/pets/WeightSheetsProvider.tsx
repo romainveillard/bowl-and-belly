@@ -9,6 +9,7 @@ import { usePet, type PetDetail } from "./pets.js";
 import { TargetPromptDialog } from "./TargetPromptDialog.js";
 import { WeighInActionsSheet } from "./WeighInActionsSheet.js";
 import { useDeleteWeight, useRestoreWeight, type TargetPrompt } from "./weights.js";
+import { useFocusReturn } from "../components/ui/overlays/useFocusReturn.js";
 import { useSettings } from "../settings/settings.js";
 
 type Reading = PetDetail["weights"][number];
@@ -44,6 +45,11 @@ export function WeightSheetsProvider({
   const [opened, setOpened] = useState<Opened | null>(null);
   const [prompt, setPrompt] = useState<TargetPrompt | null>(null);
   const close = () => setOpened(null);
+  const rememberOpener = useFocusReturn(opened !== null);
+  const openSheet = (next: Opened) => {
+    rememberOpener();
+    setOpened(next);
+  };
 
   const day = (reading: Reading) =>
     formatDay(new Date(reading.measuredAt), pet?.today ?? "", i18n.language);
@@ -95,9 +101,9 @@ export function WeightSheetsProvider({
   return (
     <WeightSheetsContext
       value={{
-        openLog: () => setOpened({ sheet: "log" }),
-        openActions: (reading) => setOpened({ sheet: "actions", reading }),
-        edit: (reading) => setOpened({ sheet: "edit", reading }),
+        openLog: () => openSheet({ sheet: "log" }),
+        openActions: (reading) => openSheet({ sheet: "actions", reading }),
+        edit: (reading) => openSheet({ sheet: "edit", reading }),
         remove,
       }}
     >
