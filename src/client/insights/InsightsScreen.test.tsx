@@ -64,3 +64,45 @@ it("leaves Insights in one Back, however many periods were stepped through", asy
 
   expect(await screen.findByText("Today")).toBeTruthy();
 });
+
+it("keeps focus where it was when the period changes or reaches the latest", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn<(input: string) => Promise<Response>>(async (input) =>
+      new URL(input, "http://localhost").pathname === "/api/pets"
+        ? Response.json({
+            today: "2026-11-25",
+            archivedCount: 0,
+            pets: [
+              { id: 1, name: "Miso", photoId: null, type: { id: 1, systemKey: "cat", name: null } },
+            ],
+          })
+        : Response.json({ code: "not_found" }, { status: 404 }),
+    ),
+  );
+  render(
+    <QueryClientProvider
+      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+    >
+      <SnackbarProvider>
+        <MemoryRouter initialEntries={["/insights?period=week"]}>
+          <Routes>
+            <Route path="insights" element={<InsightsScreen />} />
+          </Routes>
+        </MemoryRouter>
+      </SnackbarProvider>
+    </QueryClientProvider>,
+  );
+
+  const month = await screen.findByRole("button", { name: "Month" });
+  month.focus();
+  fireEvent.click(month);
+  expect(document.activeElement).toBe(screen.getByRole("button", { name: "Month" }));
+
+  fireEvent.click(screen.getByRole("button", { name: "Previous month" }));
+  const next = screen.getByRole("button", { name: "Next month" });
+  next.focus();
+  fireEvent.click(next);
+  expect(document.activeElement).toBe(next);
+  expect(next.getAttribute("aria-disabled")).toBe("true");
+});

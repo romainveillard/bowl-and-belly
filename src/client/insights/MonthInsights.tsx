@@ -1,6 +1,7 @@
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
-import { addDays, addMonths, appDayOf } from "../../shared/app-day.js";
+import { NoValue } from "../components/Figures.js";
+import { addDays, appDayOf } from "../../shared/app-day.js";
 import { periodIntake, rollingAverage } from "../../shared/insights.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { dayStatus } from "../lib/dayStatus.js";
@@ -9,7 +10,8 @@ import { targetOn, usePet } from "../pets/pets.js";
 import { weightTrend } from "./weightTrend.js";
 import { IntakeChart } from "./charts/IntakeChart.js";
 import { WeightChart } from "./charts/WeightChart.js";
-import { PeriodBar, type PeriodViewProps } from "./PeriodBar.js";
+import type { PeriodViewProps } from "./PeriodBar.js";
+import { periodSpan } from "./period.js";
 import { AverageStat, Stat, TargetStat } from "./Stat.js";
 import { useInsights } from "./useInsights.js";
 import { useSettings } from "../settings/settings.js";
@@ -27,31 +29,16 @@ function trendNote(averagesG: number[], locale: string, t: TFunction): string | 
   return t(trend.direction === "up" ? "insights.up" : "insights.down", { weight });
 }
 
-export function MonthInsights({ petId, today, from, onPeriod, onFrom }: PeriodViewProps) {
+export function MonthInsights({ petId, today, from }: PeriodViewProps) {
   const { t, i18n } = useTranslation();
-  const start = `${from.slice(0, 7)}-01`;
-  const next = addMonths(start, 1);
-  const end = addDays(next, -1);
+  const { start, end, atLatest: isCurrentMonth } = periodSpan("month", from, today);
   const { data } = useInsights(petId, start, end, addDays(start, -7));
   const { data: pet } = usePet(petId);
   const { data: settings } = useSettings();
-  const isCurrentMonth = start === `${today.slice(0, 7)}-01`;
   const month = formatAppDay(start, i18n.language, { month: "long", year: "numeric" });
 
-  const bar = (
-    <PeriodBar
-      period="month"
-      onPeriod={onPeriod}
-      label={month}
-      previousLabel={t("insights.previousMonth")}
-      nextLabel={t("insights.nextMonth")}
-      onPrevious={() => onFrom(addMonths(start, -1))}
-      onNext={() => onFrom(next)}
-      atLatest={isCurrentMonth}
-    />
-  );
   if (!data || !pet || !settings) {
-    return bar;
+    return null;
   }
 
   const [intake] = periodIntake(data.days, "month", data.today);
@@ -69,20 +56,19 @@ export function MonthInsights({ petId, today, from, onPeriod, onFrom }: PeriodVi
 
   return (
     <>
-      {bar}
       <div className="flex gap-3 desktop:grid desktop:grid-cols-4 desktop:gap-4">
         <AverageStat averageKcal={intake?.averageKcal ?? null} row={targetRow} />
         <TargetStat pet={pet} row={targetRow} />
         <Stat
           label={t("insights.onTarget")}
-          value={counted.length === 0 ? "–" : onTarget.length}
+          value={counted.length === 0 ? <NoValue /> : onTarget.length}
           unit={t("insights.ofDays", { count: counted.length })}
           note={t("insights.within")}
         />
         <Stat
           className="hidden desktop:flex"
           label={t("insights.weight")}
-          value={latest ? formatKg(latest.weightG, i18n.language) : "–"}
+          value={latest ? formatKg(latest.weightG, i18n.language) : <NoValue />}
           unit={t("common.kg")}
           note={
             trendNote(

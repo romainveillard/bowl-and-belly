@@ -1,45 +1,32 @@
 import { useTranslation } from "react-i18next";
+import { NoValue } from "../components/Figures.js";
 import { addDays, appDayOf } from "../../shared/app-day.js";
-import { periodIntake, WEIGHT_CHART_DAYS, weekStart } from "../../shared/insights.js";
+import { periodIntake, WEIGHT_CHART_DAYS } from "../../shared/insights.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { isOverTarget } from "../lib/dayStatus.js";
 import { formatAppDay, formatAppDayRange, formatInstantDay, formatKg } from "../lib/format.js";
 import { targetOn, usePet } from "../pets/pets.js";
 import { IntakeChart } from "./charts/IntakeChart.js";
 import { WeightChart } from "./charts/WeightChart.js";
-import { PeriodBar, type PeriodViewProps } from "./PeriodBar.js";
+import type { PeriodViewProps } from "./PeriodBar.js";
+import { periodSpan } from "./period.js";
 import { AverageStat, Stat, TargetStat } from "./Stat.js";
 import { useInsights } from "./useInsights.js";
 import { useSettings } from "../settings/settings.js";
 
-export function WeekInsights({ petId, today, from, onPeriod, onFrom }: PeriodViewProps) {
+export function WeekInsights({ petId, today, from }: PeriodViewProps) {
   const { t, i18n } = useTranslation();
-  const start = weekStart(from);
-  const end = addDays(start, 6);
+  const { start, end, atLatest: isCurrentWeek } = periodSpan("week", from, today);
   const weightsFrom = addDays(today, 1 - WEIGHT_CHART_DAYS);
   // A week more, so the rolling average is whole from the first day shown.
   const { data } = useInsights(petId, start, end, addDays(weightsFrom, -7));
   const { data: pet } = usePet(petId);
   const { data: settings } = useSettings();
-  const isCurrentWeek = start === weekStart(today);
 
   const range = formatAppDayRange(start, end, i18n.language, { day: "numeric", month: "short" });
 
-  const bar = (
-    <PeriodBar
-      period="week"
-      onPeriod={onPeriod}
-      label={range}
-      previousLabel={t("insights.previousWeek")}
-      nextLabel={t("insights.nextWeek")}
-      onPrevious={() => onFrom(addDays(start, -7))}
-      onNext={() => onFrom(addDays(start, 7))}
-      atLatest={isCurrentWeek}
-    />
-  );
-
   if (!data || !pet || !settings) {
-    return bar;
+    return null;
   }
 
   const [week] = periodIntake(data.days, "week", data.today);
@@ -60,15 +47,13 @@ export function WeekInsights({ petId, today, from, onPeriod, onFrom }: PeriodVie
 
   return (
     <>
-      {bar}
-
       <div className="flex gap-3 desktop:grid desktop:grid-cols-4 desktop:gap-4">
         <AverageStat averageKcal={week?.averageKcal ?? null} row={targetRow} />
         <TargetStat pet={pet} row={targetRow} />
         <Stat
           className="hidden desktop:flex"
           label={t("insights.onOrUnder")}
-          value={counted.length === 0 ? "–" : counted.length - over.length}
+          value={counted.length === 0 ? <NoValue /> : counted.length - over.length}
           unit={t("insights.ofDays", { count: counted.length })}
           note={
             counted.length === 0
@@ -80,7 +65,7 @@ export function WeekInsights({ petId, today, from, onPeriod, onFrom }: PeriodVie
         />
         <Stat
           label={t("insights.weight")}
-          value={latest ? formatKg(latest.weightG, i18n.language) : "–"}
+          value={latest ? formatKg(latest.weightG, i18n.language) : <NoValue />}
           unit={t("common.kg")}
           note={
             weightNote && (

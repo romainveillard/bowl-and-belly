@@ -21,7 +21,10 @@ export function WeightCard({ petId }: { petId: number }) {
       <CardHeading
         title={t("today.weightCard")}
         action={
-          <Link to={`/pets/${pet.id}`} className="text-sm font-semibold">
+          <Link
+            to={`/pets/${pet.id}`}
+            className="hit-area text-sm font-semibold underline underline-offset-2"
+          >
             {t("today.petProfile")}
           </Link>
         }

@@ -68,7 +68,7 @@ export function SubPageHeader({ title, hint, phoneLink, desktopLink }: SubPageHe
         {desktopLink && (
           <Link
             to={desktopLink.to}
-            className="inline-flex items-center gap-1 text-sm font-semibold"
+            className="hit-area inline-flex items-center gap-1 self-start text-sm font-semibold"
           >
             <BackIcon size={16} />
             {desktopLink.label}

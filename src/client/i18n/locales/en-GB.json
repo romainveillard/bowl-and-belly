@@ -20,6 +20,8 @@
   "common": {
     "kcal": "kcal",
     "ofTarget": "/ {target, number} kcal",
+    "ofTargetSpoken": "of {target, number} kcal",
+    "noValue": "No data",
     "g": "g",
     "kg": "kg"
   },
@@ -179,6 +181,8 @@
   "petForm": {
     "details": "Details",
     "photo": "Photo",
+    "addPhoto": "Add photo",
+    "changePhoto": "Change photo",
     "photoHint": "Optional. Shown on the pet chip and in the pets list.",
     "name": "Name",
     "type": "Type",

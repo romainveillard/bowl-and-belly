@@ -7,7 +7,7 @@ import { PetChip } from "../pets/PetChip.js";
 import { useSelectedPet } from "../pets/selectedPet.js";
 import { DayInsights } from "./DayInsights.js";
 import { MonthInsights } from "./MonthInsights.js";
-import type { PeriodViewProps } from "./PeriodBar.js";
+import { PeriodBar, type PeriodViewProps } from "./PeriodBar.js";
 import { insightsAddress, type Period } from "./period.js";
 import { WeekInsights } from "./WeekInsights.js";
 
@@ -40,24 +40,26 @@ export function InsightsScreen() {
       // stepping through every period viewed: on Android it is the way out.
       replace: true,
     });
-  const view: PeriodViewProps = {
-    petId: pet.id,
-    today: pets.today,
-    from,
-    onPeriod: (next) => {
-      try {
-        localStorage.setItem(PERIOD_KEY, next);
-      } catch {
-        // The default period resets on the next visit; harmless.
-      }
-      show(next, from);
-    },
-    onFrom: (day) => show(period, day),
+  const choosePeriod = (next: Period) => {
+    try {
+      localStorage.setItem(PERIOD_KEY, next);
+    } catch {
+      // The default period resets on the next visit; harmless.
+    }
+    show(next, from);
   };
+  const view: PeriodViewProps = { petId: pet.id, today: pets.today, from };
   return (
     <div className="flex flex-col gap-3.5 desktop:gap-6">
       <PageHeader title={t("nav.insights")} extra={<PetChip />} spaceBelow={false} />
       <div className="flex flex-col gap-3.5 px-5 pb-6 desktop:gap-6 desktop:p-0 desktop:pb-10">
+        <PeriodBar
+          period={period}
+          from={from}
+          today={pets.today}
+          onPeriod={choosePeriod}
+          onFrom={(day) => show(period, day)}
+        />
         {period === "day" && (
           <FeedSheetsProvider key={pet.id} petId={pet.id} today={view.today}>
             <DayInsights {...view} />

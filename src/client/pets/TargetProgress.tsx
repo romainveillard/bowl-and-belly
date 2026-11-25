@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { OfTarget } from "../components/Figures.js";
 import { isOverTarget } from "../lib/dayStatus.js";
 import { ProgressBar } from "../components/ui/feedback/ProgressBar.js";
 import { formatNumber } from "../lib/format.js";
@@ -23,7 +24,7 @@ export function TargetProgress({ eatenKcal, targetKcal, onAccent = false }: Targ
           <span className="font-semibold text-foreground">
             {formatNumber(eatenKcal, i18n.language)}
           </span>{" "}
-          {targetKcal === null ? t("common.kcal") : t("common.ofTarget", { target: targetKcal })}
+          {targetKcal === null ? t("common.kcal") : <OfTarget target={targetKcal} />}
         </span>
       </span>
       {targetKcal !== null && (

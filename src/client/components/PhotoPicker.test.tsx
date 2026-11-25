@@ -19,7 +19,15 @@ it("says why a photo was refused, and lets the same file be picked again", async
     <QueryClientProvider client={new QueryClient()}>
       <SnackbarProvider>
         <SaveErrorNotice />
-        <PhotoPicker shape="round" photoId={null} onChange={onChange} label="Add" alt="" hint="" />
+        <PhotoPicker
+          shape="round"
+          photoId={null}
+          onChange={onChange}
+          label="Add"
+          changeLabel="Change"
+          alt=""
+          hint=""
+        />
       </SnackbarProvider>
     </QueryClientProvider>,
   );

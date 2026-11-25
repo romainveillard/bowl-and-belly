@@ -81,7 +81,7 @@ export function IntakeChart({
   const [onlyTarget] = targets;
   const steadyTarget = targets.size === 1 && onlyTarget !== null && onlyTarget !== undefined;
   const kcal = (value: number | null) =>
-    value === null ? "–" : t("insights.kcalValue", { kcal: value });
+    value === null ? t("common.noValue") : t("insights.kcalValue", { kcal: value });
 
   return (
     <div className="flex flex-col gap-3">
@@ -105,7 +105,11 @@ export function IntakeChart({
       />
       <div aria-hidden="true" style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={data} margin={{ top: 22, right: 0, bottom: 0, left: 0 }}>
+          <ComposedChart
+            accessibilityLayer={false}
+            data={data}
+            margin={{ top: 22, right: 0, bottom: 0, left: 0 }}
+          >
             <XAxis
               dataKey="label"
               tickLine={false}

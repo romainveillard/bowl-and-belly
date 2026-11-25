@@ -6,6 +6,7 @@ import { button } from "../components/ui/forms/button.js";
 import { Card } from "../components/ui/layout/Card.js";
 import { ConfirmDialog } from "../components/ui/overlays/ConfirmDialog.js";
 import { formatAge } from "../lib/format.js";
+import { usePageTitle } from "../lib/usePageTitle.js";
 import { AgePrompt } from "./AgePrompt.js";
 import { PetAvatar } from "./PetAvatar.js";
 import { petTypeLabel, usePet, useSetArchived } from "./pets.js";
@@ -13,13 +14,17 @@ import { ProfileTargetCard } from "./ProfileTargetCard.js";
 import { TargetHistoryCard } from "./TargetHistoryCard.js";
 import { WeighInsCard } from "./WeighInsCard.js";
 
-/** A pet's profile, inside the Pets screen's WeightSheetsProvider. */
-export function PetProfile({ petId }: { petId: number }) {
+/**
+ * A pet's profile, inside the Pets screen's WeightSheetsProvider. `opened`
+ * when its address is the pet's, where it names the page.
+ */
+export function PetProfile({ petId, opened }: { petId: number; opened: boolean }) {
   const { t } = useTranslation();
   const { data: pet } = usePet(petId);
   const [archiving, setArchiving] = useState(false);
   const archive = useSetArchived("archive");
   const navigate = useNavigate();
+  usePageTitle(opened && pet ? pet.name : null);
 
   if (!pet) {
     return null;

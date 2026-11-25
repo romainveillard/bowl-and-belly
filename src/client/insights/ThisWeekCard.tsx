@@ -20,7 +20,10 @@ export function ThisWeekCard({ petId, today }: { petId: number; today: string })
       <CardHeading
         title={t("today.thisWeek")}
         action={
-          <Link to="/insights" className="text-sm font-semibold">
+          <Link
+            to="/insights"
+            className="hit-area text-sm font-semibold underline underline-offset-2"
+          >
             {t("today.insightsLink")}
           </Link>
         }

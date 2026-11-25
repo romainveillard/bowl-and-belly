@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { NoValue } from "../components/Figures.js";
 import { addDays, appDayStart } from "../../shared/app-day.js";
 import { Card, CardHeading, cardEdgeRows } from "../components/ui/layout/Card.js";
 import { FeedRow } from "../feeds/FeedRow.js";
@@ -7,19 +8,17 @@ import { useFeedSheets } from "../feeds/FeedSheetsProvider.js";
 import { useDay } from "../feeds/feeds.js";
 import { isOnTarget } from "../lib/dayStatus.js";
 import { formatAppDay, formatTime, formatNumber } from "../lib/format.js";
-import { useIsDesktop } from "../lib/useIsDesktop.js";
 import { targetOn, usePet } from "../pets/pets.js";
 import { foodTypeLabel } from "../stock/foods.js";
 import { DayChart } from "./charts/DayChart.js";
-import { PeriodBar, type PeriodViewProps } from "./PeriodBar.js";
+import type { PeriodViewProps } from "./PeriodBar.js";
 import { Stat, TargetStat } from "./Stat.js";
 import { useSettings } from "../settings/settings.js";
 
 /** One day's intake and feeds, inside a FeedSheetsProvider. */
-export function DayInsights({ petId, today, from: day, onPeriod, onFrom }: PeriodViewProps) {
+export function DayInsights({ petId, from: day }: PeriodViewProps) {
   const { t, i18n } = useTranslation();
   const [openedAt] = useState(() => Date.now());
-  const isDesktop = useIsDesktop();
   const { data: summary, isPending } = useDay(petId, day);
   const { data: pet } = usePet(petId);
   const { data: settings } = useSettings();
@@ -27,20 +26,8 @@ export function DayInsights({ petId, today, from: day, onPeriod, onFrom }: Perio
   const format = (weekday: "short" | "long") =>
     formatAppDay(day, i18n.language, { weekday, day: "numeric", month: weekday });
 
-  const bar = (
-    <PeriodBar
-      period="day"
-      onPeriod={onPeriod}
-      label={format(isDesktop ? "long" : "short")}
-      previousLabel={t("insights.previousDay")}
-      nextLabel={t("insights.nextDay")}
-      onPrevious={() => onFrom(addDays(day, -1))}
-      onNext={() => onFrom(addDays(day, 1))}
-      atLatest={day === today}
-    />
-  );
   if (isPending || !pet || !settings) {
-    return bar;
+    return null;
   }
 
   // A past day without feeds has no summary, but still had a target.
@@ -66,7 +53,6 @@ export function DayInsights({ petId, today, from: day, onPeriod, onFrom }: Perio
 
   return (
     <>
-      {bar}
       <div className="flex gap-3 desktop:grid desktop:grid-cols-4 desktop:gap-4">
         <Stat
           label={t("insights.eaten")}
@@ -98,9 +84,11 @@ export function DayInsights({ petId, today, from: day, onPeriod, onFrom }: Perio
               : byType.map((total) => foodTypeLabel(total.type, t)).join(" / ")
           }
           value={
-            byType.length === 0
-              ? "–"
-              : byType.map((total) => formatNumber(total.kcal, i18n.language)).join(" / ")
+            byType.length === 0 ? (
+              <NoValue />
+            ) : (
+              byType.map((total) => formatNumber(total.kcal, i18n.language)).join(" / ")
+            )
           }
           unit={t("common.kcal")}
           note={byType

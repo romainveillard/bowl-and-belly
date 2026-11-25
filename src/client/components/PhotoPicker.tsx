@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useId, useRef } from "react";
 import { useUploadPhoto } from "../lib/images.js";
 import { useFocusNext } from "../lib/useFocusNext.js";
 import { CameraIcon } from "./icons.js";
@@ -9,6 +9,9 @@ type PhotoPickerProps = {
   onChange: (photoId: number | null) => void;
   /** In the empty slot. */
   label: string;
+  /** What the empty slot does, when `label` alone doesn't say: "Add photo". */
+  addLabel?: string;
+  changeLabel: string;
   alt: string;
   /** Beside the empty slot. */
   hint: string;
@@ -17,12 +20,13 @@ type PhotoPickerProps = {
   (
     | { shape: "round" }
     /** A food: a wide photo, with buttons to change or remove it. */
-    | { shape: "wide"; changeLabel: string; removeLabel: string }
+    | { shape: "wide"; removeLabel: string }
   );
 
 /** Picks a photo and uploads it straight away, ahead of the form being saved. */
 export function PhotoPicker(props: PhotoPickerProps) {
-  const { photoId, onChange, label, alt, hint, shape } = props;
+  const { photoId, onChange, label, addLabel = label, changeLabel, alt, hint, shape } = props;
+  const hintId = useId();
   const fileInput = useRef<HTMLInputElement>(null);
   const emptySlot = useRef<HTMLButtonElement>(null);
   const focusNext = useFocusNext();
@@ -51,7 +55,7 @@ export function PhotoPicker(props: PhotoPickerProps) {
           <img src={photo} alt={alt} className="h-[180px] w-full rounded-xl object-cover" />
           <div className="flex gap-2">
             <button type="button" className={button.outline} onClick={choose}>
-              {props.changeLabel}
+              {changeLabel}
             </button>
             <button
               type="button"
@@ -69,6 +73,8 @@ export function PhotoPicker(props: PhotoPickerProps) {
         <div className={`flex items-center gap-3.5 ${shape === "round" ? "desktop:gap-4" : ""}`}>
           <button
             ref={emptySlot}
+            aria-label={photo === null ? addLabel : changeLabel}
+            aria-describedby={hintId}
             type="button"
             onClick={choose}
             className={`flex size-[88px] flex-none cursor-pointer flex-col items-center justify-center gap-1.5 border-[1.5px] border-dashed border-outline bg-background text-[13px] font-medium text-muted-foreground ${shape === "round" ? "overflow-hidden rounded-full desktop:size-24" : "rounded-xl"}`}
@@ -82,7 +88,9 @@ export function PhotoPicker(props: PhotoPickerProps) {
               <img src={photo} alt={alt} className="size-full object-cover" />
             )}
           </button>
-          <span className="text-[13px] text-muted-foreground">{hint}</span>
+          <span id={hintId} className="text-[13px] text-muted-foreground">
+            {hint}
+          </span>
         </div>
       )}
     </>

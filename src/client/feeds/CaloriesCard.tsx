@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { OfTarget } from "../components/Figures.js";
 import { ProgressBar } from "../components/ui/feedback/ProgressBar.js";
 import { Card } from "../components/ui/layout/Card.js";
 import { isOverTarget } from "../lib/dayStatus.js";
@@ -30,7 +31,7 @@ export function CaloriesCard({
           {formatNumber(eatenKcal, i18n.language)}
         </span>
         <span className="text-base text-muted-foreground desktop:text-heading">
-          {targetKcal === null ? t("common.kcal") : t("common.ofTarget", { target: targetKcal })}
+          {targetKcal === null ? t("common.kcal") : <OfTarget target={targetKcal} />}
         </span>
       </span>
       {targetKcal !== null && (

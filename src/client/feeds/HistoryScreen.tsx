@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { List } from "../components/ui/layout/List.js";
 import { useTranslation } from "react-i18next";
+import { OfTarget } from "../components/Figures.js";
 import { FeedRow } from "./FeedRow.js";
 import { FoodTypeTile } from "../stock/FoodTypeMark.js";
 import { EmptyState } from "../components/EmptyState.js";
@@ -82,9 +83,11 @@ function DayCard({
               {formatNumber(summary.eatenKcal, i18n.language)}
             </span>
             <span className="text-[13px] text-muted-foreground">
-              {summary.targetKcal === null
-                ? t("common.kcal")
-                : t("common.ofTarget", { target: summary.targetKcal })}
+              {summary.targetKcal === null ? (
+                t("common.kcal")
+              ) : (
+                <OfTarget target={summary.targetKcal} />
+              )}
             </span>
           </span>
           {status === "soFar" && <Badge tone="neutral">{t("history.soFar")}</Badge>}

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { MinusIcon, PlusIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
-import { Field, FieldError } from "../components/ui/forms/Field.js";
+import { describedBy, Field, FieldError } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
 import { SummaryRow } from "../components/ui/feedback/SummaryRow.js";
@@ -115,10 +115,15 @@ export function RestockSheet({ food, onClose }: { food: FoodSummary; onClose: ()
                   onChange={(event) => setAmount(event.target.value)}
                   onBlur={errors.recheck("amount")}
                   aria-invalid={amountError ? true : undefined}
-                  aria-describedby={amountError ? `${amountId}-error` : undefined}
+                  aria-describedby={describedBy(
+                    amountError && `${amountId}-error`,
+                    `${amountId}-unit`,
+                  )}
                   className="w-full rounded-lg bg-transparent text-center font-display text-[44px] leading-[48px] font-semibold tabular-nums focus:outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-primary-strong"
                 />
-                <span className="text-sm text-muted-foreground">{units}</span>
+                <span id={`${amountId}-unit`} className="text-sm text-muted-foreground">
+                  {units}
+                </span>
               </div>
               <button
                 type="button"

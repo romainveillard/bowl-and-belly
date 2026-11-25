@@ -8,9 +8,11 @@ export function usePageTitle(title: string | null) {
     if (title === null) {
       return undefined;
     }
+    // Put back what was there, so a profile opened over Pets leaves "Pets".
+    const previous = document.title;
     document.title = `${title} · ${APP_NAME}`;
     return () => {
-      document.title = APP_NAME;
+      document.title = previous;
     };
   }, [title]);
 }

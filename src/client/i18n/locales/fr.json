@@ -20,6 +20,8 @@
   "common": {
     "kcal": "kcal",
     "ofTarget": "/ {target, number} kcal",
+    "ofTargetSpoken": "sur {target, number} kcal",
+    "noValue": "Pas de données",
     "g": "g",
     "kg": "kg"
   },
@@ -179,6 +181,8 @@
   "petForm": {
     "details": "Informations",
     "photo": "Photo",
+    "addPhoto": "Ajouter une photo",
+    "changePhoto": "Changer la photo",
     "photoHint": "Facultatif. Affichée sur la pastille de l’animal et dans la liste.",
     "name": "Nom",
     "type": "Type",

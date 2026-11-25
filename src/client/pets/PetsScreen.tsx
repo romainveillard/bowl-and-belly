@@ -125,7 +125,7 @@ export function PetsScreen() {
 
           {selectedId !== undefined && (
             <div className={openId ? "" : "hidden desktop:block"}>
-              <PetProfile key={selectedId} petId={selectedId} />
+              <PetProfile key={selectedId} petId={selectedId} opened={openId !== undefined} />
             </div>
           )}
         </div>

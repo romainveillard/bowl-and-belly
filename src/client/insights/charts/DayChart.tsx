@@ -71,7 +71,11 @@ export function DayChart({
     <div className="flex flex-col gap-3">
       <div role="img" aria-label={label} style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={steps} margin={{ top: 22, right: 8, bottom: 0, left: 8 }}>
+          <ComposedChart
+            accessibilityLayer={false}
+            data={steps}
+            margin={{ top: 22, right: 8, bottom: 0, left: 8 }}
+          >
             <XAxis
               dataKey="at"
               type="number"

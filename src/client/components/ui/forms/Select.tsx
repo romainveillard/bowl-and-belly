@@ -37,6 +37,7 @@ export function Select({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           disabled={disabled}
+          aria-describedby={hint ? `${selectId}-hint` : undefined}
           className={`${inputClass} appearance-none pr-11`}
         >
           {children}
@@ -48,7 +49,11 @@ export function Select({
           <ChevronDownIcon size={20} />
         </span>
       </span>
-      {hint && <span className="text-[13px] text-muted-foreground">{hint}</span>}
+      {hint && (
+        <span id={`${selectId}-hint`} className="text-[13px] text-muted-foreground">
+          {hint}
+        </span>
+      )}
     </div>
   );
 }

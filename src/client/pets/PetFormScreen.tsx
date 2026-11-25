@@ -107,6 +107,8 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
                 photoId={form.photoId}
                 onChange={(photoId) => set("photoId", photoId)}
                 label={t("petForm.photo")}
+                addLabel={t("petForm.addPhoto")}
+                changeLabel={t("petForm.changePhoto")}
                 alt={t("petForm.photo")}
                 hint={t("petForm.photoHint")}
               />
