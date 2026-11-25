@@ -45,6 +45,34 @@ export default defineConfig({
   build: {
     outDir: "../../dist/client",
     emptyOutDir: true,
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          // Each chunk is named for what it holds, so its hash changes only with that.
+          groups: [
+            {
+              // The packages the first screen needs.
+              name: "vendor",
+              test: /node_modules[\\/]/,
+              tags: ["$initial"],
+            },
+            {
+              // The app's own code on the first load, in one file rather than a
+              // file per module it shares with the screens that load later.
+              name: "app",
+              test: /src[\\/](client|shared)[\\/]/,
+              tags: ["$initial"],
+            },
+            {
+              // Every other package, which is Recharts and its dependencies: these
+              // load only with a chart, as the groups above take the rest first.
+              name: "charts",
+              test: /node_modules[\\/]/,
+            },
+          ],
+        },
+      },
+    },
   },
   server: {
     proxy: {
