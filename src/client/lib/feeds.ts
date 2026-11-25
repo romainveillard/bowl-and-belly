@@ -154,23 +154,3 @@ export function useRestoreFeed() {
 export function useDaySettings() {
   return useSettings();
 }
-
-/** "17:50", on the app's clock rather than the device's. */
-export function formatTime(instant: string | Date, timeZone: string, locale: string): string {
-  return new Intl.DateTimeFormat(locale, {
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-    timeZone,
-  }).format(new Date(instant));
-}
-
-/** "2026-11-21", the calendar date on the app's clock, as a date input wants it. */
-export function formatDateInput(instant: string | Date, timeZone: string): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    timeZone,
-  }).format(new Date(instant));
-}

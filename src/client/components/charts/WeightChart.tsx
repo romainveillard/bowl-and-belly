@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { ComposedChart, Line, ResponsiveContainer, Scatter, XAxis, YAxis } from "recharts";
 import { addDays } from "../../../shared/app-day.js";
 import { rollingAverage, type Reading } from "../../../shared/insights.js";
-import { formatDateInput } from "../../lib/feeds.js";
+import { formatDateInput } from "../../lib/format.js";
 import { LegendItem } from "./IntakeChart.js";
 
 const DAY_MS = 86_400_000;

@@ -1,6 +1,7 @@
 import { useRef, useState, type PointerEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { formatTime, type FeedEntry } from "../lib/feeds.js";
+import type { FeedEntry } from "../lib/feeds.js";
+import { formatTime } from "../lib/format.js";
 import { FoodTypeTile } from "./FoodTypeMark.js";
 import { RepeatIcon, TrashIcon } from "./icons.js";
 

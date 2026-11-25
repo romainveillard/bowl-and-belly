@@ -9,13 +9,13 @@ import { Field, inputClass } from "../components/ui/Field.js";
 import { Segmented } from "../components/ui/Segmented.js";
 import { Sheet } from "../components/ui/Sheet.js";
 import {
-  formatTime,
   useDaySettings,
   useLogFeed,
   useLogForm,
   type LogForm,
   type PickerFood,
 } from "../lib/feeds.js";
+import { formatTime } from "../lib/format.js";
 import { portionPlural } from "../lib/foods.js";
 import {
   amountIn,

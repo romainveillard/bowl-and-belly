@@ -8,7 +8,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { formatTime, type FeedEntry } from "../../lib/feeds.js";
+import type { FeedEntry } from "../../lib/feeds.js";
+import { formatTime } from "../../lib/format.js";
 import { LegendItem } from "./IntakeChart.js";
 
 const HOUR_MS = 3_600_000;

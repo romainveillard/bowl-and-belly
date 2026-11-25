@@ -6,7 +6,8 @@ import { ErrorSummary } from "../components/ui/ErrorSummary.js";
 import { Field } from "../components/ui/Field.js";
 import { Segmented } from "../components/ui/Segmented.js";
 import { Sheet } from "../components/ui/Sheet.js";
-import { formatTime, useAddLeftover, type FeedEntry } from "../lib/feeds.js";
+import { useAddLeftover, type FeedEntry } from "../lib/feeds.js";
+import { formatTime } from "../lib/format.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
 
 const ORDER = ["leftover"] as const;

@@ -17,6 +17,26 @@ export function formatKg(weightG: number, locale: string): string {
   }).format(weightG / 1000);
 }
 
+/** "17:50", on the app's clock rather than the device's. */
+export function formatTime(instant: string | Date, timeZone: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+    timeZone,
+  }).format(new Date(instant));
+}
+
+/** "2026-11-21", the calendar date on the app's clock, as a date input wants it. */
+export function formatDateInput(instant: string | Date, timeZone: string): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone,
+  }).format(new Date(instant));
+}
+
 /** "3 Nov", with the year only when it is not `today`'s. Takes "YYYY-MM-DD" or an instant. */
 export function formatDay(value: string | Date, today: string, locale: string): string {
   const date = typeof value === "string" ? new Date(`${value}T00:00:00`) : value;

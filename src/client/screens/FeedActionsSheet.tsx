@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { BowlIcon, EditIcon, RepeatIcon, TrashIcon } from "../components/icons.js";
 import { Sheet } from "../components/ui/Sheet.js";
-import { formatTime, type FeedEntry } from "../lib/feeds.js";
+import type { FeedEntry } from "../lib/feeds.js";
+import { formatTime } from "../lib/format.js";
 import { formatDay } from "../lib/format.js";
 
 interface FeedActionsSheetProps {
