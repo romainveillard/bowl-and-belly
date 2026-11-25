@@ -52,6 +52,14 @@ Comment only the why the code can't express: invariants, external quirks, delibe
 - Mirror a neighbour's structure, not its flaws. If the analogue has a bug, write the better version and point out the asymmetry.
 - When fixing a shared boundary (schema, helper, format), find every consumer and make sure each has a test that exercises it.
 
+## Checking a change
+
+Check a change where it takes effect, not in isolation.
+
+- Test routes and middleware through the composed app (`web` in `src/server/web.ts`), never a bare Hono app built for the test. Middleware that passes on its own can do nothing once mounted.
+- A cross-cutting change isn't done until every consumer is checked. Changing a shared setting (query `staleTime`, chunk groups, global CSS, a shared component's API) means finding every place it takes effect and checking each one.
+- When a change is about the build (bundling, focus styles, contrast), check it in the built chunks and built CSS, not only in source.
+
 ## Commits and PRs
 
 - One PR per feature is the norm. Only split a PR when a specific change calls for it, decided case by case, not by default.
