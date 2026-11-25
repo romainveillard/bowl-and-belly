@@ -3,7 +3,8 @@ import { addDays, appDayOf, instantAt } from "../../shared/app-day.js";
 import type { DbOrTx } from "../db/open.js";
 import { food, foodType, pet, petType, settings, weightEntry } from "../db/schema.js";
 import { logFeed } from "../feeds/entries.js";
-import { setTarget, suggestedKcal, targetOn } from "../pets/targets.js";
+import { restock } from "../foods/restock.js";
+import { chooseTarget, targetOn } from "../pets/targets.js";
 
 const DAYS = 90;
 const TIME_ZONE = "Europe/London";
@@ -181,18 +182,12 @@ export function generateDemo(db: DbOrTx, now: Date): void {
     }
     return Math.round((petId === miso ? 4300 : 2100) + between(-50, 50));
   };
-  const calculatedTarget = (petId: number, on: string) => {
-    const kcal = suggestedKcal(db, petId, on);
-    if (kcal !== null) {
-      setTarget(db, petId, on, kcal, "calculated");
-    }
-  };
   for (const petId of [miso, biscuit, clover]) {
     weighIn(petId, first, weightOn(petId, 0));
   }
-  calculatedTarget(miso, first);
-  calculatedTarget(biscuit, first);
-  setTarget(db, clover, first, 180, "manual");
+  chooseTarget(db, miso, first, null);
+  chooseTarget(db, biscuit, first, null);
+  chooseTarget(db, clover, first, 180);
 
   const meals: Record<number, (on: string) => Meal[]> = {
     [miso]: (on) => [
@@ -234,7 +229,7 @@ export function generateDemo(db: DbOrTx, now: Date): void {
     }
     if (offset === 21) {
       db.update(pet).set({ goal: "lose", targetWeightG: 22_000 }).where(eq(pet.id, biscuit)).run();
-      calculatedTarget(biscuit, on);
+      chooseTarget(db, biscuit, on, null);
     }
     for (const petId of [miso, biscuit, clover]) {
       const targetKcal = targetOn(db, petId, on)?.kcalPerDay ?? 0;
@@ -264,15 +259,11 @@ export function generateDemo(db: DbOrTx, now: Date): void {
         });
       }
     }
-    for (const restock of restocks) {
+    for (const { foodId, belowG, packG } of restocks) {
       const stockG =
-        db.select({ stockG: food.stockG }).from(food).where(eq(food.id, restock.foodId)).get()
-          ?.stockG ?? 0;
-      if (stockG < restock.belowG) {
-        db.update(food)
-          .set({ stockG: Math.max(stockG, 0) + restock.packG })
-          .where(eq(food.id, restock.foodId))
-          .run();
+        db.select({ stockG: food.stockG }).from(food).where(eq(food.id, foodId)).get()?.stockG ?? 0;
+      if (stockG < belowG) {
+        restock(db, foodId, packG);
       }
     }
   }
