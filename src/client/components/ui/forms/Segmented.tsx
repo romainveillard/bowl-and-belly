@@ -26,7 +26,7 @@ export function Segmented<Value extends string>({
             aria-pressed={option.value === value}
             disabled={option.disabled}
             onClick={() => onChange(option.value)}
-            className="hit-area h-9 flex-1 cursor-pointer rounded-[7px] disabled:cursor-not-allowed disabled:opacity-50 px-3 text-sm font-medium text-muted-foreground aria-pressed:bg-card aria-pressed:font-semibold aria-pressed:text-foreground aria-pressed:shadow-[0_1px_2px_rgba(31,42,68,0.12)] aria-pressed:inset-ring aria-pressed:inset-ring-input-border"
+            className="hit-area min-h-9 min-w-0 flex-1 cursor-pointer rounded-[7px] px-2 py-1 text-sm leading-tight break-words hyphens-auto disabled:cursor-not-allowed disabled:opacity-50 desktop:px-3 font-medium text-muted-foreground aria-pressed:bg-card aria-pressed:font-semibold aria-pressed:text-foreground aria-pressed:shadow-[0_1px_2px_rgba(31,42,68,0.12)] aria-pressed:inset-ring aria-pressed:inset-ring-input-border"
           >
             {option.label}
           </button>

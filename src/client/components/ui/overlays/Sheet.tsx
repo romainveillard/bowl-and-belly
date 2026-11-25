@@ -56,7 +56,7 @@ export function Sheet({
               field.focus();
             }
           }}
-          className={`fixed inset-x-0 bottom-0 z-20 flex flex-col rounded-t-3xl bg-card pb-[env(safe-area-inset-bottom)] desktop:inset-x-auto desktop:top-24 desktop:bottom-auto desktop:left-1/2 desktop:-translate-x-1/2 desktop:overflow-hidden desktop:rounded-2xl desktop:pb-0 desktop:shadow-[0_20px_48px_rgba(31,42,68,0.3)] ${tall ? "top-9 desktop:max-h-[calc(100dvh-128px)] desktop:w-[min(560px,calc(100%-32px))]" : "desktop:w-[min(460px,calc(100%-32px))]"}`}
+          className={`fixed inset-x-0 bottom-0 z-20 flex max-h-[calc(100dvh-env(safe-area-inset-top)-16px)] flex-col rounded-t-3xl bg-card pb-[env(safe-area-inset-bottom)] desktop:inset-x-auto desktop:top-24 desktop:bottom-auto desktop:left-1/2 desktop:-translate-x-1/2 desktop:overflow-hidden desktop:rounded-2xl desktop:pb-0 desktop:max-h-[calc(100dvh-128px)] desktop:shadow-[0_20px_48px_rgba(31,42,68,0.3)] ${tall ? "top-9 desktop:w-[min(560px,calc(100%-32px))]" : "desktop:w-[min(460px,calc(100%-32px))]"}`}
         >
           <div className="flex-none px-5 pt-2.5 pb-2 desktop:px-6 desktop:pt-5 desktop:pb-3">
             <div
@@ -89,8 +89,8 @@ export function Sheet({
             ref={body}
             className={
               flush
-                ? "flex flex-col pt-1 pb-6 desktop:pb-3"
-                : `flex flex-col gap-2 px-5 pt-2 pb-1 desktop:gap-[18px] desktop:px-6 desktop:pt-1 desktop:pb-5 ${tall ? "min-h-0 flex-1 gap-[18px] overflow-y-auto pt-1 pb-4" : ""}`
+                ? "flex min-h-0 flex-col overflow-y-auto pt-1 pb-6 desktop:pb-3"
+                : `flex min-h-0 flex-col gap-2 overflow-y-auto px-5 pt-2 pb-1 desktop:gap-[18px] desktop:px-6 desktop:pt-1 desktop:pb-5 ${tall ? "flex-1 gap-[18px] pt-1 pb-4" : ""}`
             }
           >
             {error && (
