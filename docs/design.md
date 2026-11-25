@@ -127,6 +127,7 @@ pet           (id, name, pet_type_id, photo_id NULL,
                birth_date, birth_date_precision,                  -- 'exact' | 'year' | 'estimated'
                neutered, activity_level,
                goal, target_weight_g NULL,                        -- 'maintain' | 'lose' | 'gain'
+               goal_set_on NULL,                                  -- app day the goal or its target weight last changed
                archived_at NULL, age_prompt_months NULL)          -- the age step last asked about
 pet_target    (id, pet_id, effective_from, kcal_per_day,          -- app day, unique per pet
                source)                                            -- 'calculated' | 'manual'
@@ -150,7 +151,7 @@ feed_entry    (id, pet_id, food_id, fed_at,                       -- UTC
 - **Images:** resized on upload to about 800px WebP and stored as blobs, so the database is the whole backup. They live in their own `image` table, referenced by `photo_id`, so that listing pets or foods never loads a blob.
 - **Seeded rows:** cat, dog, wet, dry and the single settings row (`CHECK (id = 1)`) are inserted by start-up code, not by a migration, and only when missing. Restarting never resets settings. The time zone starts as the server's (`TZ`), which is UTC in the container unless set.
 - **Dates and times:** instants (`fed_at`, `measured_at`, `archived_at`) are integer milliseconds in UTC. Calendar values (`birth_date`, `effective_from`) are `YYYY-MM-DD` text, and times of day are `HH:MM` text.
-- **Targets:** a pet has at most one target row per app day; a second change the same day replaces it. Any goal other than maintain requires `target_weight_g`.
+- **Targets:** a pet has at most one target row per app day; a second change the same day replaces it. Any goal other than maintain requires `target_weight_g`. `goal_set_on` is set to the app day whenever the pet form changes the goal or its target weight, kept on any other edit, and cleared for maintain; goals from before it was recorded have none and count from the first weigh-in.
 - **Bounds:** the API refuses amounts, weights and portions over 1,000,000 g, stock beyond ±10,000,000 g, more than 10,000 kcal/kg and daily targets over 20,000 kcal, so one bad value can't swamp totals or charts.
 - **Unused photos:** a photo is uploaded before its form is saved, so an abandoned form leaves one behind. Photos that no pet or food uses are deleted at start-up.
 - **Stock audit trail:** none in the MVP; stock is a mutated total. A purchases table arrives with cost tracking.

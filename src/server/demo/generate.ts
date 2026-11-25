@@ -228,7 +228,10 @@ export function generateDemo(db: DbOrTx, now: Date): void {
       }
     }
     if (offset === 21) {
-      db.update(pet).set({ goal: "lose", targetWeightG: 22_000 }).where(eq(pet.id, biscuit)).run();
+      db.update(pet)
+        .set({ goal: "lose", targetWeightG: 22_000, goalSetOn: on })
+        .where(eq(pet.id, biscuit))
+        .run();
       chooseTarget(db, biscuit, on, null);
     }
     for (const petId of [miso, biscuit, clover]) {

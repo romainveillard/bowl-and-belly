@@ -8,6 +8,7 @@ import { db } from "../db/client.js";
 import { pet, petTarget, petType, weightEntry } from "../db/schema.js";
 import { daySummaries } from "../feeds/days.js";
 import { dropReplacedPhoto } from "../images/photos.js";
+import { goalSetOn } from "../pets/goals.js";
 import { agePrompt, answerAgePrompt } from "../pets/prompts.js";
 import {
   applyTargetChoice,
@@ -122,6 +123,7 @@ export const petsRoutes = new Hono()
         activityLevel: pet.activityLevel,
         goal: pet.goal,
         targetWeightG: pet.targetWeightG,
+        goalSetOn: pet.goalSetOn,
       })
       .from(pet)
       .innerJoin(petType, eq(pet.petTypeId, petType.id))
@@ -160,7 +162,12 @@ export const petsRoutes = new Hono()
       return c.json({ code: "in_future" as const }, 400);
     }
     const id = db.transaction((tx) => {
-      const created = tx.insert(pet).values(profileOf(body)).returning({ id: pet.id }).get();
+      const profile = profileOf(body);
+      const created = tx
+        .insert(pet)
+        .values({ ...profile, goalSetOn: goalSetOn(undefined, profile, today(tx)) })
+        .returning({ id: pet.id })
+        .get();
       logCurrentWeight(tx, created.id, body.weightG, new Date());
       chooseTarget(tx, created.id, today(tx), body.manualTargetKcal);
       return created.id;
@@ -175,12 +182,25 @@ export const petsRoutes = new Hono()
     }
     try {
       const result = db.transaction((tx) => {
-        const before = tx.select({ photoId: pet.photoId }).from(pet).where(eq(pet.id, id)).get();
+        const before = tx
+          .select({
+            photoId: pet.photoId,
+            goal: pet.goal,
+            targetWeightG: pet.targetWeightG,
+            goalSetOn: pet.goalSetOn,
+          })
+          .from(pet)
+          .where(eq(pet.id, id))
+          .get();
         const inputs = formulaInputs(tx, id);
         if (!before || !inputs) {
           return null;
         }
-        tx.update(pet).set(profileOf(body)).where(eq(pet.id, id)).run();
+        const profile = profileOf(body);
+        tx.update(pet)
+          .set({ ...profile, goalSetOn: goalSetOn(before, profile, today(tx)) })
+          .where(eq(pet.id, id))
+          .run();
         dropReplacedPhoto(tx, before.photoId, body.photoId);
         const weighed = logCurrentWeight(tx, id, body.weightG, new Date());
         // Only known once the new profile and weight are in place; nothing
