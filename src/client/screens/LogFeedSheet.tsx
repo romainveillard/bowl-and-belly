@@ -17,29 +17,18 @@ import {
   type PickerFood,
 } from "../lib/feeds.js";
 import { portionPlural } from "../lib/foods.js";
-import { parsePositive } from "../lib/format.js";
+import {
+  amountIn,
+  countsInPortions,
+  servedGrams,
+  startingAmount,
+  type AmountUnit,
+} from "../lib/logFeed.js";
 import { useSelectedPet } from "../lib/selectedPet.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
 
-type Unit = "g" | "portion";
 type FieldName = "food" | "amount" | "leftover";
 const FIELD_ORDER: FieldName[] = ["leftover", "food", "amount"];
-
-const countsInPortions = (food: PickerFood) =>
-  food.stockUnit === "portion" && food.portionG !== null;
-
-/** What the amount starts at for a food: the last amount for this pet, else one portion. */
-function defaultAmount(food: PickerFood): { amount: string; unit: Unit } {
-  if (countsInPortions(food) && food.portionG) {
-    if (food.lastServedG === null) {
-      return { amount: "1", unit: "portion" };
-    }
-    if (food.lastServedG % food.portionG === 0) {
-      return { amount: String(food.lastServedG / food.portionG), unit: "portion" };
-    }
-  }
-  return { amount: food.lastServedG === null ? "" : String(food.lastServedG), unit: "g" };
-}
 
 function LogFeedForm({
   petId,
@@ -59,21 +48,17 @@ function LogFeedForm({
   const [foodId, setFoodId] = useState<number | null>(
     form.recentCount > 0 ? (form.foods[0]?.id ?? null) : null,
   );
-  const [amounts, setAmounts] = useState(() => {
+  const [amounts, setAmounts] = useState<{ amount: string; unit: AmountUnit }>(() => {
     const first = form.recentCount > 0 ? form.foods[0] : undefined;
-    return first ? defaultAmount(first) : { amount: "", unit: "g" };
+    return first ? startingAmount(first) : { amount: "", unit: "g" };
   });
   const [time, setTime] = useState<string | null>(null);
   const [leftover, setLeftover] = useState("");
 
   const food = form.foods.find((candidate) => candidate.id === foodId);
 
-  const value = parsePositive(amounts.amount);
   const inPortions = food !== undefined && countsInPortions(food) && amounts.unit === "portion";
-  const servedG =
-    value === null
-      ? null
-      : Math.round(inPortions && food?.portionG ? value * food.portionG : value);
+  const servedG = food ? servedGrams(amounts.amount, amounts.unit, food) : null;
   const previous = form.previous;
   const leftoverG = leftover.trim() === "" ? null : Number(leftover.trim());
 
@@ -93,7 +78,7 @@ function LogFeedForm({
 
   const choose = (candidate: PickerFood) => {
     setFoodId(candidate.id);
-    setAmounts(defaultAmount(candidate));
+    setAmounts(startingAmount(candidate));
   };
 
   const submit = () => {
@@ -224,17 +209,9 @@ function LogFeedForm({
               label={t("logFeed.unit")}
               hideLabel
               value={amounts.unit}
-              onChange={(unit) => {
-                // Keep the same quantity when switching how it is counted.
-                const grams = servedG;
-                const next =
-                  grams === null || !food.portionG
-                    ? ""
-                    : unit === "g"
-                      ? String(grams)
-                      : String(Math.round((grams / food.portionG) * 100) / 100);
-                setAmounts({ amount: next, unit });
-              }}
+              onChange={(unit) =>
+                setAmounts({ amount: amountIn(servedG, unit, food.portionG), unit })
+              }
               options={[
                 { value: "g", label: t("logFeed.grams") },
                 { value: "portion", label: portionPlural(food.portionName, i18n) },
