@@ -51,6 +51,21 @@ describe("logForm", () => {
     expect(form?.recentCount).toBe(2);
   });
 
+  it("remembers a food last given months and hundreds of feeds ago", () => {
+    const { db, feed } = catPantry();
+    feed(1, hoursAgo(24 * 180), 35);
+    for (let hours = 600; hours > 0; hours -= 1) {
+      feed(2, hoursAgo(hours), 85);
+    }
+
+    const form = logForm(db, 1, now);
+
+    expect(form?.foods.map((row) => [row.name, row.lastServedG])).toEqual([
+      ["Chicken in gravy", 85],
+      ["Salmon kibbles", 35],
+    ]);
+  });
+
   it("asks for the leftover of a dry feed from the last 24 hours that has none yet", () => {
     const { db, feed } = catPantry();
     feed(1, hoursAgo(23));

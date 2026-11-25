@@ -137,16 +137,32 @@ export function chooseTarget(
 }
 
 /**
- * The target card's choice. Going back to the formula is refused when it has
- * nothing to suggest, rather than quietly keeping the user's own target.
+ * Whether asking for the formula has to be refused: the user's own target is
+ * in force and the formula has nothing to suggest (no weight yet, or a custom
+ * type), so their target would quietly stay. With no target of the user's,
+ * there is nothing to go back from, and none is set.
  */
+export function refusesFormula(
+  db: DbOrTx,
+  petId: number,
+  day: string,
+  manualKcal: number | null,
+): boolean {
+  return (
+    manualKcal === null &&
+    targetOn(db, petId, day)?.source === "manual" &&
+    suggestedKcal(db, petId, day) === null
+  );
+}
+
+/** The target card's choice, refused as `refusesFormula` says. */
 export function applyTargetChoice(
   db: DbOrTx,
   petId: number,
   day: string,
   manualKcal: number | null,
 ): "no_suggestion" | undefined {
-  if (manualKcal === null && suggestedKcal(db, petId, day) === null) {
+  if (refusesFormula(db, petId, day, manualKcal)) {
     return "no_suggestion";
   }
   chooseTarget(db, petId, day, manualKcal);

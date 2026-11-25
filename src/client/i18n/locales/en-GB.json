@@ -66,7 +66,6 @@
     "not_found": "It no longer exists. It may have been deleted on another device.",
     "too_large": "It’s too large to send.",
     "unauthorised": "Log in again to carry on.",
-    "unknown_food_type": "That food type no longer exists. Reload the page and try again.",
     "internal": "Something went wrong on the server. Try again."
   },
   "petType": {

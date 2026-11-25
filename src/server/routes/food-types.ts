@@ -1,4 +1,4 @@
-import { and, eq, isNull, ne, sql } from "drizzle-orm";
+import { and, eq, isNotNull, isNull, ne, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { db } from "../db/client.js";
@@ -70,7 +70,13 @@ export const foodTypesRoutes = new Hono()
     const archived = db
       .update(foodType)
       .set({ archivedAt: new Date() })
-      .where(and(eq(foodType.id, c.req.valid("param").id), isNull(foodType.systemKey)))
+      .where(
+        and(
+          eq(foodType.id, c.req.valid("param").id),
+          isNull(foodType.systemKey),
+          isNull(foodType.archivedAt),
+        ),
+      )
       .returning({ id: foodType.id })
       .get();
     return archived ? c.body(null, 204) : c.json({ code: "not_found" as const }, 404);
@@ -80,7 +86,7 @@ export const foodTypesRoutes = new Hono()
     const type = db
       .select({ name: foodType.name })
       .from(foodType)
-      .where(and(eq(foodType.id, id), isNull(foodType.systemKey)))
+      .where(and(eq(foodType.id, id), isNull(foodType.systemKey), isNotNull(foodType.archivedAt)))
       .get();
     if (!type?.name) {
       return c.json({ code: "not_found" as const }, 404);

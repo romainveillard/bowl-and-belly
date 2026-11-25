@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { STOCK_UNITS } from "../../shared/enums.js";
 import { db } from "../db/client.js";
+import type { DbOrTx } from "../db/open.js";
 import { feedEntry, food, foodType } from "../db/schema.js";
 import { changeKcal } from "../foods/kcal.js";
 import { portionsFor } from "../foods/portions.js";
@@ -35,8 +36,8 @@ const backfill = z.discriminatedUnion("scope", [
 type FoodBody = z.infer<typeof foodBody>;
 
 /** The row to store, or null when the food type does not exist. */
-function rowOf<Body extends Omit<FoodBody, "stockG">>(body: Body) {
-  const type = db
+function rowOf<Body extends Omit<FoodBody, "stockG">>(tx: DbOrTx, body: Body) {
+  const type = tx
     .select({ systemKey: foodType.systemKey })
     .from(foodType)
     .where(eq(foodType.id, body.foodTypeId))
@@ -119,9 +120,9 @@ export const foodsRoutes = new Hono()
     return c.json({ ...row, hasFeeds: fed !== undefined });
   })
   .post("/", validate("json", foodBody), (c) => {
-    const row = rowOf(c.req.valid("json"));
+    const row = rowOf(db, c.req.valid("json"));
     if (!row) {
-      return c.json({ code: "unknown_food_type" as const }, 400);
+      return c.json({ code: "invalid_reference" as const }, 400);
     }
     const created = db.insert(food).values(row).returning({ id: food.id }).get();
     return c.json({ id: created.id }, 201);
@@ -142,27 +143,30 @@ export const foodsRoutes = new Hono()
     (c) => {
       const { id } = c.req.valid("param");
       const { kcalBackfill, ...body } = c.req.valid("json");
-      const row = rowOf(body);
-      if (!row) {
-        return c.json({ code: "unknown_food_type" as const }, 400);
-      }
-      const found = db.transaction((tx) => {
+      const refused = db.transaction((tx) => {
         const before = tx
           .select({ photoId: food.photoId, kcalPerKg: food.kcalPerKg })
           .from(food)
           .where(eq(food.id, id))
           .get();
         if (!before) {
-          return false;
+          return "not_found" as const;
+        }
+        const row = rowOf(tx, body);
+        if (!row) {
+          return "invalid_reference" as const;
         }
         tx.update(food).set(row).where(eq(food.id, id)).run();
         if (before.kcalPerKg !== row.kcalPerKg) {
           changeKcal(tx, id, row.kcalPerKg, kcalBackfill);
         }
         dropReplacedPhoto(tx, before.photoId, row.photoId);
-        return true;
+        return undefined;
       });
-      return found ? c.body(null, 204) : c.json({ code: "not_found" as const }, 404);
+      if (!refused) {
+        return c.body(null, 204);
+      }
+      return c.json({ code: refused }, refused === "not_found" ? 404 : 400);
     },
   )
   .post(

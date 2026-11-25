@@ -18,6 +18,11 @@ export const stockGrams = z
 /** Pure fat is about 9,000 kcal per kg. */
 export const kcalPerKg = z.number().int().positive().max(10_000);
 export const kcalPerDay = z.number().int().positive().max(20_000);
+/** An instant as the API sends it back for an undo: an ISO date-time, never in the future. */
+export const pastInstant = z.iso
+  .datetime()
+  .transform((value) => new Date(value))
+  .refine((date) => date.getTime() <= Date.now());
 
 /** Zod validation that answers with a code and the offending fields, never Zod's sentences. */
 export const validate = <Target extends keyof ValidationTargets, Schema extends z.ZodType>(

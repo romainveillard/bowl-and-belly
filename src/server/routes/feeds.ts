@@ -12,7 +12,7 @@ import {
 } from "../feeds/entries.js";
 import { logForm } from "../feeds/logForm.js";
 import { daySettings, today } from "../settings.js";
-import { grams, kcalPerKg, leftoverGrams, validate } from "../validate.js";
+import { grams, kcalPerKg, leftoverGrams, pastInstant, validate } from "../validate.js";
 
 const petQuery = z.object({ petId: z.coerce.number().int() });
 const idParam = z.object({ id: z.coerce.number().int() });
@@ -127,7 +127,7 @@ export const feedsRoutes = new Hono()
       z.object({
         petId: z.number().int(),
         foodId: z.number().int(),
-        fedAt: z.coerce.date(),
+        fedAt: pastInstant,
         servedG: grams,
         leftoverG: leftoverGrams.nullable(),
         leftoverReturnedToStock: z.boolean(),

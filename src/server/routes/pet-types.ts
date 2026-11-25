@@ -1,4 +1,4 @@
-import { and, eq, isNull, ne, sql } from "drizzle-orm";
+import { and, eq, isNotNull, isNull, ne, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { db } from "../db/client.js";
@@ -66,7 +66,13 @@ export const petTypesRoutes = new Hono()
     const archived = db
       .update(petType)
       .set({ archivedAt: new Date() })
-      .where(and(eq(petType.id, c.req.valid("param").id), isNull(petType.systemKey)))
+      .where(
+        and(
+          eq(petType.id, c.req.valid("param").id),
+          isNull(petType.systemKey),
+          isNull(petType.archivedAt),
+        ),
+      )
       .returning({ id: petType.id })
       .get();
     return archived ? c.body(null, 204) : c.json({ code: "not_found" as const }, 404);
@@ -76,7 +82,7 @@ export const petTypesRoutes = new Hono()
     const type = db
       .select({ name: petType.name })
       .from(petType)
-      .where(and(eq(petType.id, id), isNull(petType.systemKey)))
+      .where(and(eq(petType.id, id), isNull(petType.systemKey), isNotNull(petType.archivedAt)))
       .get();
     if (!type?.name) {
       return c.json({ code: "not_found" as const }, 404);

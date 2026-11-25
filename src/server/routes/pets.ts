@@ -1,6 +1,6 @@
 import { grams, kcalPerDay, validate } from "../validate.js";
 import { logCurrentWeight } from "../weights/readings.js";
-import { and, count, desc, eq, isNotNull, isNull } from "drizzle-orm";
+import { and, count, desc, eq, isNotNull, isNull, TransactionRollbackError } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { ACTIVITY_LEVELS, BIRTH_DATE_PRECISIONS, GOALS } from "../../shared/enums.js";
@@ -15,6 +15,7 @@ import {
   chooseTargetAfterEdit,
   formulaInputs,
   latestWeightG,
+  refusesFormula,
   targetOn,
 } from "../pets/targets.js";
 import { today } from "../settings.js";
@@ -155,6 +156,9 @@ export const petsRoutes = new Hono()
   })
   .post("/", validate("json", petBody), (c) => {
     const body = c.req.valid("json");
+    if (body.birthDate > today(db)) {
+      return c.json({ code: "in_future" as const }, 400);
+    }
     const id = db.transaction((tx) => {
       const created = tx.insert(pet).values(profileOf(body)).returning({ id: pet.id }).get();
       logCurrentWeight(tx, created.id, body.weightG, new Date());
@@ -166,24 +170,39 @@ export const petsRoutes = new Hono()
   .put("/:id", validate("param", idParam), validate("json", petBody), (c) => {
     const { id } = c.req.valid("param");
     const body = c.req.valid("json");
-    const result = db.transaction((tx) => {
-      const before = tx.select({ photoId: pet.photoId }).from(pet).where(eq(pet.id, id)).get();
-      const inputs = formulaInputs(tx, id);
-      if (!before || !inputs) {
-        return null;
+    if (body.birthDate > today(db)) {
+      return c.json({ code: "in_future" as const }, 400);
+    }
+    try {
+      const result = db.transaction((tx) => {
+        const before = tx.select({ photoId: pet.photoId }).from(pet).where(eq(pet.id, id)).get();
+        const inputs = formulaInputs(tx, id);
+        if (!before || !inputs) {
+          return null;
+        }
+        tx.update(pet).set(profileOf(body)).where(eq(pet.id, id)).run();
+        dropReplacedPhoto(tx, before.photoId, body.photoId);
+        const weighed = logCurrentWeight(tx, id, body.weightG, new Date());
+        // Only known once the new profile and weight are in place; nothing
+        // the form sent is kept when it is refused.
+        if (refusesFormula(tx, id, today(tx), body.manualTargetKcal)) {
+          tx.rollback();
+        }
+        return {
+          targetKcal: chooseTargetAfterEdit(tx, id, today(tx), {
+            before: inputs,
+            weighed,
+            manualKcal: body.manualTargetKcal,
+          }),
+        };
+      });
+      return result ? c.json(result) : c.json({ code: "not_found" as const }, 404);
+    } catch (error) {
+      if (error instanceof TransactionRollbackError) {
+        return c.json({ code: "no_suggestion" as const }, 409);
       }
-      tx.update(pet).set(profileOf(body)).where(eq(pet.id, id)).run();
-      dropReplacedPhoto(tx, before.photoId, body.photoId);
-      const weighed = logCurrentWeight(tx, id, body.weightG, new Date());
-      return {
-        targetKcal: chooseTargetAfterEdit(tx, id, today(tx), {
-          before: inputs,
-          weighed,
-          manualKcal: body.manualTargetKcal,
-        }),
-      };
-    });
-    return result ? c.json(result) : c.json({ code: "not_found" as const }, 404);
+      throw error;
+    }
   })
   .get("/:id/age-prompt", validate("param", idParam), (c) => {
     const { id } = c.req.valid("param");

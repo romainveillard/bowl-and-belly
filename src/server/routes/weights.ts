@@ -3,7 +3,7 @@ import { z } from "zod";
 import { db } from "../db/client.js";
 import { weightEntry } from "../db/schema.js";
 import { today } from "../settings.js";
-import { grams, validate } from "../validate.js";
+import { grams, pastInstant, validate } from "../validate.js";
 import { deleteReading, editReading, logReading } from "../weights/readings.js";
 
 const idParam = z.object({ id: z.coerce.number().int() });
@@ -38,7 +38,7 @@ export const weightsRoutes = new Hono()
       "json",
       z.object({
         petId: z.number().int(),
-        measuredAt: z.coerce.date(),
+        measuredAt: pastInstant,
         weightG: grams,
       }),
     ),

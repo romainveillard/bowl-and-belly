@@ -7,6 +7,7 @@ import {
   chooseTarget,
   chooseTargetAfterEdit,
   formulaInputs,
+  refusesFormula,
   suggestedKcal,
   targetOn,
 } from "./targets.js";
@@ -139,6 +140,28 @@ describe("chooseTarget", () => {
 
     expect(chooseTarget(db, id, "2026-11-20", null)).toBeNull();
     expect(targetOn(db, id, "2026-11-20")?.source).toBe("calculated");
+  });
+});
+
+describe("refusesFormula", () => {
+  it("refuses only when the user's own target would quietly stay", () => {
+    const weightless = catWeighing(null);
+    chooseTarget(weightless.db, weightless.id, "2026-11-10", 300);
+    const rabbit = catWeighing(4000);
+    const custom = rabbit.db.insert(petType).values({ name: "Rabbit" }).returning().get();
+    rabbit.db.update(pet).set({ petTypeId: custom.id }).run();
+    chooseTarget(rabbit.db, rabbit.id, "2026-11-10", 300);
+    const untargeted = catWeighing(null);
+    const followed = catWeighing(4000);
+    chooseTarget(followed.db, followed.id, "2026-11-10", null);
+    followed.db.delete(weightEntry).run();
+
+    expect(
+      [weightless, rabbit, untargeted, followed].map(({ db, id }) =>
+        refusesFormula(db, id, "2026-11-20", null),
+      ),
+    ).toEqual([true, true, false, false]);
+    expect(refusesFormula(weightless.db, weightless.id, "2026-11-20", 320)).toBe(false);
   });
 });
 

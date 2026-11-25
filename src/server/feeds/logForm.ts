@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull, lte, or } from "drizzle-orm";
+import { and, desc, eq, isNull, lte, max, or } from "drizzle-orm";
 import type { DbOrTx } from "../db/open.js";
 import { feedEntry, food, foodType, pet } from "../db/schema.js";
 import { returnsLeftovers } from "./entries.js";
@@ -47,7 +47,23 @@ export function logForm(db: DbOrTx, petId: number, now: Date) {
     .orderBy(food.name)
     .all();
 
-  const feeds = db
+  const fedSoFar = and(eq(feedEntry.petId, petId), lte(feedEntry.fedAt, now));
+  // SQLite takes the bare served_g from the row that holds the MAX.
+  const lastFeeds = db
+    .select({ foodId: feedEntry.foodId, fedAt: max(feedEntry.fedAt), servedG: feedEntry.servedG })
+    .from(feedEntry)
+    .where(fedSoFar)
+    .groupBy(feedEntry.foodId)
+    .all();
+  const last = new Map(lastFeeds.map((feed) => [feed.foodId, feed]));
+  const recent = foods
+    .filter((row) => last.has(row.id))
+    .toSorted(
+      (a, b) => (last.get(b.id)?.fedAt?.getTime() ?? 0) - (last.get(a.id)?.fedAt?.getTime() ?? 0),
+    );
+  const others = foods.filter((row) => !last.has(row.id));
+
+  const previous = db
     .select({
       id: feedEntry.id,
       foodId: feedEntry.foodId,
@@ -56,24 +72,10 @@ export function logForm(db: DbOrTx, petId: number, now: Date) {
       leftoverG: feedEntry.leftoverG,
     })
     .from(feedEntry)
-    .where(and(eq(feedEntry.petId, petId), lte(feedEntry.fedAt, now)))
+    .where(fedSoFar)
     .orderBy(desc(feedEntry.fedAt), desc(feedEntry.id))
-    .limit(500)
-    .all();
-  const last = new Map<number, (typeof feeds)[number]>();
-  for (const feed of feeds) {
-    if (!last.has(feed.foodId)) {
-      last.set(feed.foodId, feed);
-    }
-  }
-  const recent = foods
-    .filter((row) => last.has(row.id))
-    .toSorted(
-      (a, b) => (last.get(b.id)?.fedAt.getTime() ?? 0) - (last.get(a.id)?.fedAt.getTime() ?? 0),
-    );
-  const others = foods.filter((row) => !last.has(row.id));
-
-  const [previous] = feeds;
+    .limit(1)
+    .get();
   const previousFood = previous && foods.find((row) => row.id === previous.foodId);
   const askLeftover =
     previous !== undefined &&
