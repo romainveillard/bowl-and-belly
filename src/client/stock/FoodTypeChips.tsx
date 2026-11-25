@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { foodTypeLabel } from "./foods.js";
+import { FoodTypeGlyph } from "./FoodTypeMark.js";
 import { Chip } from "../components/ui/forms/Chip.js";
 
 interface FoodTypeChipsProps {
@@ -28,6 +29,7 @@ export function FoodTypeChips({ types, selected, onSelect, wrap = false }: FoodT
           onClick={() => onSelect(type.id)}
           className={chip}
         >
+          <FoodTypeGlyph type={type} />
           {foodTypeLabel(type, t)}
         </Chip>
       ))}

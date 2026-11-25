@@ -14,6 +14,29 @@ const colours = {
   custom: "bg-muted text-muted-foreground",
 };
 
+/** A food type's drawing: a drop for wet, kibbles for dry, a bowl for the user's own types. */
+export function FoodTypeIcon({ type, size }: { type: FoodType; size: number }) {
+  if (type.systemKey === "wet") {
+    return <WetFoodIcon size={size} />;
+  }
+  return type.systemKey === "dry" ? <DryFoodIcon size={size} /> : <BowlIcon size={size} />;
+}
+
+const iconColours = {
+  wet: "text-wet-foreground",
+  dry: "text-dry-foreground",
+  custom: "text-muted-foreground",
+};
+
+/** The icon in the type's own colour, beside text that names it, such as on a filter chip. */
+export function FoodTypeGlyph({ type }: { type: FoodType }) {
+  return (
+    <span className={`flex ${iconColours[type.systemKey ?? "custom"]}`}>
+      <FoodTypeIcon type={type} size={16} />
+    </span>
+  );
+}
+
 /**
  * The square tile that starts a food row: a blue drop for wet, peach kibbles for dry.
  * Decorative where text beside it already names the type, which would otherwise be read twice.
@@ -35,9 +58,7 @@ export function FoodTypeTile({
       {...name}
       className={`flex size-10 flex-none items-center justify-center rounded-[10px] ${colours[type.systemKey ?? "custom"]}`}
     >
-      {type.systemKey === "wet" && <WetFoodIcon size={20} />}
-      {type.systemKey === "dry" && <DryFoodIcon size={20} />}
-      {type.systemKey === null && <BowlIcon size={20} />}
+      <FoodTypeIcon type={type} size={20} />
     </span>
   );
 }

@@ -14,7 +14,7 @@ export function Chip({ pressed, onClick, children, className = "" }: ChipProps) 
       type="button"
       aria-pressed={pressed}
       onClick={onClick}
-      className={`hit-area h-9 cursor-pointer rounded-full border border-border bg-card px-3.5 text-sm font-medium aria-pressed:border-primary-strong aria-pressed:bg-accent-soft aria-pressed:font-semibold ${className}`}
+      className={`hit-area inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-full border border-border bg-card px-3.5 text-sm font-medium aria-pressed:border-primary-strong aria-pressed:bg-accent-soft aria-pressed:font-semibold ${className}`}
     >
       {children}
     </button>
