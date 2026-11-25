@@ -4,6 +4,7 @@ import { bodyLimit } from "hono/body-limit";
 import { csrf } from "hono/csrf";
 import { requireSession } from "./auth/access.js";
 import { db } from "./db/client.js";
+import { analyticsToken } from "./demo/analytics.js";
 import { demo, demoGuard } from "./demo/mode.js";
 import { onApiError } from "./errors.js";
 import { authRoutes } from "./routes/auth.js";
@@ -43,7 +44,7 @@ const api = new Hono()
     db.run(sql`select 1`);
     return c.json({ status: "ok" as const });
   })
-  .get("/instance", (c) => c.json({ demo }))
+  .get("/instance", (c) => c.json({ demo, analyticsToken }))
   .route("/auth", authRoutes)
   .route("/pets", petsRoutes)
   .route("/pet-types", petTypesRoutes)

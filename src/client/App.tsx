@@ -10,7 +10,7 @@ import { BottomNav, Sidebar } from "./components/Navigation.js";
 import { useSnackbar } from "./components/ui/feedback/Snackbar.js";
 import { onDemoLimit, onUnreachable, useAccess } from "./access/access.js";
 import { useAuth } from "./access/auth.js";
-import { useDemo } from "./lib/instance.js";
+import { useDemo, useDemoAnalytics } from "./lib/instance.js";
 import { usePets } from "./pets/pets.js";
 import { LoginScreen } from "./access/LoginScreen.js";
 import { SessionExpiredScreen } from "./access/SessionExpiredScreen.js";
@@ -155,6 +155,7 @@ function AccessGate({ children }: { children: ReactNode }) {
 
 export function App() {
   usePrefetchLater();
+  useDemoAnalytics();
   return (
     <>
       <ConnectionNotice />

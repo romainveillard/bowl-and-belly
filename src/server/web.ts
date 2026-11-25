@@ -3,16 +3,23 @@ import { compress } from "hono/compress";
 import { secureHeaders } from "hono/secure-headers";
 import { app } from "./app.js";
 import { knownHostsOnly } from "./auth/hosts.js";
+import { analyticsToken, usageLog } from "./demo/analytics.js";
+import { demo } from "./demo/mode.js";
 import { staticFiles } from "./staticFiles.js";
 
 const clientDir = "dist/client";
 
 export const web = new Hono()
   .use(knownHostsOnly)
+  .use("/api/*", demo ? usageLog : (_c, next) => next())
   .use(
     secureHeaders({
       contentSecurityPolicy: {
         defaultSrc: ["'self'"],
+        ...(analyticsToken && {
+          scriptSrc: ["'self'", "https://static.cloudflareinsights.com"],
+          connectSrc: ["'self'", "https://cloudflareinsights.com"],
+        }),
         // Recharts and React set inline style attributes.
         styleSrc: ["'self'", "'unsafe-inline'"],
         objectSrc: ["'none'"],

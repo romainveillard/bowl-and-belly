@@ -14,6 +14,7 @@ You need Node 24 (see `.nvmrc`).
 - Install: `npm install`
 - Run locally: `npm run dev`, then open http://localhost:5173. The API runs on port 3000 and stores its SQLite file in `data/`, or in the folder `DATA_DIR` names.
 - Try it with data: `npm run demo` writes three pets and three months of history into `data-demo/` (replacing what was there), then starts the same dev servers on it.
+- Demo usage: `docker logs <container> | node scripts/usage-report.mjs` prints, for each day, the public demo's unique visitors, its busiest API routes, and how many visitors went from Today to logging a feed to opening Insights. Today counts from its feeds request, which History shares.
 - Test: `npm test`
 - Lint and typecheck: `npm run lint`, `npm run format:check` and `npm run typecheck`. `npm run format` fixes formatting.
 - Production build: `npm run build`, then `npm start`

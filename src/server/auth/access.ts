@@ -30,10 +30,15 @@ export function passwordProblem(value: string | null): string | null {
 
 export const configuredPasswordProblem = passwordProblem(password);
 
+/** The visitor's address from Cloudflare's header, when the operator says it can be trusted. */
+export function cloudflareAddress(c: Context): string | undefined {
+  return trustCloudflare ? c.req.header("CF-Connecting-IP") : undefined;
+}
+
 // Behind a proxy every request comes from the proxy, so the limit is global
 // unless the operator says Cloudflare's client address header can be trusted.
 function clientKey(c: Context): string {
-  const address = trustCloudflare ? c.req.header("CF-Connecting-IP") : undefined;
+  const address = cloudflareAddress(c);
   return address ? clientOf(address) : "global";
 }
 
