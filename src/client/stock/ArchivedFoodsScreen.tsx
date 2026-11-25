@@ -4,7 +4,8 @@ import { ArchivedList } from "../components/ArchivedList.js";
 import { FoodTypeTile } from "./FoodTypeMark.js";
 import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { foodTypeLabel, useArchivedFoods, useSetFoodArchived } from "./foods.js";
-import { formatDay } from "../lib/format.js";
+import { formatInstantDay } from "../lib/format.js";
+import { useSettings } from "../settings/settings.js";
 import { usePets } from "../pets/pets.js";
 
 export function ArchivedFoodsScreen() {
@@ -13,9 +14,10 @@ export function ArchivedFoodsScreen() {
   const { data: archived } = useArchivedFoods();
   // Only for the app day, which decides whether dates need their year.
   const { data: pets } = usePets();
+  const { data: settings } = useSettings();
   const restore = useSetFoodArchived("restore");
 
-  if (!archived || !pets) {
+  if (!archived || !pets || !settings) {
     return null;
   }
 
@@ -37,7 +39,7 @@ export function ArchivedFoodsScreen() {
           detail: t("stock.archivedRow", {
             type: foodTypeLabel(food.type, t),
             date: food.archivedAt
-              ? formatDay(new Date(food.archivedAt), pets.today, i18n.language)
+              ? formatInstantDay(food.archivedAt, settings, pets.today, i18n.language)
               : "",
           }),
         }))}

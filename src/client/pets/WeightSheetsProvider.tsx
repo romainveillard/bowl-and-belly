@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { PlusIcon } from "../components/icons.js";
 import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
 import { button } from "../components/ui/forms/button.js";
-import { formatDay, formatReadingKg } from "../lib/format.js";
+import { formatInstantDay, formatReadingKg } from "../lib/format.js";
 import { LogWeightSheet } from "./LogWeightSheet.js";
 import { usePet, type PetDetail } from "./pets.js";
 import { TargetPromptDialog } from "./TargetPromptDialog.js";
@@ -52,7 +52,7 @@ export function WeightSheetsProvider({
   };
 
   const day = (reading: Reading) =>
-    formatDay(new Date(reading.measuredAt), pet?.today ?? "", i18n.language);
+    settings ? formatInstantDay(reading.measuredAt, settings, pet?.today ?? "", i18n.language) : "";
   const kg = (reading: Reading) => formatReadingKg(reading.weightG, i18n.language);
 
   const remove = (reading: Reading) =>

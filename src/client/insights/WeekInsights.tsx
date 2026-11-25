@@ -4,7 +4,7 @@ import { addDays } from "../../shared/app-day.js";
 import { periodIntake, weekStart } from "../../shared/insights.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { isOverTarget } from "../lib/dayStatus.js";
-import { formatAppDay, formatAppDayRange, formatDay, formatKg } from "../lib/format.js";
+import { formatAppDay, formatAppDayRange, formatInstantDay, formatKg } from "../lib/format.js";
 import { targetOn, usePet } from "../pets/pets.js";
 import { IntakeChart } from "./charts/IntakeChart.js";
 import { WeightChart } from "./charts/WeightChart.js";
@@ -38,7 +38,7 @@ export function WeekInsights({ petId, today, onPeriod }: PeriodViewProps) {
     />
   );
 
-  if (!data || !pet) {
+  if (!data || !pet || !settings) {
     return bar;
   }
 
@@ -55,7 +55,8 @@ export function WeekInsights({ petId, today, onPeriod }: PeriodViewProps) {
   const lastDay = isCurrentWeek ? data.today : end;
   const targetRow = targetOn(pet, lastDay);
   const latest = pet.weights[0];
-  const weightNote = latest && formatDay(new Date(latest.measuredAt), pet.today, i18n.language);
+  const weightNote =
+    latest && formatInstantDay(latest.measuredAt, settings, pet.today, i18n.language);
 
   return (
     <>

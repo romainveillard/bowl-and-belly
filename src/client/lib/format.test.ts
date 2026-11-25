@@ -2,7 +2,7 @@ import i18next from "i18next";
 import ICU from "i18next-icu";
 import { describe, expect, it, vi } from "vitest";
 import enGB from "../i18n/locales/en-GB.json" with { type: "json" };
-import { formatAppDay, formatAppDayRange, formatWhen } from "./format.js";
+import { formatAppDay, formatAppDayRange, formatInstantDay, formatWhen } from "./format.js";
 
 const i18n = i18next.createInstance();
 await i18n.use(ICU).init({ lng: "en-GB", resources: { "en-GB": { translation: enGB } } });
@@ -25,6 +25,26 @@ describe("formatAppDay", () => {
       expect(
         formatAppDayRange("2026-11-23", "2026-11-29", "en-GB", { day: "numeric", month: "short" }),
       ).toMatch(/^23\D+29 Nov$/);
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+});
+
+describe("formatInstantDay", () => {
+  it("dates an instant by the app's day, whatever the device's time zone", () => {
+    vi.stubEnv("TZ", "America/Los_Angeles");
+    try {
+      // 00:30 in Paris on the 25th: still the evening of the 24th in Los Angeles.
+      const weighIn = "2026-11-24T23:30:00Z";
+      expect(new Date(weighIn).getDate()).toBe(24);
+
+      const paris = { timeZone: "Europe/Paris", dayStartsAt: "00:00" };
+      expect(formatInstantDay(weighIn, paris, "2026-11-25", "en-GB")).toBe("25 Nov");
+      // Before a 05:00 day start, it still belongs to the 24th.
+      expect(
+        formatInstantDay(weighIn, { ...paris, dayStartsAt: "05:00" }, "2026-11-25", "en-GB"),
+      ).toBe("24 Nov");
     } finally {
       vi.unstubAllEnvs();
     }

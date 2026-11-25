@@ -3,7 +3,8 @@ import { useNavigate } from "react-router";
 import { ArchivedList } from "../components/ArchivedList.js";
 import { PetAvatar } from "./PetAvatar.js";
 import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
-import { formatDay } from "../lib/format.js";
+import { formatInstantDay } from "../lib/format.js";
+import { useSettings } from "../settings/settings.js";
 import { petTypeLabel, useArchivedPets, usePets, useSetArchived } from "./pets.js";
 
 export function ArchivedPetsScreen() {
@@ -11,9 +12,10 @@ export function ArchivedPetsScreen() {
   const navigate = useNavigate();
   const { data: pets } = usePets();
   const { data: archived } = useArchivedPets();
+  const { data: settings } = useSettings();
   const restore = useSetArchived("restore");
 
-  if (!pets || !archived) {
+  if (!pets || !archived || !settings) {
     return null;
   }
 
@@ -44,7 +46,7 @@ export function ArchivedPetsScreen() {
           detail: t("pets.archivedRow", {
             type: petTypeLabel(pet.type, t),
             date: pet.archivedAt
-              ? formatDay(new Date(pet.archivedAt), pets.today, i18n.language)
+              ? formatInstantDay(pet.archivedAt, settings, pets.today, i18n.language)
               : "",
           }),
         }))}

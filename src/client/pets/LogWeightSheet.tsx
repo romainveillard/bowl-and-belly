@@ -6,7 +6,7 @@ import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field } from "../components/ui/forms/Field.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
 import { appDayOf, type DaySettings } from "../../shared/app-day.js";
-import { formatDay, formatReadingKg, parsePositive } from "../lib/format.js";
+import { formatInstantDay, formatReadingKg, parsePositive } from "../lib/format.js";
 import type { PetDetail } from "./pets.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
 import { bigChangeFrom, useSaveWeight, type WeighInPrompt } from "./weights.js";
@@ -71,7 +71,7 @@ export function LogWeightSheet({
           ? t("logWeight.subtitle", {
               name: pet.name,
               weight: formatReadingKg(last.weightG, i18n.language),
-              date: formatDay(new Date(last.measuredAt), pet.today, i18n.language),
+              date: formatInstantDay(last.measuredAt, daySettings, pet.today, i18n.language),
             })
           : pet.name
       }

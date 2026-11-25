@@ -4,7 +4,8 @@ import { EditIcon, PlusIcon, TrashIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { listRow, RowHoverActions } from "../components/ui/layout/List.js";
-import { formatDay, formatKg, formatReadingKg } from "../lib/format.js";
+import { formatInstantDay, formatKg, formatReadingKg } from "../lib/format.js";
+import { useSettings } from "../settings/settings.js";
 import type { PetDetail } from "./pets.js";
 import { SPARKLINE_READINGS, Sparkline } from "./Sparkline.js";
 import { useWeightSheets } from "./WeightSheetsProvider.js";
@@ -19,14 +20,16 @@ export function WeighInsCard({ pet }: { pet: PetDetail }) {
   const weightSheets = useWeightSheets();
   const [showAll, setShowAll] = useState(false);
   const latest = pet.weights[0];
-  const day = (value: Date) => formatDay(value, pet.today, locale);
+  const { data: settings } = useSettings();
+  const day = (measuredAt: string) =>
+    settings ? formatInstantDay(measuredAt, settings, pet.today, locale) : "";
 
   return (
     <Card>
       <div className="flex items-start justify-between gap-3">
         <CardHeading
           title={t("weight.title")}
-          hint={latest && t("weight.lastWeighed", { date: day(new Date(latest.measuredAt)) })}
+          hint={latest && t("weight.lastWeighed", { date: day(latest.measuredAt) })}
         />
         {latest && (
           <span className="flex items-baseline gap-1">
@@ -49,7 +52,7 @@ export function WeighInsCard({ pet }: { pet: PetDetail }) {
       {pet.weights.length > 0 && (
         <div>
           {pet.weights.slice(0, showAll ? undefined : LATEST_READINGS).map((reading) => {
-            const date = day(new Date(reading.measuredAt));
+            const date = day(reading.measuredAt);
             return (
               <div key={reading.id} className={`group relative ${listRow}`}>
                 <button

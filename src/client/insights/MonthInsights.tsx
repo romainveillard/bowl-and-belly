@@ -5,7 +5,7 @@ import { addDays, addMonths } from "../../shared/app-day.js";
 import { periodIntake, rollingAverage } from "../../shared/insights.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { dayStatus } from "../lib/dayStatus.js";
-import { formatAppDay, formatDateInput, formatDay, formatKg } from "../lib/format.js";
+import { formatAppDay, formatDateInput, formatInstantDay, formatKg } from "../lib/format.js";
 import { targetOn, usePet } from "../pets/pets.js";
 import { weightTrend } from "../pets/weightTrend.js";
 import { IntakeChart } from "./charts/IntakeChart.js";
@@ -93,7 +93,7 @@ export function MonthInsights({ petId, today, onPeriod }: PeriodViewProps) {
             ) ??
             (latest &&
               t("insights.lastWeighed", {
-                date: formatDay(new Date(latest.at), pet.today, i18n.language),
+                date: formatInstantDay(new Date(latest.at), settings, pet.today, i18n.language),
               }))
           }
         />

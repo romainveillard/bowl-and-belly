@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
-import { formatDay, formatKg } from "../lib/format.js";
+import { formatInstantDay, formatKg } from "../lib/format.js";
+import { useSettings } from "../settings/settings.js";
 import { usePet } from "./pets.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { SPARKLINE_READINGS, Sparkline } from "./Sparkline.js";
@@ -9,9 +10,10 @@ import { SPARKLINE_READINGS, Sparkline } from "./Sparkline.js";
 export function WeightCard({ petId }: { petId: number }) {
   const { t, i18n } = useTranslation();
   const { data: pet } = usePet(petId);
+  const { data: settings } = useSettings();
   const latest = pet?.weights[0];
 
-  if (!pet || !latest) {
+  if (!pet || !latest || !settings) {
     return null;
   }
   return (
@@ -30,7 +32,7 @@ export function WeightCard({ petId }: { petId: number }) {
         </span>
         <span className="text-sm text-muted-foreground">
           {t("today.weightDate", {
-            date: formatDay(new Date(latest.measuredAt), pet.today, i18n.language),
+            date: formatInstantDay(latest.measuredAt, settings, pet.today, i18n.language),
           })}
         </span>
       </span>

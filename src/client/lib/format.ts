@@ -1,5 +1,5 @@
 import type { TFunction } from "i18next";
-import { addDays, appDayOf } from "../../shared/app-day.js";
+import { addDays, appDayOf, type DaySettings } from "../../shared/app-day.js";
 import { ageInMonths } from "../../shared/target.js";
 
 /** A reading as entered: trailing zeros stripped, but at least one decimal. */
@@ -90,15 +90,28 @@ export function formatDateInput(instant: string | Date, timeZone: string): strin
   }).format(new Date(instant));
 }
 
-/** "3 Nov", with the year only when it is not `today`'s. Takes "YYYY-MM-DD" or an instant. */
-export function formatDay(value: string | Date, today: string, locale: string): string {
-  const date = typeof value === "string" ? new Date(`${value}T00:00:00`) : value;
+/** "3 Nov" for an app day, "YYYY-MM-DD", with the year only when it is not `today`'s. */
+export function formatDay(day: string, today: string, locale: string): string {
+  const date = new Date(`${day}T00:00:00`);
   const sameYear = String(date.getFullYear()) === today.slice(0, 4);
   return new Intl.DateTimeFormat(locale, {
     day: "numeric",
     month: "short",
     ...(sameYear ? {} : { year: "numeric" }),
   }).format(date);
+}
+
+/**
+ * formatDay for an instant, such as when a weigh-in was taken, on the app day
+ * it falls in: the device's own time zone could put it a day off.
+ */
+export function formatInstantDay(
+  instant: string | Date,
+  settings: DaySettings,
+  today: string,
+  locale: string,
+): string {
+  return formatDay(appDayOf(new Date(instant), settings), today, locale);
 }
 
 /** "since 3 Nov", or "since today". */
