@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
 import type { InferRequestType } from "hono/client";
 import { api } from "../api.js";
+import { apiError } from "../lib/apiError.js";
 
 const foodTypes = api.api["food-types"];
 const petTypes = api.api["pet-types"];
@@ -23,6 +24,7 @@ export function useSaveFoodType(id: number | undefined) {
   const invalidate = useInvalidate("food");
 
   return useMutation({
+    meta: { failed: "type" },
     mutationFn: async (body: FoodTypeBody) => {
       const response =
         id === undefined
@@ -32,7 +34,7 @@ export function useSaveFoodType(id: number | undefined) {
         return "name_taken" as const;
       }
       if (!response.ok) {
-        throw new Error("Could not save the food type");
+        throw await apiError(response);
       }
       return null;
     },
@@ -45,6 +47,7 @@ export function useSavePetType(id: number | undefined) {
   const invalidate = useInvalidate("pet");
 
   return useMutation({
+    meta: { failed: "type" },
     mutationFn: async (name: string) => {
       const response =
         id === undefined
@@ -54,7 +57,7 @@ export function useSavePetType(id: number | undefined) {
         return "name_taken" as const;
       }
       if (!response.ok) {
-        throw new Error("Could not save the pet type");
+        throw await apiError(response);
       }
       return null;
     },
@@ -67,6 +70,7 @@ export function useSetTypeArchived(kind: TypeKind, action: "archive" | "restore"
   const invalidate = useInvalidate(kind);
 
   return useMutation({
+    meta: { failed: action === "archive" ? "archiveType" : "restoreType" },
     mutationFn: async (id: number) => {
       const route = kind === "food" ? foodTypes : petTypes;
       const response = await route[":id"][action].$post({ param: { id: String(id) } });
@@ -74,7 +78,7 @@ export function useSetTypeArchived(kind: TypeKind, action: "archive" | "restore"
         return "name_taken" as const;
       }
       if (!response.ok) {
-        throw new Error(`Could not ${action} the type`);
+        throw await apiError(response);
       }
       return null;
     },

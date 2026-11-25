@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api.js";
 import { setAccess } from "./access.js";
+import { apiError } from "../lib/apiError.js";
 
 const auth = api.api.auth;
 
@@ -22,13 +23,14 @@ export function useLogIn() {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "logIn" },
     mutationFn: async (password: string) => {
       const response = await auth.login.$post({ json: { password } });
       if (response.status === 401 || response.status === 429) {
         return (await response.json()).code;
       }
       if (!response.ok) {
-        throw new Error("Could not log in");
+        throw await apiError(response);
       }
       return null;
     },
@@ -45,10 +47,11 @@ export function useLogOut() {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "logOut" },
     mutationFn: async () => {
       const response = await auth.logout.$post();
       if (!response.ok) {
-        throw new Error("Could not log out");
+        throw await apiError(response);
       }
     },
     onSuccess: () => {

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Outlet, Route, Routes } from "react-router";
 import { DemoBanner } from "./components/DemoBanner.js";
 import { EmptyState } from "./components/EmptyState.js";
+import { SaveErrorNotice } from "./components/SaveErrorNotice.js";
 import { HistoryIcon, InsightsIcon } from "./components/icons.js";
 import { BottomNav, Sidebar } from "./components/Navigation.js";
 import { useSnackbar } from "./components/ui/feedback/Snackbar.js";
@@ -100,6 +101,7 @@ export function App() {
   return (
     <>
       <ConnectionNotice />
+      <SaveErrorNotice />
       <AccessGate>
         <Routes>
           <Route element={<Shell />}>

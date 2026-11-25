@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import type { InferRequestType, InferResponseType } from "hono/client";
 import { api } from "../api.js";
+import { apiError } from "../lib/apiError.js";
 
 const weights = api.api.weights;
 
@@ -42,17 +43,18 @@ export function useSaveWeight(petId: number, id: number | undefined) {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "weighIn" },
     mutationFn: async (reading: { weightG: number; date: string }) => {
       if (id === undefined) {
         const response = await weights.$post({ json: { petId, ...reading } });
         if (!response.ok) {
-          throw new Error("Could not log the weight");
+          throw await apiError(response);
         }
         return (await response.json()).prompt;
       }
       const response = await weights[":id"].$put({ param: { id: String(id) }, json: reading });
       if (!response.ok) {
-        throw new Error("Could not edit the weigh-in");
+        throw await apiError(response);
       }
       return (await response.json()).prompt;
     },
@@ -64,10 +66,11 @@ export function useDeleteWeight() {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "deleteWeighIn" },
     mutationFn: async (id: number) => {
       const response = await weights[":id"].$delete({ param: { id: String(id) } });
       if (!response.ok) {
-        throw new Error("Could not delete the weigh-in");
+        throw await apiError(response);
       }
       return response.json();
     },
@@ -79,10 +82,11 @@ export function useRestoreWeight() {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "restoreWeighIn" },
     mutationFn: async (json: InferRequestType<typeof weights.restore.$post>["json"]) => {
       const response = await weights.restore.$post({ json });
       if (!response.ok) {
-        throw new Error("Could not restore the weigh-in");
+        throw await apiError(response);
       }
     },
     onSuccess: () => refresh(queryClient),
@@ -110,13 +114,14 @@ export function useAnswerAgePrompt(petId: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "answer" },
     mutationFn: async (answer: { months: number; update: boolean }) => {
       const response = await api.api.pets[":id"]["age-prompt"].$post({
         param: { id: String(petId) },
         json: answer,
       });
       if (!response.ok) {
-        throw new Error("Could not answer the question");
+        throw await apiError(response);
       }
     },
     onSuccess: () => refresh(queryClient),

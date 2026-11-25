@@ -3,6 +3,7 @@ import type { InferRequestType, InferResponseType } from "hono/client";
 import type { TFunction } from "i18next";
 import { explainTarget } from "../../shared/target.js";
 import { api } from "../api.js";
+import { apiError } from "../lib/apiError.js";
 
 const pets = api.api.pets;
 
@@ -58,17 +59,18 @@ export function useSavePet(id: number | undefined) {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "pet" },
     mutationFn: async (json: PetBody) => {
       if (id === undefined) {
         const response = await pets.$post({ json });
         if (!response.ok) {
-          throw new Error("Could not create the pet");
+          throw await apiError(response);
         }
         return { id: (await response.json()).id, targetKcal: null };
       }
       const response = await pets[":id"].$put({ param: { id: String(id) }, json });
       if (!response.ok) {
-        throw new Error("Could not update the pet");
+        throw await apiError(response);
       }
       return { id, targetKcal: (await response.json()).targetKcal };
     },
@@ -94,10 +96,11 @@ export function useSetArchived(action: "archive" | "restore") {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: action === "archive" ? "archivePet" : "restorePet" },
     mutationFn: async (id: number) => {
       const response = await pets[":id"][action].$post({ param: { id: String(id) } });
       if (!response.ok) {
-        throw new Error(`Could not ${action} the pet`);
+        throw await apiError(response);
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["pets"] }),
@@ -109,13 +112,14 @@ export function useSetTarget(id: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "target" },
     mutationFn: async (manualTargetKcal: number | null) => {
       const response = await pets[":id"].target.$put({
         param: { id: String(id) },
         json: { manualTargetKcal },
       });
       if (!response.ok) {
-        throw new Error("Could not set the target");
+        throw await apiError(response);
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["pets"] }),

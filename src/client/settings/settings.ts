@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { InferRequestType, InferResponseType } from "hono/client";
 import { api } from "../api.js";
+import { apiError } from "../lib/apiError.js";
 
 const settings = api.api.settings;
 
@@ -38,10 +39,11 @@ export function useSaveSettings() {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "settings" },
     mutationFn: async (body: SettingsBody) => {
       const response = await settings.$put({ json: body });
       if (!response.ok) {
-        throw new Error("Could not save the settings");
+        throw await apiError(response);
       }
     },
     onMutate: async (body) => {

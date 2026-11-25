@@ -8,6 +8,7 @@ import {
 import type { InferRequestType, InferResponseType } from "hono/client";
 import { addDays } from "../../shared/app-day.js";
 import { api } from "../api.js";
+import { apiError } from "../lib/apiError.js";
 
 const feeds = api.api.feeds;
 
@@ -79,10 +80,11 @@ export function useLogFeed() {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "feed" },
     mutationFn: async (json: LogBody) => {
       const response = await feeds.$post({ json });
       if (!response.ok) {
-        throw new Error("Could not log the feed");
+        throw await apiError(response);
       }
       return (await response.json()).id;
     },
@@ -95,10 +97,11 @@ export function useDeleteFeed() {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "deleteFeed" },
     mutationFn: async (id: number) => {
       const response = await feeds[":id"].$delete({ param: { id: String(id) } });
       if (!response.ok) {
-        throw new Error("Could not delete the feed");
+        throw await apiError(response);
       }
       return response.json();
     },
@@ -110,10 +113,11 @@ export function useEditFeed(id: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "feed" },
     mutationFn: async (json: InferRequestType<(typeof feeds)[":id"]["$put"]>["json"]) => {
       const response = await feeds[":id"].$put({ param: { id: String(id) }, json });
       if (!response.ok) {
-        throw new Error("Could not edit the feed");
+        throw await apiError(response);
       }
     },
     onSuccess: () => refreshAfterFeed(queryClient),
@@ -124,12 +128,13 @@ export function useAddLeftover(id: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "leftover" },
     mutationFn: async (
       json: InferRequestType<(typeof feeds)[":id"]["leftover"]["$put"]>["json"],
     ) => {
       const response = await feeds[":id"].leftover.$put({ param: { id: String(id) }, json });
       if (!response.ok) {
-        throw new Error("Could not save the leftover");
+        throw await apiError(response);
       }
     },
     onSuccess: () => refreshAfterFeed(queryClient),
@@ -140,10 +145,11 @@ export function useRestoreFeed() {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "restoreFeed" },
     mutationFn: async (json: InferRequestType<typeof feeds.restore.$post>["json"]) => {
       const response = await feeds.restore.$post({ json });
       if (!response.ok) {
-        throw new Error("Could not restore the feed");
+        throw await apiError(response);
       }
     },
     onSuccess: () => refreshAfterFeed(queryClient),

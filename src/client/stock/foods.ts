@@ -3,6 +3,7 @@ import type { i18n as I18n, TFunction } from "i18next";
 import type { InferRequestType, InferResponseType } from "hono/client";
 import { stockParts } from "../../shared/stock.js";
 import { api } from "../api.js";
+import { apiError } from "../lib/apiError.js";
 
 const foods = api.api.foods;
 
@@ -69,6 +70,7 @@ export function useSaveFood(id: number | undefined) {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "food" },
     mutationFn: async ({
       body,
       keepStock,
@@ -88,7 +90,7 @@ export function useSaveFood(id: number | undefined) {
               json: keepStock ? { ...rest, kcalBackfill } : { ...rest, stockG, kcalBackfill },
             });
       if (!response.ok) {
-        throw new Error("Could not save the food");
+        throw await apiError(response);
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["foods"] }),
@@ -99,13 +101,14 @@ export function useRestock(id: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: "restock" },
     mutationFn: async (addG: number) => {
       const response = await foods[":id"].restock.$post({
         param: { id: String(id) },
         json: { addG },
       });
       if (!response.ok) {
-        throw new Error("Could not restock the food");
+        throw await apiError(response);
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["foods"] }),
@@ -117,10 +120,11 @@ export function useSetFoodArchived(action: "archive" | "restore") {
   const queryClient = useQueryClient();
 
   return useMutation({
+    meta: { failed: action === "archive" ? "archiveFood" : "restoreFood" },
     mutationFn: async (id: number) => {
       const response = await foods[":id"][action].$post({ param: { id: String(id) } });
       if (!response.ok) {
-        throw new Error(`Could not ${action} the food`);
+        throw await apiError(response);
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["foods"] }),
