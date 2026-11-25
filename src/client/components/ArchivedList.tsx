@@ -40,12 +40,12 @@ export function ArchivedList({ hint, items, restoring, onRestore }: ArchivedList
             </span>
             <button
               type="button"
-              aria-label={t("pets.restoreNamed", { name: item.name })}
+              aria-label={t("action.restoreNamed", { name: item.name })}
               className={`${button.outline} flex-none`}
               disabled={restoring}
               onClick={() => onRestore(item.id)}
             >
-              {t("pets.restore")}
+              {t("action.restore")}
             </button>
           </div>
         ))}

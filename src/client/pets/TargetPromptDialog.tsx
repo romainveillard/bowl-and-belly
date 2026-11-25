@@ -95,7 +95,7 @@ export function TargetPromptDialog({
             <span className="font-display text-2xl font-semibold tabular-nums">
               {prompt.currentKcal}
             </span>
-            <span className="text-[13px] text-muted-foreground">{t("feed.kcal")}</span>
+            <span className="text-[13px] text-muted-foreground">{t("common.kcal")}</span>
           </span>
         </div>
         <div className="flex flex-1 flex-col gap-0.5 rounded-[10px] bg-accent-soft p-3">
@@ -104,7 +104,7 @@ export function TargetPromptDialog({
             <span className="font-display text-2xl font-semibold tabular-nums">
               {prompt.suggestedKcal}
             </span>
-            <span className="text-[13px] text-muted-foreground">{t("feed.kcal")}</span>
+            <span className="text-[13px] text-muted-foreground">{t("common.kcal")}</span>
           </span>
         </div>
       </div>

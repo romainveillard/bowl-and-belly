@@ -25,7 +25,7 @@ export function CaloriesCard({
           {eatenKcal}
         </span>
         <span className="text-base text-muted-foreground desktop:text-heading">
-          {targetKcal === null ? t("pets.kcal") : t("pets.ofTarget", { target: targetKcal })}
+          {targetKcal === null ? t("common.kcal") : t("common.ofTarget", { target: targetKcal })}
         </span>
       </span>
       {targetKcal !== null && (

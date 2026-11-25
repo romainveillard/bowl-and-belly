@@ -11,7 +11,13 @@
   },
   "action": {
     "close": "Close",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "restore": "Restore",
+    "restoreNamed": "Restore {name}"
+  },
+  "common": {
+    "kcal": "kcal",
+    "ofTarget": "/ {target} kcal"
   },
   "petType": {
     "cat": "Cat",
@@ -27,8 +33,6 @@
     "editShort": "Edit",
     "back": "Back to pets",
     "today": "Today",
-    "ofTarget": "/ {target} kcal",
-    "kcal": "kcal",
     "progress": "{percent}% of today’s target",
     "neutered": "neutered",
     "intact": "not neutered",
@@ -52,9 +56,7 @@
     "archivedLink": "Archived pets ({count})",
     "archivedTitle": "Archived pets",
     "archivedHint": "History is kept. Restore a pet to log for them again.",
-    "archivedRow": "{type} · archived {date}",
-    "restore": "Restore",
-    "restoreNamed": "Restore {name}"
+    "archivedRow": "{type} · archived {date}"
   },
   "target": {
     "title": "Daily target",
@@ -406,7 +408,6 @@
   "feed": {
     "detail": "{time} · {served} g",
     "detailLeft": "{time} · {served} g · {left} g left",
-    "kcal": "kcal",
     "logFeed": "Log feed",
     "feeds": "{count, plural, one {# feed} other {# feeds}}",
     "kcalLeft": "{kcal} kcal left",

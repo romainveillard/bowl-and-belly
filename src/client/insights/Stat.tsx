@@ -55,7 +55,7 @@ export function TargetStat({
       className="hidden desktop:flex"
       label={t("insights.target")}
       value={kcal ?? "–"}
-      unit={t("feed.kcal")}
+      unit={t("common.kcal")}
       note={basis && t(`insights.basis.${basis.kind === "formula" ? basis.row : basis.kind}`)}
     />
   );
@@ -74,7 +74,7 @@ export function AverageStat({
     <Stat
       label={t("insights.dailyAverage")}
       value={averageKcal ?? "–"}
-      unit={t("feed.kcal")}
+      unit={t("common.kcal")}
       note={
         <>
           <span className="desktop:hidden">

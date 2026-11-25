@@ -72,7 +72,7 @@ export function DayInsights({ petId, today, onPeriod }: PeriodViewProps) {
         <Stat
           label={t("insights.eaten")}
           value={eatenKcal}
-          unit={t("feed.kcal")}
+          unit={t("common.kcal")}
           note={eatenNote}
         />
         <TargetStat pet={pet} row={targetRow} kcal={targetKcal} />
@@ -81,7 +81,7 @@ export function DayInsights({ petId, today, onPeriod }: PeriodViewProps) {
           value={entries.length}
           note={
             <>
-              <span className="desktop:hidden">{split && `${split} ${t("feed.kcal")}`}</span>
+              <span className="desktop:hidden">{split && `${split} ${t("common.kcal")}`}</span>
               <span className="hidden desktop:inline">
                 {lastFeed &&
                   t("insights.lastAt", {
@@ -95,7 +95,7 @@ export function DayInsights({ petId, today, onPeriod }: PeriodViewProps) {
           className="hidden desktop:flex"
           label={t("insights.wetDry")}
           value={byType.length === 0 ? "–" : byType.map((total) => total.kcal).join(" / ")}
-          unit={t("feed.kcal")}
+          unit={t("common.kcal")}
           note={byType.map((total) => `${total.eatenG} g`).join(" / ")}
         />
       </div>

@@ -80,8 +80,8 @@ function DayCard({
             <span className="font-display text-title font-semibold">{summary.eatenKcal}</span>
             <span className="text-[13px] text-muted-foreground">
               {summary.targetKcal === null
-                ? t("pets.kcal")
-                : t("pets.ofTarget", { target: summary.targetKcal })}
+                ? t("common.kcal")
+                : t("common.ofTarget", { target: summary.targetKcal })}
             </span>
           </span>
           {status === "soFar" && <Badge tone="neutral">{t("history.soFar")}</Badge>}
@@ -113,7 +113,7 @@ function DayCard({
                 </span>
                 <span className="flex flex-col tabular-nums">
                   <span className="text-sm font-semibold">
-                    {total.kcal} {t("feed.kcal")}
+                    {total.kcal} {t("common.kcal")}
                   </span>
                   <span className="text-caption text-muted-foreground">
                     {t("history.byType", {

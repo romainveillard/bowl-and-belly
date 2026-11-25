@@ -140,7 +140,7 @@ export function TypesScreen({ kind }: { kind: TypeKind }) {
                 </span>
                 <button
                   type="button"
-                  aria-label={t("pets.restoreNamed", { name: row.label })}
+                  aria-label={t("action.restoreNamed", { name: row.label })}
                   className={`${button.outline} flex-none`}
                   disabled={restore.isPending}
                   onClick={() =>
@@ -151,7 +151,7 @@ export function TypesScreen({ kind }: { kind: TypeKind }) {
                     })
                   }
                 >
-                  {t("pets.restore")}
+                  {t("action.restore")}
                 </button>
               </div>
             ))}

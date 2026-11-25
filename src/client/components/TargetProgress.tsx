@@ -18,7 +18,7 @@ export function TargetProgress({ eatenKcal, targetKcal, onAccent = false }: Targ
         <span>{t("pets.today")}</span>
         <span>
           <span className="font-semibold text-foreground">{eatenKcal}</span>{" "}
-          {targetKcal === null ? t("pets.kcal") : t("pets.ofTarget", { target: targetKcal })}
+          {targetKcal === null ? t("common.kcal") : t("common.ofTarget", { target: targetKcal })}
         </span>
       </span>
       {targetKcal !== null && (

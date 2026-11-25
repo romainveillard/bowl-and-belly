@@ -120,7 +120,7 @@ export function FeedRow({
         </span>
         <span className="flex flex-none items-baseline gap-[3px] tabular-nums desktop:w-[76px] desktop:justify-end">
           <span className="text-base font-semibold">{entry.kcal}</span>
-          <span className="text-[13px] text-muted-foreground">{t("feed.kcal")}</span>
+          <span className="text-[13px] text-muted-foreground">{t("common.kcal")}</span>
         </span>
       </button>
       <RowHoverActions
