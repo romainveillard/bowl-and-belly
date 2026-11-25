@@ -1,6 +1,6 @@
 import i18n from "i18next";
 import { describe, expect, it } from "vitest";
-import { barDetailLines, placeBarDetails, type ChartDay } from "./BarDetails.js";
+import { barDetailLines, placeDetails, type ChartDay } from "./ChartDetails.js";
 
 const today = "2026-11-25";
 const tuesday: ChartDay = {
@@ -40,14 +40,14 @@ describe("barDetailLines", () => {
   });
 });
 
-describe("placeBarDetails", () => {
+describe("placeDetails", () => {
   it("opens on the side with more room, no wider than that room", () => {
-    expect(placeBarDetails({ day: "", x: 52, y: 38, width: 30 }, 314, 176)).toMatchObject({
+    expect(placeDetails({ x: 52, y: 38, width: 30 }, 314, 176)).toMatchObject({
       side: "right",
       offset: 94,
       maxWidth: 220,
     });
-    expect(placeBarDetails({ day: "", x: 268, y: 60, width: 30 }, 314, 176)).toMatchObject({
+    expect(placeDetails({ x: 268, y: 60, width: 30 }, 314, 176)).toMatchObject({
       side: "left",
       offset: 58,
       maxWidth: 256,
@@ -55,11 +55,11 @@ describe("placeBarDetails", () => {
   });
 
   it("stays inside the chart top to bottom, pointing at the bar's top", () => {
-    expect(placeBarDetails({ day: "", x: 10, y: 20, width: 30 }, 314, 176)).toMatchObject({
+    expect(placeDetails({ x: 10, y: 20, width: 30 }, 314, 176)).toMatchObject({
       top: 0,
       arrowTop: 20,
     });
-    expect(placeBarDetails({ day: "", x: 10, y: 170, width: 30 }, 314, 176)).toMatchObject({
+    expect(placeDetails({ x: 10, y: 170, width: 30 }, 314, 176)).toMatchObject({
       top: 104,
       arrowTop: 62,
     });

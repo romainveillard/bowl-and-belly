@@ -1,4 +1,5 @@
 import type { TFunction } from "i18next";
+import { useEffect, useState } from "react";
 import type { DayIntake } from "../../../shared/insights.js";
 import { isOnTarget, isOverTarget } from "../../lib/dayStatus.js";
 import { formatAppDay } from "../../lib/format.js";
@@ -9,35 +10,57 @@ export interface ChartDay extends DayIntake {
   byType: { type: { systemKey: "wet" | "dry" | null; name: string | null }; kcal: number }[];
 }
 
-/** The chosen bar, where the chart drew it. */
-export interface ChosenBar {
-  day: string;
+/** The chosen bar or point, where the chart drew it: a point has no width. */
+export interface ChosenMark {
+  key: string;
   x: number;
   y: number;
   width: number;
 }
 
 const GAP = 12;
-/** About the box's height with its three lines, to keep it inside the chart. */
-const BOX_HEIGHT = 72;
 
 /**
- * Where a bar's details go: beside it on the side with more room, never wider
- * than that room, and inside the chart top to bottom, with the arrow at the
- * bar's top.
+ * Where a mark's details go: beside it on the side with more room, never wider
+ * than that room, and inside the chart top to bottom where it is tall enough,
+ * with the arrow at the mark's top.
  */
-export function placeBarDetails(bar: ChosenBar, chartWidth: number, chartHeight: number) {
-  const onRight = bar.x + bar.width / 2 <= chartWidth / 2;
-  const room = onRight ? chartWidth - (bar.x + bar.width) - GAP : bar.x - GAP;
-  const top = Math.max(0, Math.min(bar.y - BOX_HEIGHT / 2, chartHeight - BOX_HEIGHT));
+export function placeDetails(
+  mark: Omit<ChosenMark, "key">,
+  chartWidth: number,
+  chartHeight: number,
+  /** About the box's height, three lines unless told otherwise. */
+  boxHeight = 72,
+) {
+  const onRight = mark.x + mark.width / 2 <= chartWidth / 2;
+  const room = onRight ? chartWidth - (mark.x + mark.width) - GAP : mark.x - GAP;
+  const top = Math.max(0, Math.min(mark.y - boxHeight / 2, chartHeight - boxHeight));
   return {
     side: onRight ? ("right" as const) : ("left" as const),
-    // From the chart's left edge, or its right edge for a box on the bar's left.
-    offset: onRight ? bar.x + bar.width + GAP : chartWidth - bar.x + GAP,
+    // From the chart's left edge, or its right edge for a box on the mark's left.
+    offset: onRight ? mark.x + mark.width + GAP : chartWidth - mark.x + GAP,
     maxWidth: Math.max(room, 0),
     top,
-    arrowTop: Math.max(10, Math.min(bar.y - top, BOX_HEIGHT - 10)),
+    arrowTop: Math.max(10, Math.min(mark.y - top, boxHeight - 10)),
   };
+}
+
+/**
+ * The mark whose details are open. Hovering or tapping one opens them; a tap
+ * anywhere closes them, and a tap on a mark opens them again, on it, as the
+ * mark's click comes after the tap's pointerdown.
+ */
+export function useChosenMark() {
+  const [chosen, setChosen] = useState<(ChosenMark & { chartWidth: number }) | null>(null);
+  useEffect(() => {
+    if (!chosen) {
+      return undefined;
+    }
+    const close = () => setChosen(null);
+    document.addEventListener("pointerdown", close);
+    return () => document.removeEventListener("pointerdown", close);
+  }, [chosen]);
+  return [chosen, setChosen] as const;
 }
 
 /** "Tue 17 Nov", "251 / 260 kcal", "On target · Wet 70 · Dry 181". */
@@ -65,13 +88,13 @@ export function barDetailLines(day: ChartDay, today: string, locale: string, t: 
   };
 }
 
-/** The navy box beside a chosen bar. Pointer only: screen readers have the chart's table. */
-export function BarDetails({
+/** The navy box beside a chosen mark. Pointer only: screen readers have the chart's table. */
+export function ChartDetails({
   lines,
   place,
 }: {
-  lines: ReturnType<typeof barDetailLines>;
-  place: ReturnType<typeof placeBarDetails>;
+  lines: { date: string; value: string; note?: string };
+  place: ReturnType<typeof placeDetails>;
 }) {
   return (
     <div
@@ -88,7 +111,7 @@ export function BarDetails({
       />
       <span className="text-caption font-semibold text-inverse-muted">{lines.date}</span>
       <span className="text-sm font-semibold tabular-nums">{lines.value}</span>
-      <span className="text-caption tabular-nums">{lines.note}</span>
+      {lines.note && <span className="text-caption tabular-nums">{lines.note}</span>}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Bar,
@@ -13,12 +13,12 @@ import {
 import { isOverTarget } from "../../lib/dayStatus.js";
 import { formatAppDay } from "../../lib/format.js";
 import {
-  BarDetails,
+  ChartDetails,
   barDetailLines,
-  placeBarDetails,
+  placeDetails,
+  useChosenMark,
   type ChartDay,
-  type ChosenBar,
-} from "./BarDetails.js";
+} from "./ChartDetails.js";
 import { ChartTable } from "./ChartTable.js";
 import { markColour } from "./colours.js";
 import { LegendItem } from "./Legend.js";
@@ -69,17 +69,7 @@ export function IntakeChart({
 }) {
   const { t, i18n } = useTranslation();
   const box = useRef<HTMLDivElement>(null);
-  const [chosen, setChosen] = useState<(ChosenBar & { chartWidth: number }) | null>(null);
-
-  // A tap anywhere closes the details; a tap on a bar opens them again, on it.
-  useEffect(() => {
-    if (!chosen) {
-      return undefined;
-    }
-    const close = () => setChosen(null);
-    document.addEventListener("pointerdown", close);
-    return () => document.removeEventListener("pointerdown", close);
-  }, [chosen]);
+  const [chosen, setChosen] = useChosenMark();
 
   const top = Math.max(...days.map((day) => Math.max(day.eatenKcal, day.targetKcal ?? 0)), 1);
   // Days still to come show as short grey stubs, so the month keeps its shape.
@@ -103,10 +93,10 @@ export function IntakeChart({
   const choose = (bar: { x: number; y: number; width: number }, index: number) => {
     const day = data[index];
     if (day && day.day <= today) {
-      setChosen({ day: day.day, ...bar, chartWidth: box.current?.clientWidth ?? 0 });
+      setChosen({ key: day.day, ...bar, chartWidth: box.current?.clientWidth ?? 0 });
     }
   };
-  const chosenDay = chosen && data.find((day) => day.day === chosen.day);
+  const chosenDay = chosen && data.find((day) => day.day === chosen.key);
   const kcal = (value: number | null) =>
     value === null ? t("common.noValue") : t("insights.kcalValue", { kcal: value });
 
@@ -161,13 +151,13 @@ export function IntakeChart({
                   key={day.day}
                   // An outline lifts pale bars to 3:1 against the card.
                   stroke={
-                    day.day === chosen?.day
+                    day.day === chosen?.key
                       ? colours.ink
                       : day.day > today
                         ? "none"
                         : markColour("barOutline")
                   }
-                  strokeWidth={day.day === chosen?.day ? 2 : 1}
+                  strokeWidth={day.day === chosen?.key ? 2 : 1}
                   fill={
                     day.day > today
                       ? colours.axis
@@ -211,9 +201,9 @@ export function IntakeChart({
           </ComposedChart>
         </ResponsiveContainer>
         {chosen && chosenDay && (
-          <BarDetails
+          <ChartDetails
             lines={barDetailLines(chosenDay, today, i18n.language, t)}
-            place={placeBarDetails(chosen, chosen.chartWidth, height)}
+            place={placeDetails(chosen, chosen.chartWidth, height)}
           />
         )}
       </div>
