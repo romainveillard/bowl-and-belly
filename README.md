@@ -18,27 +18,13 @@ Bowl & Belly is a small self-hosted app for keeping track of what your pets eat 
 
 ## Running it
 
-Images for amd64 and arm64 are published to the GitHub Container Registry.
+Images for amd64 and arm64 are published to the GitHub Container Registry. The quickest way to run one is the [`compose.yaml`](compose.yaml) in this repository:
 
-```yaml
-# compose.yaml
-services:
-  bowl-and-belly:
-    image: ghcr.io/romainveillard/bowl-and-belly:latest
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      TZ: Europe/London
-      BOWL_PASSWORD: ${BOWL_PASSWORD:?Set BOWL_PASSWORD in .env}
-    volumes:
-      - data:/data
+1. Download [`compose.yaml`](https://raw.githubusercontent.com/romainveillard/bowl-and-belly/main/compose.yaml) into an empty folder.
+2. Next to it, create a `.env` file with the password, at least 12 characters: `BOWL_PASSWORD=…`
+3. Run `docker compose up -d` (or `podman compose up -d`) and open http://localhost:3000.
 
-volumes:
-  data:
-```
-
-Put the password in a `.env` file next to `compose.yaml` (`BOWL_PASSWORD=` followed by at least 12 characters), then run `docker compose up -d` (or `podman compose up -d`) and open http://localhost:3000.
+The file has the options for running behind a tunnel or Cloudflare commented in; the variables below go in its `environment:` section.
 
 | Variable | Default | What it does |
 | --- | --- | --- |

@@ -1,0 +1,28 @@
+# Runs a released image of Bowl & Belly. For working on the app itself, use
+# `npm run dev` instead (see CONTRIBUTING.md).
+#
+# Put the password in a .env file next to this one:
+#   BOWL_PASSWORD=at-least-12-characters
+# then run `docker compose up -d` (or `podman compose up -d`).
+
+services:
+  bowl-and-belly:
+    image: ghcr.io/romainveillard/bowl-and-belly:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+      # Behind a tunnel or reverse proxy on this machine, publish on loopback
+      # only, so nothing reaches the app without going through it:
+      # - "127.0.0.1:3000:3000"
+    environment:
+      # The time zone the app starts with; Settings can change it later.
+      TZ: Europe/London
+      BOWL_PASSWORD: ${BOWL_PASSWORD:?Set BOWL_PASSWORD in .env, at least 12 characters}
+      # Behind Cloudflare, so login attempts are limited per visitor:
+      # BOWL_TRUST_PROXY: cloudflare
+    volumes:
+      # The database, backups and login secret.
+      - data:/data
+
+volumes:
+  data:
