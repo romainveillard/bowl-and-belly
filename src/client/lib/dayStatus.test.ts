@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { dayStatus, isOverTarget } from "./dayStatus.js";
+import { dayStatus, isOverTarget, onTargetDays } from "./dayStatus.js";
 
 const today = "2026-11-22";
 
@@ -30,4 +30,26 @@ it("counts a day as over target only beyond the on-target band", () => {
   expect(isOverTarget(273, 260)).toBe(false);
   expect(isOverTarget(274, 260)).toBe(true);
   expect(isOverTarget(500, null)).toBe(false);
+});
+
+const day = (date: string, eatenKcal: number, fed = true, targetKcal: number | null = 260) => ({
+  day: date,
+  eatenKcal,
+  targetKcal,
+  fed,
+});
+
+it("counts only finished days with feeds and a target, today left out", () => {
+  expect(
+    onTargetDays(
+      [
+        day("2026-11-18", 255),
+        day("2026-11-19", 300),
+        day("2026-11-20", 0, false),
+        day("2026-11-21", 250, true, null),
+        day(today, 255),
+      ],
+      today,
+    ),
+  ).toEqual({ counted: 2, onTarget: 1 });
 });

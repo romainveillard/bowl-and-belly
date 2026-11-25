@@ -4,7 +4,7 @@ import { NoValue } from "../components/Figures.js";
 import { addDays, appDayOf } from "../../shared/app-day.js";
 import { periodIntake, rollingAverage } from "../../shared/insights.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
-import { dayStatus } from "../lib/dayStatus.js";
+import { onTargetDays } from "../lib/dayStatus.js";
 import { formatAppDay, formatInstantDay, formatKg } from "../lib/format.js";
 import { targetOn, usePet } from "../pets/pets.js";
 import { weightTrend } from "./weightTrend.js";
@@ -42,10 +42,7 @@ export function MonthInsights({ petId, today, from }: PeriodViewProps) {
   }
 
   const [intake] = periodIntake(data.days, "month", data.today);
-  const counted = data.days.filter(
-    (day) => day.fed && day.day < data.today && day.targetKcal !== null,
-  );
-  const onTarget = counted.filter((day) => dayStatus(day, data.today) === "onTarget");
+  const { counted, onTarget } = onTargetDays(data.days, data.today);
   const lastDay = isCurrentMonth ? data.today : end;
   const targetRow = targetOn(pet, lastDay);
   const inMonth = rollingAverage(data.weights).filter((reading) => {
@@ -61,8 +58,8 @@ export function MonthInsights({ petId, today, from }: PeriodViewProps) {
         <TargetStat pet={pet} row={targetRow} />
         <Stat
           label={t("insights.onTarget")}
-          value={counted.length === 0 ? <NoValue /> : onTarget.length}
-          unit={t("insights.ofDays", { count: counted.length })}
+          value={counted === 0 ? <NoValue /> : onTarget}
+          unit={t("insights.ofDays", { count: counted })}
           note={t("insights.within")}
         />
         <Stat
