@@ -1,36 +1,18 @@
-import { and, desc, eq, isNull, lte, or } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { instantAt, latestAt } from "../../shared/app-day.js";
 import { db } from "../db/client.js";
-import { feedEntry, food, foodType, pet } from "../db/schema.js";
+import { feedEntry } from "../db/schema.js";
 import { hasFeedsBefore, daySummaries } from "../feeds/days.js";
-import {
-  deleteFeed,
-  editFeed,
-  logFeedWithLeftover,
-  restoreFeed,
-  returnsLeftovers,
-} from "../feeds/entries.js";
+import { deleteFeed, editFeed, logFeedWithLeftover, restoreFeed } from "../feeds/entries.js";
+import { logForm } from "../feeds/logForm.js";
 import { daySettings, today } from "../settings.js";
 import { grams, kcalPerKg, leftoverGrams, validate } from "../validate.js";
 
 const petQuery = z.object({ petId: z.coerce.number().int() });
 const idParam = z.object({ id: z.coerce.number().int() });
 const time = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
-
-/**
- * Only a recent previous feed prompts for a leftover; older bowls are long
- * gone. Foods whose leftovers are binned use Add leftover instead.
- */
-const LEFTOVER_PROMPT_MS = 24 * 60 * 60 * 1000;
-
-const foodTypeLabel = {
-  id: foodType.id,
-  systemKey: foodType.systemKey,
-  name: foodType.name,
-  leftoverReturnsToStock: foodType.leftoverReturnsToStock,
-};
 
 export const feedsRoutes = new Hono()
   .get("/", validate("query", petQuery.extend({ from: z.iso.date(), to: z.iso.date() })), (c) => {
@@ -43,86 +25,8 @@ export const feedsRoutes = new Hono()
     });
   })
   .get("/log-form", validate("query", petQuery), (c) => {
-    const { petId } = c.req.valid("query");
-    const owner = db.select({ petTypeId: pet.petTypeId }).from(pet).where(eq(pet.id, petId)).get();
-    if (!owner) {
-      return c.json({ code: "not_found" as const }, 404);
-    }
-    const foods = db
-      .select({
-        id: food.id,
-        name: food.name,
-        brand: food.brand,
-        photoId: food.photoId,
-        type: foodTypeLabel,
-        kcalPerKg: food.kcalPerKg,
-        portionName: food.portionName,
-        portionG: food.portionG,
-        stockUnit: food.stockUnit,
-        stockG: food.stockG,
-      })
-      .from(food)
-      .innerJoin(foodType, eq(food.foodTypeId, foodType.id))
-      .where(
-        and(
-          isNull(food.archivedAt),
-          or(isNull(food.petTypeId), eq(food.petTypeId, owner.petTypeId)),
-        ),
-      )
-      .orderBy(food.name)
-      .all();
-
-    const now = new Date();
-    const feeds = db
-      .select({
-        id: feedEntry.id,
-        foodId: feedEntry.foodId,
-        fedAt: feedEntry.fedAt,
-        servedG: feedEntry.servedG,
-        leftoverG: feedEntry.leftoverG,
-      })
-      .from(feedEntry)
-      .where(and(eq(feedEntry.petId, petId), lte(feedEntry.fedAt, now)))
-      .orderBy(desc(feedEntry.fedAt), desc(feedEntry.id))
-      .limit(500)
-      .all();
-    const last = new Map<number, (typeof feeds)[number]>();
-    for (const feed of feeds) {
-      if (!last.has(feed.foodId)) {
-        last.set(feed.foodId, feed);
-      }
-    }
-    const recent = foods
-      .filter((row) => last.has(row.id))
-      .toSorted(
-        (a, b) => (last.get(b.id)?.fedAt.getTime() ?? 0) - (last.get(a.id)?.fedAt.getTime() ?? 0),
-      );
-    const others = foods.filter((row) => !last.has(row.id));
-
-    const [previous] = feeds;
-    const previousFood = previous && foods.find((row) => row.id === previous.foodId);
-    const askLeftover =
-      previous !== undefined &&
-      previous.leftoverG === null &&
-      now.getTime() - previous.fedAt.getTime() < LEFTOVER_PROMPT_MS &&
-      returnsLeftovers(db, previous.foodId);
-
-    return c.json({
-      foods: [...recent, ...others].map((row) => ({
-        ...row,
-        lastServedG: last.get(row.id)?.servedG ?? null,
-      })),
-      recentCount: recent.length,
-      previous:
-        askLeftover && previous
-          ? {
-              id: previous.id,
-              fedAt: previous.fedAt,
-              servedG: previous.servedG,
-              foodName: previousFood?.name ?? null,
-            }
-          : null,
-    });
+    const form = logForm(db, c.req.valid("query").petId, new Date());
+    return form ? c.json(form) : c.json({ code: "not_found" as const }, 404);
   })
   .post(
     "/",
