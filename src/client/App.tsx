@@ -14,16 +14,35 @@ import { useDemo } from "./lib/instance.js";
 import { usePets } from "./pets/pets.js";
 import { LoginScreen } from "./access/LoginScreen.js";
 import { SessionExpiredScreen } from "./access/SessionExpiredScreen.js";
-import { ArchivedFoodsScreen } from "./stock/ArchivedFoodsScreen.js";
-import { ArchivedPetsScreen } from "./pets/ArchivedPetsScreen.js";
-import { FoodFormScreen } from "./stock/FoodFormScreen.js";
 import { HistoryScreen } from "./feeds/HistoryScreen.js";
-import { PetFormScreen } from "./pets/PetFormScreen.js";
 import { PetsScreen } from "./pets/PetsScreen.js";
-import { SettingsScreen } from "./settings/SettingsScreen.js";
 import { StockScreen } from "./stock/StockScreen.js";
 import { TodayScreen } from "./feeds/TodayScreen.js";
-import { FoodTypesScreen, PetTypesScreen } from "./settings/TypesScreen.js";
+
+// Forms, Settings and the archives are opened now and then, so they load when first visited.
+const ArchivedFoodsScreen = lazy(() =>
+  import("./stock/ArchivedFoodsScreen.js").then((module) => ({
+    default: module.ArchivedFoodsScreen,
+  })),
+);
+const ArchivedPetsScreen = lazy(() =>
+  import("./pets/ArchivedPetsScreen.js").then((module) => ({ default: module.ArchivedPetsScreen })),
+);
+const FoodFormScreen = lazy(() =>
+  import("./stock/FoodFormScreen.js").then((module) => ({ default: module.FoodFormScreen })),
+);
+const PetFormScreen = lazy(() =>
+  import("./pets/PetFormScreen.js").then((module) => ({ default: module.PetFormScreen })),
+);
+const SettingsScreen = lazy(() =>
+  import("./settings/SettingsScreen.js").then((module) => ({ default: module.SettingsScreen })),
+);
+const PetTypesScreen = lazy(() =>
+  import("./settings/TypesScreen.js").then((module) => ({ default: module.PetTypesScreen })),
+);
+const FoodTypesScreen = lazy(() =>
+  import("./settings/TypesScreen.js").then((module) => ({ default: module.FoodTypesScreen })),
+);
 
 // The charting library only loads with the screen that needs it.
 const InsightsScreen = lazy(() =>
@@ -47,7 +66,9 @@ function Shell({ bottomNav = true }: { bottomNav?: boolean }) {
       <div className="flex-1 desktop:w-full desktop:max-w-[1120px] desktop:px-10 desktop:py-8">
         {demo && <DemoBanner />}
         <main id="main" tabIndex={-1} className="focus:outline-none">
-          <Outlet />
+          <Suspense fallback={null}>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
       {bottomNav && <BottomNav />}
