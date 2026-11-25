@@ -19,30 +19,55 @@ import { PetsScreen } from "./pets/PetsScreen.js";
 import { StockScreen } from "./stock/StockScreen.js";
 import { TodayScreen } from "./feeds/TodayScreen.js";
 
-// Forms, Settings and the archives are opened now and then, so they load when first visited.
+// Forms, Settings and the archives are opened now and then, so they load
+// separately, fetched once the browser is idle so they don't blink on a first visit.
+const later = {
+  archivedFoods: () => import("./stock/ArchivedFoodsScreen.js"),
+  archivedPets: () => import("./pets/ArchivedPetsScreen.js"),
+  foodForm: () => import("./stock/FoodFormScreen.js"),
+  petForm: () => import("./pets/PetFormScreen.js"),
+  settings: () => import("./settings/SettingsScreen.js"),
+  types: () => import("./settings/TypesScreen.js"),
+};
 const ArchivedFoodsScreen = lazy(() =>
-  import("./stock/ArchivedFoodsScreen.js").then((module) => ({
-    default: module.ArchivedFoodsScreen,
-  })),
+  later.archivedFoods().then((module) => ({ default: module.ArchivedFoodsScreen })),
 );
 const ArchivedPetsScreen = lazy(() =>
-  import("./pets/ArchivedPetsScreen.js").then((module) => ({ default: module.ArchivedPetsScreen })),
+  later.archivedPets().then((module) => ({ default: module.ArchivedPetsScreen })),
 );
 const FoodFormScreen = lazy(() =>
-  import("./stock/FoodFormScreen.js").then((module) => ({ default: module.FoodFormScreen })),
+  later.foodForm().then((module) => ({ default: module.FoodFormScreen })),
 );
 const PetFormScreen = lazy(() =>
-  import("./pets/PetFormScreen.js").then((module) => ({ default: module.PetFormScreen })),
+  later.petForm().then((module) => ({ default: module.PetFormScreen })),
 );
 const SettingsScreen = lazy(() =>
-  import("./settings/SettingsScreen.js").then((module) => ({ default: module.SettingsScreen })),
+  later.settings().then((module) => ({ default: module.SettingsScreen })),
 );
 const PetTypesScreen = lazy(() =>
-  import("./settings/TypesScreen.js").then((module) => ({ default: module.PetTypesScreen })),
+  later.types().then((module) => ({ default: module.PetTypesScreen })),
 );
 const FoodTypesScreen = lazy(() =>
-  import("./settings/TypesScreen.js").then((module) => ({ default: module.FoodTypesScreen })),
+  later.types().then((module) => ({ default: module.FoodTypesScreen })),
 );
+
+/** Fetches the screens loaded later, once the first one is up and the browser idle. */
+function usePrefetchLater() {
+  useEffect(() => {
+    const prefetch = () => {
+      for (const load of Object.values(later)) {
+        void load();
+      }
+    };
+    // Safari has no requestIdleCallback.
+    if ("requestIdleCallback" in window) {
+      const id = requestIdleCallback(prefetch);
+      return () => cancelIdleCallback(id);
+    }
+    const timer = setTimeout(prefetch, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+}
 
 // The charting library only loads with the screen that needs it.
 const InsightsScreen = lazy(() =>
@@ -129,6 +154,7 @@ function AccessGate({ children }: { children: ReactNode }) {
 }
 
 export function App() {
+  usePrefetchLater();
   return (
     <>
       <ConnectionNotice />
