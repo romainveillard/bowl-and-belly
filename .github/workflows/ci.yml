@@ -23,6 +23,9 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Nothing here pushes with git, and npm ci runs packages' install scripts.
+          persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
@@ -37,6 +40,15 @@ jobs:
             exit 1
           fi
       - run: npm ci
+      # Tests migrate from the same folder, so they'd run on the old schema and pass.
+      - name: Check the migrations match the schema
+        run: |
+          npm run db:generate
+          if [ -n "$(git status --porcelain drizzle)" ]; then
+            echo "::error::The schema changed without a migration: run npm run db:generate and commit drizzle/."
+            git status --porcelain drizzle
+            exit 1
+          fi
       - run: npm run lint
       - run: npm run format:check
       - run: npm run typecheck
@@ -44,21 +56,33 @@ jobs:
       - run: npm run build
       - run: npm audit --omit=dev --audit-level=high
 
-  # Dockerfile and .dockerignore mistakes show up on the pull request, not on main.
+  # Dockerfile and .dockerignore mistakes show up on the pull request, not on main,
+  # on both architectures: the native modules differ, and arm64 is where it's deployed.
   image:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Nothing here pushes with git, and npm ci runs packages' install scripts.
+          persist-credentials: false
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
-          platforms: linux/amd64
+          platforms: linux/${{ matrix.arch }}
           push: false
           load: true
           tags: bowl-and-belly:check
-          cache-from: type=gha,scope=amd64
+          cache-from: type=gha,scope=${{ matrix.arch }}
       # Runs the image: it answers, sharp turns an upload into WebP, which needs
       # the native build for the image's C library, and its healthcheck reports.
       - name: Try the image
@@ -106,6 +130,9 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Nothing here pushes with git, and npm ci runs packages' install scripts.
+          persist-credentials: false
       - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
         with:
           registry: ghcr.io

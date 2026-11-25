@@ -6,6 +6,12 @@ updates:
     schedule:
       interval: weekly
 
+  # The base image is pinned by digest; this brings its security fixes as PRs.
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+
   # Minor and patch updates land together; a major, outside the group, gets its own PR.
   - package-ecosystem: npm
     directory: /
