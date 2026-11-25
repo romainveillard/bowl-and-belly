@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { ArchivedLink } from "../components/ArchivedLink.js";
 import { FoodTypeBadge, FoodTypeTile } from "../components/FoodTypeMark.js";
+import { FoodTypeChips } from "../components/FoodTypeChips.js";
 import { EmptyState } from "../components/EmptyState.js";
 import { PlusIcon, StockIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
@@ -10,8 +11,8 @@ import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageTitle } from "../components/ui/layout/PageHeader.js";
 import { SearchInput } from "../components/ui/forms/Field.js";
 import {
-  foodTypeLabel,
   isOutOfStock,
+  matchesFood,
   stockLabel,
   useFoods,
   useFoodTypes,
@@ -19,8 +20,6 @@ import {
 } from "../lib/foods.js";
 import { RestockSheet } from "./RestockSheet.js";
 
-const chip =
-  "h-9 cursor-pointer rounded-full border border-border bg-card px-3.5 text-sm font-medium aria-pressed:border-primary-strong aria-pressed:bg-accent-soft aria-pressed:font-semibold";
 const columns = "grid grid-cols-[minmax(0,2.4fr)_90px_140px_150px_132px] gap-4 px-[22px]";
 const columnHeader = "text-caption font-medium tracking-[0.6px] text-muted-foreground uppercase";
 
@@ -70,12 +69,7 @@ export function StockScreen() {
     );
   }
 
-  const wanted = search.trim().toLocaleLowerCase(i18n.language);
-  const foods = data.foods.filter(
-    (food) =>
-      (typeId === null || food.type.id === typeId) &&
-      `${food.name} ${food.brand ?? ""}`.toLocaleLowerCase(i18n.language).includes(wanted),
-  );
+  const foods = data.foods.filter((food) => matchesFood(food, search, typeId, i18n.language));
   const kcalPer100 = (food: FoodSummary) =>
     t("stock.per100", {
       kcal: new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 1 }).format(
@@ -97,31 +91,14 @@ export function StockScreen() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              aria-pressed={typeId === null}
-              className={chip}
-              onClick={() => setTypeId(null)}
-            >
-              {t("stock.all")}
-            </button>
-            {foodTypes
-              .filter(
-                (type) => !type.archived || data.foods.some((food) => food.type.id === type.id),
-              )
-              .map((type) => (
-                <button
-                  key={type.id}
-                  type="button"
-                  aria-pressed={typeId === type.id}
-                  className={chip}
-                  onClick={() => setTypeId(type.id)}
-                >
-                  {foodTypeLabel(type, t)}
-                </button>
-              ))}
-          </div>
+          <FoodTypeChips
+            wrap
+            types={foodTypes.filter(
+              (type) => !type.archived || data.foods.some((food) => food.type.id === type.id),
+            )}
+            selected={typeId}
+            onSelect={setTypeId}
+          />
         </div>
       </header>
 

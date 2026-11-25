@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { PickerFood } from "../lib/feeds.js";
-import { foodTypeLabel, isOutOfStock, stockLeftLabel } from "../lib/foods.js";
+import { isOutOfStock, matchesFood, stockLeftLabel } from "../lib/foods.js";
 import { FoodTypeBadge, FoodTypeTile } from "./FoodTypeMark.js";
+import { FoodTypeChips } from "./FoodTypeChips.js";
 import { FieldError, SearchInput } from "./ui/forms/Field.js";
-
-const chip =
-  "h-9 flex-none cursor-pointer rounded-full border border-border bg-card px-3.5 text-sm font-medium aria-pressed:border-primary-strong aria-pressed:bg-accent-soft aria-pressed:font-semibold";
 
 interface FoodPickerProps {
   /** The search field's id, which a form error focuses. */
@@ -33,13 +31,8 @@ export function FoodPicker({
   const [typeId, setTypeId] = useState<number | null>(null);
 
   const types = [...new Map(foods.map((food) => [food.type.id, food.type])).values()];
-  const wanted = search.trim().toLocaleLowerCase(i18n.language);
-  const shown = foods.filter(
-    (food) =>
-      (typeId === null || food.type.id === typeId) &&
-      `${food.name} ${food.brand ?? ""}`.toLocaleLowerCase(i18n.language).includes(wanted),
-  );
-  const showRecentLabel = recentCount > 0 && wanted === "" && typeId === null;
+  const shown = foods.filter((food) => matchesFood(food, search, typeId, i18n.language));
+  const showRecentLabel = recentCount > 0 && search.trim() === "" && typeId === null;
   const errorId = `${inputId}-error`;
 
   return (
@@ -57,27 +50,7 @@ export function FoodPicker({
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
         />
-        <div className="flex gap-2">
-          <button
-            type="button"
-            aria-pressed={typeId === null}
-            className={chip}
-            onClick={() => setTypeId(null)}
-          >
-            {t("stock.all")}
-          </button>
-          {types.map((type) => (
-            <button
-              key={type.id}
-              type="button"
-              aria-pressed={typeId === type.id}
-              className={chip}
-              onClick={() => setTypeId(type.id)}
-            >
-              {foodTypeLabel(type, t)}
-            </button>
-          ))}
-        </div>
+        <FoodTypeChips types={types} selected={typeId} onSelect={setTypeId} />
       </div>
       {error && <FieldError id={errorId}>{error}</FieldError>}
       {showRecentLabel && (

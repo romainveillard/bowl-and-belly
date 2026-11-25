@@ -127,6 +127,20 @@ export function useSetFoodArchived(action: "archive" | "restore") {
   });
 }
 
+/** Whether a food is of the chosen type, if any, and has `search` in its name or brand. */
+export function matchesFood(
+  food: { name: string; brand: string | null; type: { id: number } },
+  search: string,
+  typeId: number | null,
+  locale: string,
+): boolean {
+  const wanted = search.trim().toLocaleLowerCase(locale);
+  return (
+    (typeId === null || food.type.id === typeId) &&
+    `${food.name} ${food.brand ?? ""}`.toLocaleLowerCase(locale).includes(wanted)
+  );
+}
+
 export function foodTypeLabel(
   type: { systemKey: "wet" | "dry" | null; name: string | null },
   t: TFunction,

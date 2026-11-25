@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router";
 import { kcalPerKg } from "../../shared/stock.js";
 import { CameraIcon, ChevronDownIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
+import { Chip } from "../components/ui/forms/Chip.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { ConfirmDialog } from "../components/ui/overlays/ConfirmDialog.js";
@@ -364,15 +365,13 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
                       className="flex flex-wrap gap-2"
                     >
                       {([...SUGGESTED_PORTIONS, "other"] as const).map((choice) => (
-                        <button
+                        <Chip
                           key={choice}
-                          type="button"
-                          aria-pressed={form.portion === choice}
+                          pressed={form.portion === choice}
                           onClick={() => set("portion", choice)}
-                          className="h-9 cursor-pointer rounded-full border border-border bg-card px-3.5 text-sm font-medium aria-pressed:border-primary-strong aria-pressed:bg-accent-soft aria-pressed:font-semibold"
                         >
                           {t(`portionName.${choice}`)}
-                        </button>
+                        </Chip>
                       ))}
                     </div>
                     {form.portion === "other" && (

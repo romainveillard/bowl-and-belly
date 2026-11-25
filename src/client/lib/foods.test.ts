@@ -3,7 +3,7 @@ import ICU from "i18next-icu";
 import { describe, expect, it } from "vitest";
 import enGB from "../i18n/locales/en-GB.json" with { type: "json" };
 import fr from "../i18n/locales/fr.json" with { type: "json" };
-import { stockLabel } from "./foods.js";
+import { matchesFood, stockLabel } from "./foods.js";
 
 const i18n = i18next.createInstance();
 await i18n.use(ICU).init({
@@ -39,5 +39,20 @@ describe("stockLabel", () => {
 
   it("adds a plain s to a typed portion name", () => {
     expect(stockLabel({ ...pouches, portionName: "Carton", stockG: 255 }, i18n)).toBe("3 cartons");
+  });
+});
+
+describe("matchesFood", () => {
+  const kibbles = { name: "Salmon kibbles", brand: "Purrfect", type: { id: 2 } };
+
+  it("finds a food by its name or brand, whatever the case or the spaces around", () => {
+    expect(matchesFood(kibbles, "  SALMON ", null, "en-GB")).toBe(true);
+    expect(matchesFood(kibbles, "purr", null, "en-GB")).toBe(true);
+    expect(matchesFood(kibbles, "chicken", null, "en-GB")).toBe(false);
+  });
+
+  it("keeps only the chosen type", () => {
+    expect(matchesFood(kibbles, "", 2, "en-GB")).toBe(true);
+    expect(matchesFood(kibbles, "", 1, "en-GB")).toBe(false);
   });
 });
