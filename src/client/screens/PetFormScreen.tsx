@@ -1,13 +1,13 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { ACTIVITY_LEVELS, GOALS } from "../../shared/enums.js";
 import { explainTarget } from "../../shared/target.js";
-import { CameraIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
 import { Select } from "../components/ui/forms/Select.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
+import { PhotoPicker } from "../components/PhotoPicker.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
@@ -19,7 +19,6 @@ import { offeredTypes, optionLabel } from "../lib/types.js";
 import { birthDateOf, initialPetForm, type PetFormState } from "../lib/petForm.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
 import {
-  uploadPhoto,
   usePet,
   usePets,
   usePetTypes,
@@ -48,7 +47,6 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
   const { data: petTypes } = usePetTypes();
   const demo = useDemo();
   const save = useSavePet(pet?.id);
-  const fileInput = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState(() => initialPetForm(pet));
   const showSnackbar = useSnackbar();
   const set = <Key extends keyof PetFormState>(key: Key, value: PetFormState[Key]) =>
@@ -155,39 +153,14 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
           <Card>
             <CardHeading title={t("petForm.details")} />
             {!demo && (
-              <div className="flex items-center gap-3.5 desktop:gap-4">
-                <button
-                  type="button"
-                  onClick={() => fileInput.current?.click()}
-                  className="flex size-[88px] flex-none cursor-pointer flex-col items-center justify-center gap-1.5 overflow-hidden rounded-full border-[1.5px] border-dashed border-outline bg-background text-[13px] font-medium text-muted-foreground desktop:size-24"
-                >
-                  {form.photoId === null ? (
-                    <>
-                      <CameraIcon />
-                      {t("petForm.photo")}
-                    </>
-                  ) : (
-                    <img
-                      src={`/api/images/${form.photoId}`}
-                      alt={t("petForm.photo")}
-                      className="size-full object-cover"
-                    />
-                  )}
-                </button>
-                <input
-                  ref={fileInput}
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  onChange={(event) => {
-                    const photo = event.target.files?.[0];
-                    if (photo) {
-                      void uploadPhoto(photo).then((id) => set("photoId", id));
-                    }
-                  }}
-                />
-                <span className="text-[13px] text-muted-foreground">{t("petForm.photoHint")}</span>
-              </div>
+              <PhotoPicker
+                shape="round"
+                photoId={form.photoId}
+                onChange={(photoId) => set("photoId", photoId)}
+                label={t("petForm.photo")}
+                alt={t("petForm.photo")}
+                hint={t("petForm.photoHint")}
+              />
             )}
             <div className="flex flex-col gap-3.5 desktop:grid desktop:grid-cols-2 desktop:gap-4">
               <Field
