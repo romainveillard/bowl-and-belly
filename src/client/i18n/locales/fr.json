@@ -81,7 +81,7 @@
     "editShort": "Modifier",
     "back": "Retour aux animaux",
     "today": "Aujourd’hui",
-    "progress": "{percent} % de l’objectif du jour",
+    "progress": "{percent} % de l’objectif du jour",
     "neutered": "stérilisé",
     "intact": "non stérilisé",
     "activity": {
@@ -97,7 +97,7 @@
     "emptyTitle": "Ajoutez votre premier animal",
     "emptyBody": "Bowl & Belly calcule un objectif calorique quotidien pour chaque animal, puis suit ce qu’il mange par rapport à cet objectif.",
     "archive": "Archiver l’animal",
-    "archiveTitle": "Archiver {name} ?",
+    "archiveTitle": "Archiver {name} ?",
     "archiveBody": "Ses repas, ses pesées et ses objectifs sont conservés. Il disparaîtra du sélecteur d’animal, et vous pourrez le restaurer à tout moment depuis Animaux archivés, dans l’onglet Animaux.",
     "archiveBodyDesktop": "Ses repas, ses pesées et ses objectifs sont conservés. Il disparaîtra du sélecteur d’animal, et vous pourrez le restaurer à tout moment depuis Animaux archivés.",
     "archiveConfirm": "Archiver",
@@ -113,7 +113,7 @@
     "setOwn": "Définir mon propre objectif",
     "setOwnHint": "Pour une recommandation du vétérinaire ou un régime particulier.",
     "calculatedSince": "Calculé {since}.",
-    "calculatedSinceHow": "Calculé {since} : besoins au repos de {resting} kcal × {factor} pour {profile}.",
+    "calculatedSinceHow": "Calculé {since} : besoins au repos de {resting} kcal × {factor} pour {profile}.",
     "manualSince": "Défini par vous {since}.",
     "none": "Pas encore d’objectif quotidien.",
     "profile": {
@@ -183,7 +183,7 @@
     "year": "Année",
     "birthYear": "Année de naissance",
     "years": "ans",
-    "ageHint": "Enregistré comme une estimation, affiché « environ {age} ».",
+    "ageHint": "Enregistré comme une estimation, affiché « environ {age} ».",
     "health": "Santé et objectif",
     "healthHint": "Sert à calculer l’objectif quotidien.",
     "neutered": "Stérilisé",
@@ -222,7 +222,7 @@
     "sinceToday": "depuis aujourd’hui"
   },
   "form": {
-    "thingsToFix": "{count, plural, one {# point à corriger avant d’enregistrer :} other {# points à corriger avant d’enregistrer :}}"
+    "thingsToFix": "{count, plural, one {# point à corriger avant d’enregistrer :} other {# points à corriger avant d’enregistrer :}}"
   },
   "today": {
     "settings": "Réglages",
@@ -232,7 +232,7 @@
     "gettingStarted": "Pour commencer",
     "stepPet": "Ajouter votre animal",
     "stepFood": "Ajouter un aliment",
-    "stepDone": "Fait :",
+    "stepDone": "Fait :",
     "caloriesToday": "Calories du jour",
     "caloriesLabel": "Calories du jour",
     "noFeeds": "Aucun repas aujourd’hui pour l’instant",
@@ -342,7 +342,7 @@
     "save": "Enregistrer l’aliment",
     "saveChanges": "Enregistrer les modifications",
     "archive": "Archiver l’aliment",
-    "archiveTitle": "Archiver {name} ?",
+    "archiveTitle": "Archiver {name} ?",
     "archiveBody": "Ses repas passés sont conservés. Il disparaîtra du choix des aliments et du stock, et vous pourrez le restaurer depuis Aliments archivés.",
     "archiveConfirm": "Archiver",
     "errors": {
@@ -362,7 +362,7 @@
     "stockHintEdit": "Corrigez le compte ici s’il est faux. Utilisez Réapprovisionner quand vous en rachetez."
   },
   "kcalUpdate": {
-    "title": "Mettre à jour les repas passés ?",
+    "title": "Mettre à jour les repas passés ?",
     "body": "{name} est passé de {from} à {to} kcal pour {unit}.",
     "legend": "Quels repas mettre à jour",
     "all": "Tous les repas passés",
@@ -387,7 +387,7 @@
     "soFar": "En cours",
     "onTarget": "Objectif atteint",
     "byType": "{type} · {grams} g",
-    "progress": "{percent} % de l’objectif",
+    "progress": "{percent} % de l’objectif",
     "noFeedsTitle": "Pas encore de repas",
     "noFeedsBody": "Chaque repas noté pour {name} apparaîtra ici, jour après jour."
   },
@@ -407,7 +407,7 @@
     "noTarget": "Pas d’objectif",
     "onOrUnder": "Objectif respecté",
     "ofDays": "{count, plural, one {sur # jour} other {sur # jours}}",
-    "wentOver": "{days} : dépassement",
+    "wentOver": "{days} : dépassement",
     "noneOver": "Aucun dépassement",
     "weight": "Poids",
     "lastWeighed": "Dernière pesée le {date}",
@@ -453,7 +453,7 @@
     "dayLabel": "Calories au fil du {date}, {kcal} kcal",
     "feedList": "Repas",
     "onTarget": "Objectif atteint",
-    "within": "À 5 % près de l’objectif",
+    "within": "À 5 % près de l’objectif",
     "oneBarPerDay": "Une barre par jour",
     "monthLabel": "Calories par jour, {month}",
     "weighIns": "{count, plural, one {# pesée ce mois-ci} other {# pesées ce mois-ci}}",
@@ -467,7 +467,7 @@
     "kgValue": "{weight} kg"
   },
   "petChip": {
-    "label": "Animal : {name}. Changer d’animal",
+    "label": "Animal : {name}. Changer d’animal",
     "switchTitle": "Changer d’animal",
     "pets": "Animaux",
     "option": "{type} · {eaten} / {target} kcal aujourd’hui",
@@ -490,10 +490,10 @@
     "addLeftoverHint": "Ce qui restait dans la gamelle",
     "logAgain": "Noter à nouveau",
     "logAgainHint": "Même aliment et quantité, à l’heure actuelle",
-    "logAgainNamed": "Noter à nouveau : {name}",
+    "logAgainNamed": "Noter à nouveau : {name}",
     "delete": "Supprimer",
     "deleteHint": "Vous pouvez annuler pendant quelques secondes",
-    "deleteNamed": "Supprimer : {name}",
+    "deleteNamed": "Supprimer : {name}",
     "deleted": "Repas supprimé",
     "deletedDetail": "{time} · {name} · {served} g",
     "undo": "Annuler",
@@ -501,7 +501,7 @@
   },
   "logFeed": {
     "title": "Noter un repas",
-    "leftoverQuestion": "Un reste de {time} ?",
+    "leftoverQuestion": "Un reste de {time} ?",
     "leftoverFood": "{name} · {served} g",
     "food": "Aliment",
     "search": "Rechercher un aliment",
@@ -548,7 +548,7 @@
     "title": "Ajouter un reste",
     "subtitle": "{name} · {time} · {served} g servis",
     "leftOver": "Reste",
-    "fate": "Qu’est-il devenu ?",
+    "fate": "Qu’est-il devenu ?",
     "back": "Remis en stock",
     "binned": "Jeté",
     "eaten": "Mangé",
@@ -570,7 +570,7 @@
     "today": "Aujourd’hui",
     "save": "Enregistrer le poids",
     "button": "Noter le poids",
-    "bigChange": "C’est un grand écart par rapport à {previous} kg. {weight} kg, c’est bien ça ?",
+    "bigChange": "C’est un grand écart par rapport à {previous} kg. {weight} kg, c’est bien ça ?",
     "errors": {
       "weight": "Saisissez un poids supérieur à 0 kg",
       "date": "Choisissez aujourd’hui ou un jour passé"
@@ -585,15 +585,15 @@
     "subtitle": "{name} · {date} · {weight} kg",
     "edit": "Modifier",
     "editHint": "Poids ou date",
-    "editNamed": "Modifier la pesée : {date}",
+    "editNamed": "Modifier la pesée : {date}",
     "delete": "Supprimer",
     "deleteHint": "Vous pouvez annuler pendant quelques secondes",
-    "deleteNamed": "Supprimer la pesée : {date}",
+    "deleteNamed": "Supprimer la pesée : {date}",
     "deleted": "Pesée supprimée",
     "deletedDetail": "{date} · {weight} kg"
   },
   "targetPrompt": {
-    "title": "Mettre à jour l’objectif quotidien ?",
+    "title": "Mettre à jour l’objectif quotidien ?",
     "weight": "{name} pèse maintenant {weight} kg (contre {previous} kg), l’objectif suggéré a donc changé.",
     "weightNoPrevious": "{name} pèse maintenant {weight} kg, l’objectif suggéré a donc changé.",
     "age4": "{name} a maintenant 4 mois, l’objectif suggéré a donc changé.",
@@ -630,7 +630,7 @@
       "last": "Dernière sauvegarde {when}.",
       "first": "Aucune sauvegarde pour l’instant. La première aura lieu {when}.",
       "failed": "La dernière sauvegarde a échoué",
-      "failedDetail": "({date}, {time}) : {reason}.",
+      "failedDetail": "({date}, {time}) : {reason}.",
       "retry": "Nouvel essai à la prochaine heure prévue.",
       "errors": {
         "disk_full": "espace disque insuffisant",
@@ -668,7 +668,7 @@
     "binned": "Jetés",
     "leftoversHint": "Le choix par défaut quand vous notez un reste. Vous pouvez le changer à chaque fois.",
     "archive": "Archiver le type",
-    "archiveTitle": "Archiver {name} ?",
+    "archiveTitle": "Archiver {name} ?",
     "food": {
       "title": "Types de nourriture",
       "hint": "Les types de nourriture filtrent le choix des aliments et décident du sort des restes.",
@@ -689,7 +689,7 @@
       "addTitle": "Nouveau type d’animal",
       "editTitle": "Modifier le type d’animal",
       "save": "Enregistrer le type",
-      "noFormula": "Il n’y a pas de formule de calories pour vos propres types : les animaux de ce type utilisent un objectif quotidien que vous fixez, par exemple avec votre vétérinaire.",
+      "noFormula": "Il n’y a pas de formule de calories pour vos propres types : les animaux de ce type utilisent un objectif quotidien que vous fixez, par exemple avec votre vétérinaire.",
       "archiveBody": "{name} ne sera plus proposé pour les nouveaux animaux. Les animaux qui l’utilisent le gardent, et vous pourrez le restaurer plus tard."
     },
     "showArchived": "Afficher les archivés",
@@ -700,7 +700,7 @@
   "login": {
     "password": "Mot de passe",
     "submit": "Se connecter",
-    "forgotten": "Mot de passe oublié ? Il est défini sur le serveur par la personne qui gère Bowl & Belly.",
+    "forgotten": "Mot de passe oublié ? Il est défini sur le serveur par la personne qui gère Bowl & Belly.",
     "errors": {
       "wrong_password": "Ce mot de passe n’est pas le bon.",
       "too_many_attempts": "Trop de tentatives. Réessayez dans une minute.",
