@@ -12,6 +12,23 @@ if (!root) {
   throw new Error("Missing #root element");
 }
 
+// A tab opened before an upgrade asks for screens the new build no longer has.
+// One reload picks up the new build; the stamp stops a loop when a screen is
+// missing for another reason, and without storage there is no reload at all.
+window.addEventListener("vite:preloadError", (event) => {
+  const key = "reloadedForUpdateAt";
+  try {
+    if (Date.now() - Number(sessionStorage.getItem(key)) < 60_000) {
+      return;
+    }
+    sessionStorage.setItem(key, String(Date.now()));
+  } catch {
+    return;
+  }
+  event.preventDefault();
+  location.reload();
+});
+
 // Many components read the same queries, settings in about twenty places, so a
 // short freshness window stops each new one from refetching. Focus still
 // refetches anything older, so changes from another device arrive.

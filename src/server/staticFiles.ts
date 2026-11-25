@@ -7,20 +7,20 @@ import { createMiddleware } from "hono/factory";
 // exists: serveStatic's onFound runs after it is built, too late for headers.
 const cacheControl = createMiddleware(async (c, next) => {
   await next();
-  // A missing asset falls through to index.html, which must not be kept.
-  const hashed =
-    c.req.path.startsWith("/assets/") &&
-    !c.res.headers.get("Content-Type")?.startsWith("text/html");
+  const hashed = c.req.path.startsWith("/assets/") && c.res.ok;
   c.header("Cache-Control", hashed ? "public, max-age=31536000, immutable" : "no-cache");
 });
 
-/** The built app, from `root`: its files, and index.html for every other path. */
+/** The built app, from `root`: its files, and index.html for every other page. */
 export function staticFiles(root: string) {
   return (
     new Hono()
       .use(cacheControl)
       // The build writes .br and .gz copies, sent to browsers that accept them.
       .use(serveStatic({ root, precompressed: true }))
+      // An asset from an earlier build, asked for by a tab opened before an
+      // upgrade. The page in its place would fail as a script without saying why.
+      .get("/assets/*", (c) => c.body(null, 404))
       .get("*", serveStatic({ root, path: "index.html", precompressed: true }))
   );
 }

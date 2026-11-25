@@ -18,7 +18,8 @@ it("keeps hashed assets for good, but always revalidates the page", async () => 
   expect(await cacheControl("/stock")).toBe("no-cache");
 });
 
-it("doesn't keep the page served in place of an asset that's gone", async () => {
-  // An old tab asking for the previous build's asset gets index.html instead.
-  expect(await cacheControl("/assets/app-old999.js")).toBe("no-cache");
+it("answers an asset from an earlier build with a 404 that isn't kept", async () => {
+  const response = await site.request("/assets/app-old999.js");
+
+  expect([response.status, response.headers.get("Cache-Control")]).toEqual([404, "no-cache"]);
 });

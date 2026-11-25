@@ -64,9 +64,15 @@ export default defineConfig({
               tags: ["$initial"],
             },
             {
-              // Every other package, which is Recharts and its dependencies: these
-              // load only with a chart, as the groups above take the rest first.
+              // Recharts and the packages only it uses, which load with a chart.
+              // Named one by one: a catch-all here also took packages the form
+              // screens need, so they downloaded every chart too.
               name: "charts",
+              test: /node_modules[\\/](recharts|victory-vendor|d3-[^\\/]+|internmap|@reduxjs|redux|redux-thunk|react-redux|reselect|immer|es-toolkit|eventemitter3|decimal\.js-light|tiny-invariant|use-sync-external-store|clsx|@standard-schema)[\\/]/,
+            },
+            {
+              // The other packages only later screens use, such as a switch.
+              name: "lazy-vendor",
               test: /node_modules[\\/]/,
             },
           ],
