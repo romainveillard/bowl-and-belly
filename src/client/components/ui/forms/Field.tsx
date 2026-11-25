@@ -10,8 +10,19 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   boxClassName?: string;
 }
 
-export function Input({ suffix, boxClassName = "", className = "", ...input }: InputProps) {
+/** Ids for aria-describedby, leaving out the missing ones. */
+export const describedBy = (...ids: (string | false | null | undefined)[]) =>
+  ids.filter(Boolean).join(" ") || undefined;
+
+export function Input({
+  suffix,
+  boxClassName = "",
+  className = "",
+  "aria-describedby": description,
+  ...input
+}: InputProps) {
   const [unitWidth, setUnitWidth] = useState<number | null>(null);
+  const unitId = useId();
 
   // Units run from "g" to translated or typed portion names such as
   // "sachets", so the text keeps clear of the unit's measured width, which
@@ -33,10 +44,13 @@ export function Input({ suffix, boxClassName = "", className = "", ...input }: I
       <input
         className={`${inputClass} ${className}`}
         style={clearance ? { paddingInlineEnd: clearance } : undefined}
+        // The unit is hidden as text of its own but read with the field: "4.5, kg".
+        aria-describedby={describedBy(description, suffix && unitId)}
         {...input}
       />
       {suffix && (
         <span
+          id={unitId}
           ref={measureUnit}
           aria-hidden="true"
           className="absolute top-3 right-3 text-[15px] text-muted-foreground"
@@ -83,10 +97,21 @@ interface FieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "onChan
   error?: string | undefined;
 }
 
-export function Field({ label, value, onChange, suffix, hint, error, ...input }: FieldProps) {
+export function Field({
+  label,
+  value,
+  onChange,
+  suffix,
+  hint,
+  error,
+  "aria-describedby": description,
+  ...input
+}: FieldProps) {
   const generatedId = useId();
   const id = input.id ?? generatedId;
   const errorId = `${id}-error`;
+  const hintId = `${id}-hint`;
+  const showHint = Boolean(hint) && !error;
 
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -99,11 +124,15 @@ export function Field({ label, value, onChange, suffix, hint, error, ...input }:
         onChange={(event) => onChange(event.target.value)}
         suffix={suffix}
         aria-invalid={error ? true : undefined}
-        aria-describedby={error ? errorId : undefined}
+        aria-describedby={describedBy(error && errorId, showHint && hintId, description)}
         {...input}
       />
       {error && <FieldError id={errorId}>{error}</FieldError>}
-      {hint && !error && <span className="text-[13px] text-muted-foreground">{hint}</span>}
+      {showHint && (
+        <span id={hintId} className="text-[13px] text-muted-foreground">
+          {hint}
+        </span>
+      )}
     </div>
   );
 }
