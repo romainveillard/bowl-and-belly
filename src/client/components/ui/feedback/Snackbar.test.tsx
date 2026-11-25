@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { Sheet } from "../overlays/Sheet.js";
 import { SnackbarProvider, useSnackbar } from "./Snackbar.js";
 
 beforeEach(() => vi.useFakeTimers());
@@ -17,6 +18,14 @@ function Buttons() {
         onClick={() => show({ tone: "error", message: "Couldn’t save the feed" })}
       >
         Error
+      </button>
+      <button
+        type="button"
+        onClick={() =>
+          show({ message: "Feed deleted", action: { label: "Undo", onClick: () => undefined } })
+        }
+      >
+        Delete
       </button>
     </>
   );
@@ -60,4 +69,71 @@ it("lets an error replace a confirmation, never the other way round", () => {
   fireEvent.click(screen.getByRole("button", { name: "Info" }));
   expect(screen.getByRole("status").textContent).toBe("");
   expect(screen.getByRole("alert").textContent).toContain("Couldn’t save the feed");
+});
+
+it("keeps a snackbar with Undo until it is used, dismissed or replaced", () => {
+  renderButtons();
+  // Focus stays out of the snackbar, which would otherwise hold it for that reason alone.
+  const deleteButton = screen.getByRole("button", { name: "Delete" });
+  deleteButton.focus();
+
+  fireEvent.click(deleteButton);
+  act(() => {
+    vi.advanceTimersByTime(60_000);
+  });
+  expect(screen.getByRole("status").textContent).toContain("Feed deleted");
+
+  fireEvent.click(screen.getByRole("button", { name: "Dismiss" }));
+  expect(screen.getByRole("status").textContent).toBe("");
+});
+
+it("holds a confirmation while the pointer is over it", () => {
+  renderButtons();
+
+  fireEvent.click(screen.getByRole("button", { name: "Info" }));
+  const snackbar = screen.getByRole("status").parentElement;
+  if (!snackbar) {
+    throw new Error("No snackbar");
+  }
+  fireEvent.pointerEnter(snackbar);
+  act(() => {
+    vi.advanceTimersByTime(10_000);
+  });
+  expect(screen.getByRole("status").textContent).toBe("Feed logged");
+
+  fireEvent.pointerLeave(snackbar);
+  act(() => {
+    vi.advanceTimersByTime(5000);
+  });
+  expect(screen.getByRole("status").textContent).toBe("");
+});
+
+it("takes focus to Undo when the deleted row took focus with it, and only then", () => {
+  renderButtons();
+  const deleteButton = screen.getByRole("button", { name: "Delete" });
+
+  deleteButton.focus();
+  fireEvent.click(deleteButton);
+  expect(document.activeElement).toBe(deleteButton);
+
+  fireEvent.click(screen.getByRole("button", { name: "Dismiss" }));
+  deleteButton.blur();
+  fireEvent.click(deleteButton);
+  expect(document.activeElement).toBe(screen.getByRole("button", { name: "Undo" }));
+});
+
+it("stays announced while a sheet hides the rest of the page", () => {
+  vi.useRealTimers();
+  render(
+    <SnackbarProvider>
+      <Sheet open title="Edit feed" onOpenChange={() => undefined}>
+        <span />
+      </Sheet>
+    </SnackbarProvider>,
+  );
+
+  expect(screen.getByRole("dialog")).toBeTruthy();
+  for (const region of [screen.getByRole("status"), screen.getByRole("alert")]) {
+    expect(region.closest('[aria-hidden="true"]')).toBeNull();
+  }
 });

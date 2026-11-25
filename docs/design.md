@@ -185,7 +185,7 @@ Used on Today and History. A food-type tile on the left (blue drop for wet, peac
 - **Add leftover** takes the grams and "Back in stock / Binned" (from the food type, or the entry's earlier choice), with a live "Eaten: X g · Y kcal" line.
 - **Log again** shows a "Logged again" snackbar with Undo, since a swipe right is easy to make by accident.
 - **Swipe right** logs it again; **swipe left** deletes it. Both are shortcuts for actions also in the tap menu.
-- **Delete** shows an undo snackbar above the bottom bar for about 5 seconds, naming the entry ("07:30 · Salmon kibbles · 20 g"). One snackbar at a time: a new delete makes the previous one final. Undo restores the entry, the day's total and the stock.
+- **Delete** shows an undo snackbar above the bottom bar until it is used, dismissed or replaced, naming the entry ("07:30 · Salmon kibbles · 20 g"). One snackbar at a time: a new delete makes the previous one final. Undo restores the entry, the day's total and the stock.
 - **Discoverability:** the first time Today shows entries, the top row peeks a few pixels to reveal the swipe colours, then settles back. No hint text.
 - **Desktop:** no swipes; hovering or focusing a row shows "Log again" and "Delete" buttons beside its kcal.
 - **Undo** puts the deleted entry back with its original time and kcal snapshot, and takes its stock again.
@@ -216,7 +216,7 @@ Used on Today and History. A food-type tile on the left (blue drop for wet, peac
 ### Forms, dialogs and snackbars
 
 - **Validation:** Save stays enabled, since a disabled button doesn't say what's wrong. A failed save shows a summary at the top ("2 things to fix before saving: name and current weight."), a message under each invalid field, and moves focus to the first. Fields are then re-validated on blur. Invalid fields carry `aria-invalid` and `aria-describedby`.
-- **Snackbar:** one shared component, navy with white text and an optional action (Undo for deletes, none for target changes), shown for about 5 seconds. On a phone it spans the width above the bottom bar; on desktop it sits at the bottom centre of the content column, clear of the floating buttons.
+- **Snackbar:** one shared component, navy with white text and an optional action (Undo for deletes, none for target changes). A plain confirmation shows for about 5 seconds, paused while the pointer or focus is on it; one with an action has a dismiss button and stays until it is used, dismissed or replaced, so it can be reached by keyboard. When a delete has taken focus with it, focus moves to Undo. On a phone it spans the width above the bottom bar; on desktop it sits at the bottom centre of the content column, clear of the floating buttons.
 - **Error snackbar:** for an error that doesn't belong to a field (a refused photo, a lost connection, a save the server turns down). White on the danger colour with an alert icon, it says what failed and why ("Couldn't upload the photo. It's larger than 20 MB. Try a smaller one."), uses `role="alert"`, and stays until dismissed. The reason comes from the API's error code; without one it falls back to the connection or a generic line. An error replaces a confirmation on screen, never the other way round. Field errors stay inline.
 - **Sheets and dialogs:** a sheet rises from the bottom on a phone and is a dialog near the top of the page on desktop. A confirmation is a centred dialog.
 - **Desktop:** from 860 px the tabs move to a sidebar with Settings and the version at its foot, and Pets shows the list and the selected profile side by side.
