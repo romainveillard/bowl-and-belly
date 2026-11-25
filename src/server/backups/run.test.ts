@@ -21,3 +21,21 @@ it("records a failure until a backup succeeds", () => {
   expect(runBackup(db, dir, new Date("2026-11-23T03:30:00Z"))).toBeNull();
   expect(failure()).toEqual({ at: null, error: null });
 });
+
+it("doesn't call a double click within one second a failure", () => {
+  const db = openDatabase(":memory:");
+  const dir = mkdtempSync(path.join(tmpdir(), "backups-"));
+  const at = new Date("2026-11-23T03:30:00Z");
+
+  expect(runBackup(db, dir, at)).toBeNull();
+  expect(runBackup(db, dir, at)).toBeNull();
+});
+
+it("reports a failure rather than throwing, since a throw from its timer ends the process", () => {
+  vi.spyOn(console, "error").mockImplementation(() => {});
+  const db = openDatabase(":memory:");
+  // Even reading the settings, and recording the failure, now throw.
+  db.$client.close();
+
+  expect(runBackup(db, mkdtempSync(path.join(tmpdir(), "backups-")), new Date())).toBe("unknown");
+});

@@ -28,7 +28,12 @@ export function copyDatabase(db: Db, file: string): void {
 /** Writes a backup into `dir`, then keeps only the newest `keep` backups there. */
 export function writeBackup(db: Db, dir: string, at: Date, keep: number): void {
   mkdirSync(dir, { recursive: true });
-  copyDatabase(db, path.join(dir, nameAt(at)));
+  const file = path.join(dir, nameAt(at));
+  // Names go to the second and VACUUM INTO refuses an existing file, so a
+  // second backup within the same second, such as a double click, keeps the first.
+  if (!existsSync(file)) {
+    copyDatabase(db, file);
+  }
   const names = backupNames(dir);
   for (const name of names.slice(0, Math.max(0, names.length - keep))) {
     rmSync(path.join(dir, name));

@@ -34,8 +34,12 @@ function schedule(after = new Date()): void {
   }
   // A weekly wait stays well under setTimeout's 24.8-day limit.
   timer = setTimeout(() => {
-    runBackup(db, backupDir, at);
-    schedule(at);
+    // Whatever this run does, the next one must still be scheduled.
+    try {
+      runBackup(db, backupDir, at);
+    } finally {
+      schedule(at);
+    }
   }, at.getTime() - Date.now());
   timer.unref();
 }

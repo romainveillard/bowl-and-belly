@@ -34,6 +34,17 @@ it("copies the data, not just the schema", () => {
   expect(copy.select({ name: food.name }).from(food).all()).toEqual([{ name: "Salmon kibbles" }]);
 });
 
+it("keeps the first backup when a second one lands in the same second", () => {
+  const dir = mkdtempSync(path.join(tmpdir(), "backups-"));
+  const db = openDatabase(":memory:");
+  const at = new Date("2026-11-23T03:30:00Z");
+
+  writeBackup(db, dir, at, 7);
+  expect(() => writeBackup(db, dir, at, 7)).not.toThrow();
+
+  expect(readdirSync(dir)).toEqual(["bowl-and-belly-20261123T033000Z.db"]);
+});
+
 it("reports no backup when the folder does not exist yet", () => {
   expect(latestBackupAt(path.join(tmpdir(), "no-such-backups"))).toBeNull();
 });

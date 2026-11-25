@@ -23,17 +23,24 @@ function errorOf(error: unknown): BackupError {
   }
 }
 
-/** Writes a backup and records how it went, for the Settings screen. */
+/**
+ * Writes a backup and records how it went, for the Settings screen. Never
+ * throws: it runs from a timer, where an exception would end the process.
+ */
 export function runBackup(db: Db, dir: string, at: Date): BackupError | null {
-  const keep = db.select({ keep: settings.backupKeep }).from(settings).get()?.keep ?? 1;
   try {
+    const keep = db.select({ keep: settings.backupKeep }).from(settings).get()?.keep ?? 1;
     writeBackup(db, dir, at, keep);
+    db.update(settings).set({ backupFailedAt: null, backupError: null }).run();
+    return null;
   } catch (error) {
     console.error("Backup failed", error);
     const backupError = errorOf(error);
-    db.update(settings).set({ backupFailedAt: at, backupError }).run();
+    try {
+      db.update(settings).set({ backupFailedAt: at, backupError }).run();
+    } catch (recordError) {
+      console.error("Could not record the backup failure", recordError);
+    }
     return backupError;
   }
-  db.update(settings).set({ backupFailedAt: null, backupError: null }).run();
-  return null;
 }
