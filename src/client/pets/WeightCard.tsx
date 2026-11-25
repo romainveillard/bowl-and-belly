@@ -41,11 +41,9 @@ export function WeightCard({ petId }: { petId: number }) {
       </span>
       {pet.weights.length > 1 && (
         <Sparkline
-          weightsG={pet.weights
-            .slice(0, SPARKLINE_READINGS)
-            .map((reading) => reading.weightG)
-            .toReversed()}
+          readings={pet.weights.slice(0, SPARKLINE_READINGS).toReversed()}
           label={t("weight.sparkline")}
+          daySettings={settings}
         />
       )}
     </Card>

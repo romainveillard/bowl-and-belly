@@ -42,13 +42,11 @@ export function WeighInsCard({ pet }: { pet: PetDetail }) {
           </span>
         )}
       </div>
-      {pet.weights.length > 1 && (
+      {pet.weights.length > 1 && settings && (
         <Sparkline
-          weightsG={pet.weights
-            .slice(0, SPARKLINE_READINGS)
-            .map((weight) => weight.weightG)
-            .toReversed()}
+          readings={pet.weights.slice(0, SPARKLINE_READINGS).toReversed()}
           label={t("weight.sparkline")}
+          daySettings={settings}
         />
       )}
       {pet.weights.length > 0 && (

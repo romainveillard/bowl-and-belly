@@ -494,6 +494,7 @@
     "barOver": "Au-dessus de l’objectif",
     "barUnder": "Sous l’objectif",
     "kgValue": "{weight} kg",
+    "averageNote": "Moyenne sur 7 jours {weight} kg",
     "splitKcal": "{split} kcal",
     "gramsValue": "{grams, number} g"
   },

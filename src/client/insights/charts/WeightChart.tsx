@@ -1,13 +1,57 @@
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { ComposedChart, Line, ResponsiveContainer, Scatter, XAxis, YAxis } from "recharts";
 import { addDays, appDayOf, type DaySettings } from "../../../shared/app-day.js";
 import { rollingAverage, type Reading } from "../../../shared/insights.js";
 import { formatAppDay, formatKg } from "../../lib/format.js";
+import { ChartDetails, placeDetails, useChosenMark } from "./ChartDetails.js";
 import { ChartTable } from "./ChartTable.js";
 import { markColour } from "./colours.js";
 import { LegendItem } from "./Legend.js";
 
 const DAY_MS = 86_400_000;
+
+/**
+ * A reading's dot, ringed when chosen, inside a hit area wider than the dot.
+ * Recharts fills in where it goes and which reading it is.
+ */
+function ReadingDot({
+  cx,
+  cy,
+  index = 0,
+  chosen,
+  onChoose,
+  onLeave,
+}: {
+  cx?: number | undefined;
+  cy?: number | undefined;
+  index?: number;
+  chosen: number | null;
+  onChoose: (index: number, cx: number | undefined, cy: number | undefined) => void;
+  onLeave: () => void;
+}) {
+  return (
+    <g
+      className="cursor-pointer"
+      onMouseEnter={() => onChoose(index, cx, cy)}
+      onMouseLeave={onLeave}
+      onClick={() => onChoose(index, cx, cy)}
+    >
+      <circle cx={cx} cy={cy} r={14} fill="transparent" />
+      <circle cx={cx} cy={cy} r={4} fill="var(--color-foreground)" />
+      {chosen === index && (
+        <circle
+          cx={cx}
+          cy={cy}
+          r={7}
+          fill="none"
+          stroke="var(--color-foreground)"
+          strokeWidth={2}
+        />
+      )}
+    </g>
+  );
+}
 
 /** Raw readings as faint dots and their 7-day rolling average as a line. */
 export function WeightChart({
@@ -31,6 +75,8 @@ export function WeightChart({
   height?: number;
 }) {
   const { t, i18n } = useTranslation();
+  const box = useRef<HTMLDivElement>(null);
+  const [chosen, setChosen] = useChosenMark();
   const start = Date.parse(`${from}T00:00:00Z`);
   const end = Date.parse(`${addDays(to, 1)}T00:00:00Z`);
   const shown = rollingAverage(readings).filter((reading) => {
@@ -50,6 +96,13 @@ export function WeightChart({
   const weight = (grams: number) =>
     t("insights.kgValue", { weight: formatKg(grams, i18n.language) });
   const kg = data.flatMap((point) => [point.kg, point.averageKg]);
+  const choose = (index: number, cx: number | undefined, cy: number | undefined) => {
+    if (cx !== undefined && cy !== undefined) {
+      const chartWidth = box.current?.clientWidth ?? 0;
+      setChosen({ key: String(index), x: cx, y: cy, width: 0, chartWidth });
+    }
+  };
+  const chosenReading = chosen && shown[Number(chosen.key)];
 
   return (
     <div className="flex flex-col gap-3">
@@ -68,7 +121,8 @@ export function WeightChart({
           ],
         }))}
       />
-      <div aria-hidden="true" style={{ height }}>
+      {/* Hidden from screen readers, which have the table; the details are pointer only. */}
+      <div ref={box} aria-hidden="true" className="relative" style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
             accessibilityLayer={false}
@@ -100,7 +154,17 @@ export function WeightChart({
               dot={false}
               isAnimationActive={false}
             />
-            <Scatter dataKey="kg" fill="var(--color-foreground)" isAnimationActive={false} />
+            <Scatter
+              dataKey="kg"
+              isAnimationActive={false}
+              shape={
+                <ReadingDot
+                  chosen={chosen === null ? null : Number(chosen.key)}
+                  onChoose={choose}
+                  onLeave={() => setChosen(null)}
+                />
+              }
+            />
             <Line
               dataKey="averageKg"
               stroke={markColour("weightAverage")}
@@ -111,6 +175,22 @@ export function WeightChart({
             />
           </ComposedChart>
         </ResponsiveContainer>
+        {chosen && chosenReading && (
+          <ChartDetails
+            lines={{
+              date: formatAppDay(appDayOf(new Date(chosenReading.at), daySettings), i18n.language, {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+              }),
+              value: weight(chosenReading.weightG),
+              note: t("insights.averageNote", {
+                weight: formatKg(chosenReading.averageG, i18n.language),
+              }),
+            }}
+            place={placeDetails(chosen, chosen.chartWidth, height)}
+          />
+        )}
       </div>
       <div className="flex gap-4">
         <LegendItem label={t("insights.legendReadings")} line="border-t-[3px] border-foreground" />

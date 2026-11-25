@@ -494,6 +494,7 @@
     "barOver": "Over target",
     "barUnder": "Under target",
     "kgValue": "{weight} kg",
+    "averageNote": "7-day average {weight} kg",
     "splitKcal": "{split} kcal",
     "gramsValue": "{grams, number} g"
   },
