@@ -78,15 +78,17 @@ These copies live in the same volume as the database, so copy them somewhere els
 There's no restore button: you replace the database file while the app is stopped.
 
 1. Stop the app: `docker compose stop bowl-and-belly`
-2. If the backup is on your computer rather than in the volume, copy it in: `docker compose cp ./bowl-and-belly-2026-11-23.db bowl-and-belly:/data/backups/`
-3. Copy the current database aside first, so you can go back to it, then put the backup in its place and remove the old database's journal files:
+2. If the backup is on your computer rather than in the volume, copy it in: `docker compose cp ./bowl-and-belly-2026-11-23.db bowl-and-belly:/data/restore.db`
+3. Copy the current database aside first, so you can go back to it, then put the backup in its place, remove the old database's journal files and give the files back to the app's user. Set `backup` to `/data/restore.db` for a copied-in file, or to a scheduled backup such as `/data/backups/bowl-and-belly-20261123T033000Z.db`:
 
    ```sh
-   docker compose run --rm --no-deps --entrypoint sh bowl-and-belly -c '
+   docker compose run --rm --no-deps --user root --entrypoint sh bowl-and-belly -c '
+     backup=/data/restore.db
      mkdir -p /data/before-restore &&
      cp /data/bowl-and-belly.db* /data/before-restore/ &&
-     cp /data/backups/bowl-and-belly-2026-11-23.db /data/bowl-and-belly.db &&
-     rm -f /data/bowl-and-belly.db-wal /data/bowl-and-belly.db-shm'
+     cp "$backup" /data/bowl-and-belly.db &&
+     rm -f /data/bowl-and-belly.db-wal /data/bowl-and-belly.db-shm &&
+     chown -R node:node /data'
    ```
 
 4. Start it again: `docker compose start bowl-and-belly`

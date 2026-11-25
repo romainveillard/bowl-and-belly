@@ -45,6 +45,17 @@ it("keeps the first backup when a second one lands in the same second", () => {
   expect(readdirSync(dir)).toEqual(["bowl-and-belly-20261123T033000Z.db"]);
 });
 
+it("never counts a copy cut short, and isn't blocked by one", () => {
+  const dir = mkdtempSync(path.join(tmpdir(), "backups-"));
+  writeFileSync(path.join(dir, "bowl-and-belly-20261123T033000Z.db.partial"), "half a databa");
+  const db = openDatabase(":memory:");
+
+  expect(latestBackupAt(dir)).toBeNull();
+  writeBackup(db, dir, new Date("2026-11-23T03:30:00Z"), 7);
+
+  expect(readdirSync(dir)).toEqual(["bowl-and-belly-20261123T033000Z.db"]);
+});
+
 it("reports no backup when the folder does not exist yet", () => {
   expect(latestBackupAt(path.join(tmpdir(), "no-such-backups"))).toBeNull();
 });

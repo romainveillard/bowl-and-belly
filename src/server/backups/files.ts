@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, renameSync, rmSync } from "node:fs";
 import path from "node:path";
 import type { Db } from "../db/open.js";
 
@@ -32,7 +32,18 @@ export function writeBackup(db: Db, dir: string, at: Date, keep: number): void {
   // Names go to the second and VACUUM INTO refuses an existing file, so a
   // second backup within the same second, such as a double click, keeps the first.
   if (!existsSync(file)) {
-    copyDatabase(db, file);
+    // Written aside, then renamed in one step, so a copy cut short by a
+    // stopped container or a full disk never passes for a backup. One left
+    // by an earlier run would make VACUUM INTO refuse.
+    const partial = `${file}.partial`;
+    rmSync(partial, { force: true });
+    try {
+      copyDatabase(db, partial);
+    } catch (error) {
+      rmSync(partial, { force: true });
+      throw error;
+    }
+    renameSync(partial, file);
   }
   const names = backupNames(dir);
   for (const name of names.slice(0, Math.max(0, names.length - keep))) {
