@@ -170,7 +170,6 @@
   "weight": {
     "title": "Poids",
     "lastWeighed": "Dernière pesée le {date}",
-    "kg": "kg",
     "reading": "{weight} kg",
     "sparkline": "Poids lors des dernières pesées",
     "current": "Poids actuel",
@@ -682,6 +681,7 @@
     "leftoversHint": "Le choix par défaut quand vous notez un reste. Vous pouvez le changer à chaque fois.",
     "archive": "Archiver le type",
     "archiveTitle": "Archiver {name} ?",
+    "archiveConfirm": "Archiver",
     "food": {
       "title": "Types de nourriture",
       "hint": "Les types de nourriture filtrent le choix des aliments et décident du sort des restes.",

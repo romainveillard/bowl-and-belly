@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { isOverTarget } from "../lib/dayStatus.js";
-import { ProgressBar } from "./ui/feedback/ProgressBar.js";
+import { ProgressBar } from "../components/ui/feedback/ProgressBar.js";
 import { formatNumber } from "../lib/format.js";
 
 interface TargetProgressProps {

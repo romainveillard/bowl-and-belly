@@ -2,7 +2,7 @@ import { ageInMonths } from "../../shared/target.js";
 import { formatInputNumber, parsePositive } from "../lib/format.js";
 import type { PetBody, PetDetail } from "./pets.js";
 
-export type AgeMode = PetBody["birthDatePrecision"];
+type AgeMode = PetBody["birthDatePrecision"];
 
 export interface PetFormState {
   name: string;

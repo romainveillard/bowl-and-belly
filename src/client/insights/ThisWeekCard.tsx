@@ -7,7 +7,7 @@ import { IntakeChart } from "./charts/IntakeChart.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 
 /** This week's intake on desktop Today, linking to Insights. Loaded on demand, with the charts. */
-export default function ThisWeekCard({ petId, today }: { petId: number; today: string }) {
+export function ThisWeekCard({ petId, today }: { petId: number; today: string }) {
   const { t } = useTranslation();
   const start = weekStart(today);
   const { data } = useInsights(petId, start, addDays(start, 6));

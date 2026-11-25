@@ -74,7 +74,7 @@ export const requireSession: MiddlewareHandler = async (c, next) => {
   return next();
 };
 
-export type LoginResult = "ok" | "wrong_password" | "too_many_attempts";
+type LoginResult = "ok" | "wrong_password" | "too_many_attempts";
 
 export async function logIn(c: Context, attempt: string): Promise<LoginResult> {
   if (!current || !password) {

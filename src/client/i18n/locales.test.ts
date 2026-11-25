@@ -16,6 +16,18 @@ function strings(node: unknown, path = ""): [string, string][] {
   );
 }
 
+const argumentsOf = (text: string) =>
+  [...new Set([...text.matchAll(/\{\s*(\w+)\s*[,}]/g)].map(([, name]) => name ?? ""))].toSorted(
+    (a, b) => a.localeCompare(b),
+  );
+const signatures = (locale: unknown) =>
+  Object.fromEntries(strings(locale).map(([key, text]) => [key, argumentsOf(text)]));
+
+// Only en-GB is type-checked, and French has no English to fall back on.
+it("has the same keys in both languages, each taking the same arguments", () => {
+  expect(signatures(fr)).toEqual(signatures(enGB));
+});
+
 // French puts a space before these marks; an ordinary one lets the mark wrap onto a line alone.
 it("keeps French punctuation on the line of the word before it", () => {
   const breakable = strings(fr).filter(([, text]) => / [?!;:%»]|« /.test(text));

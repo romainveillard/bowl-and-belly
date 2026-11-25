@@ -170,7 +170,6 @@
   "weight": {
     "title": "Weight",
     "lastWeighed": "Last weighed {date}",
-    "kg": "kg",
     "reading": "{weight} kg",
     "sparkline": "Weight over the last weigh-ins",
     "current": "Current weight",
@@ -682,6 +681,7 @@
     "leftoversHint": "The default when you record a leftover. You can change it each time.",
     "archive": "Archive type",
     "archiveTitle": "Archive {name}?",
+    "archiveConfirm": "Archive",
     "food": {
       "title": "Food types",
       "hint": "Food types filter the food picker and decide what happens to leftovers.",

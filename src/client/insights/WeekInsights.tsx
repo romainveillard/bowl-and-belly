@@ -81,7 +81,7 @@ export function WeekInsights({ petId, today, from, onPeriod, onFrom }: PeriodVie
         <Stat
           label={t("insights.weight")}
           value={latest ? formatKg(latest.weightG, i18n.language) : "–"}
-          unit={t("weight.kg")}
+          unit={t("common.kg")}
           note={
             weightNote && (
               <>

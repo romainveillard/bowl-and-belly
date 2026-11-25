@@ -36,7 +36,7 @@ export function WeighInsCard({ pet }: { pet: PetDetail }) {
             <span className="font-display text-figure font-semibold tabular-nums desktop:text-4xl">
               {formatKg(latest.weightG, locale)}
             </span>
-            <span className="text-sm text-muted-foreground">{t("weight.kg")}</span>
+            <span className="text-sm text-muted-foreground">{t("common.kg")}</span>
           </span>
         )}
       </div>

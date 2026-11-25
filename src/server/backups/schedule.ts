@@ -1,7 +1,7 @@
 import { addDays, appDayOf, instantAt } from "../../shared/app-day.js";
 import type { BACKUP_FREQUENCIES } from "../../shared/enums.js";
 
-export interface BackupSchedule {
+interface BackupSchedule {
   frequency: (typeof BACKUP_FREQUENCIES)[number];
   /** ISO weekday, 1 is Monday; only read for weekly backups. */
   weekday: number | null;

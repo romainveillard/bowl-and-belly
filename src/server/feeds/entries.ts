@@ -3,7 +3,7 @@ import { leftoverFits } from "../../shared/feeds.js";
 import type { DbOrTx } from "../db/open.js";
 import { feedEntry, food, foodType } from "../db/schema.js";
 
-export interface FeedValues {
+interface FeedValues {
   petId: number;
   foodId: number;
   fedAt: Date;

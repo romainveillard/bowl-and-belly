@@ -5,7 +5,7 @@ import { ArchivedLink } from "../components/ArchivedLink.js";
 import { EmptyState } from "../components/EmptyState.js";
 import { PetsIcon, PlusIcon } from "../components/icons.js";
 import { PetAvatar } from "./PetAvatar.js";
-import { TargetProgress } from "../components/TargetProgress.js";
+import { TargetProgress } from "./TargetProgress.js";
 import { button } from "../components/ui/forms/button.js";
 import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageTitle } from "../components/ui/layout/PageHeader.js";
@@ -108,7 +108,7 @@ export function PetsScreen() {
                     {weight && (
                       <span className="flex flex-col items-end gap-0.5 tabular-nums desktop:hidden">
                         <span className="font-display text-xl font-semibold">{weight}</span>
-                        <span className="text-caption text-muted-foreground">{t("weight.kg")}</span>
+                        <span className="text-caption text-muted-foreground">{t("common.kg")}</span>
                       </span>
                     )}
                   </span>

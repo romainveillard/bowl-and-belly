@@ -26,7 +26,7 @@ export function loadSecret(file: string): Buffer {
   return secret;
 }
 
-export interface Sessions {
+interface Sessions {
   issue: (now: number) => string;
   /** "valid", "refresh" when valid but due to be reissued, or "invalid". */
   check: (token: string | undefined, now: number) => "valid" | "refresh" | "invalid";

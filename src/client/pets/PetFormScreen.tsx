@@ -207,7 +207,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
                 {...field("targetWeight")}
                 label={t("weight.target")}
                 inputMode="decimal"
-                suffix={t("weight.kg")}
+                suffix={t("common.kg")}
                 value={form.targetWeight}
                 onChange={(value) => set("targetWeight", value)}
               />
@@ -220,7 +220,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
               {...field("weight")}
               label={t("weight.current")}
               inputMode="decimal"
-              suffix={t("weight.kg")}
+              suffix={t("common.kg")}
               value={form.weight}
               onChange={(value) => set("weight", value)}
             />

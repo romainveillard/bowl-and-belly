@@ -142,7 +142,9 @@ function LogFeedForm({
             id={errors.idOf("amount")}
             label={t("logFeed.amount")}
             inputMode="decimal"
-            suffix={inPortions && food?.portionName ? portionUnit(food.portionName, i18n) : "g"}
+            suffix={
+              inPortions && food?.portionName ? portionUnit(food.portionName, i18n) : t("common.g")
+            }
             error={errorFor("amount")}
             onBlur={errors.recheck("amount")}
             value={amounts.amount}

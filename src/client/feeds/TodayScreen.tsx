@@ -25,7 +25,9 @@ import { useSwipeHint } from "./useSwipeHint.js";
 import { useSettings } from "../settings/settings.js";
 
 // The charting library only loads where a chart is shown.
-const ThisWeekCard = lazy(() => import("../insights/ThisWeekCard.js"));
+const ThisWeekCard = lazy(() =>
+  import("../insights/ThisWeekCard.js").then((module) => ({ default: module.ThisWeekCard })),
+);
 
 const card = "bg-card inset-ring inset-ring-border";
 

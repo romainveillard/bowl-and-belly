@@ -6,7 +6,7 @@ import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { dayStatus } from "../lib/dayStatus.js";
 import { formatAppDay, formatInstantDay, formatKg } from "../lib/format.js";
 import { targetOn, usePet } from "../pets/pets.js";
-import { weightTrend } from "../pets/weightTrend.js";
+import { weightTrend } from "./weightTrend.js";
 import { IntakeChart } from "./charts/IntakeChart.js";
 import { WeightChart } from "./charts/WeightChart.js";
 import { PeriodBar, type PeriodViewProps } from "./PeriodBar.js";
@@ -83,7 +83,7 @@ export function MonthInsights({ petId, today, from, onPeriod, onFrom }: PeriodVi
           className="hidden desktop:flex"
           label={t("insights.weight")}
           value={latest ? formatKg(latest.weightG, i18n.language) : "–"}
-          unit={t("weight.kg")}
+          unit={t("common.kg")}
           note={
             trendNote(
               inMonth.map((reading) => reading.averageG),

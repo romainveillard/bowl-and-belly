@@ -3,6 +3,8 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import ICU from "i18next-icu";
 import { initReactI18next } from "react-i18next";
 
+const SUPPORTED = ["en-GB", "fr"];
+
 // Each locale is its own chunk, so only the language in use is downloaded.
 const locales: BackendModule = {
   type: "backend",
@@ -26,8 +28,10 @@ export const i18nReady = i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    fallbackLng: "en-GB",
-    supportedLngs: ["en-GB", "fr"],
+    // English only for languages the app doesn't have. A fixed fallback would
+    // also download English beside French; locales.test.ts keeps them complete.
+    fallbackLng: (code) => (SUPPORTED.includes(code) ? [] : ["en-GB"]),
+    supportedLngs: SUPPORTED,
     load: "currentOnly",
     detection: {
       order: ["localStorage", "navigator"],

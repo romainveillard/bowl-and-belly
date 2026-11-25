@@ -129,7 +129,7 @@ export function TypeFormSheet({ kind, type, otherLabels, onClose }: TypeFormShee
           onOpenChange={setArchiving}
           title={t("types.archiveTitle", { name: type.name })}
           description={t(`types.${kind}.archiveBody`, { name: type.name })}
-          confirmLabel={t("pets.archiveConfirm")}
+          confirmLabel={t("types.archiveConfirm")}
           onConfirm={() => archive.mutate(type.id, { onSuccess: onClose })}
         />
       )}
