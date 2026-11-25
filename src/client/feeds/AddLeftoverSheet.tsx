@@ -80,7 +80,7 @@ export function AddLeftoverSheet({
           id={errors.idOf("leftover")}
           label={t("addLeftover.leftOver")}
           inputMode="numeric"
-          suffix="g"
+          suffix={t("common.g")}
           value={leftover}
           onChange={setLeftover}
           onBlur={errors.recheck("leftover")}

@@ -82,7 +82,7 @@ export function PortionCard({
               {...weightField}
               label={t("foodForm.weight")}
               inputMode="numeric"
-              suffix="g"
+              suffix={t("common.g")}
               value={value.portionG}
               onChange={(portionG) => onChange({ portionG })}
             />

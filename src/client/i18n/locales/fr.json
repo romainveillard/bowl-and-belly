@@ -19,7 +19,9 @@
   },
   "common": {
     "kcal": "kcal",
-    "ofTarget": "/ {target, number} kcal"
+    "ofTarget": "/ {target, number} kcal",
+    "g": "g",
+    "kg": "kg"
   },
   "errors": {
     "failed": {
@@ -464,7 +466,9 @@
     "noFeedsDay": "Aucun repas ce jour-là",
     "date": "Date",
     "kcalValue": "{kcal, number} kcal",
-    "kgValue": "{weight} kg"
+    "kgValue": "{weight} kg",
+    "splitKcal": "{split} kcal",
+    "gramsValue": "{grams, number} g"
   },
   "petChip": {
     "label": "Animal : {name}. Changer d’animal",

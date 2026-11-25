@@ -86,8 +86,8 @@ export function RestockSheet({ food, onClose }: { food: FoodSummary; onClose: ()
                 value={unit}
                 onChange={setUnit}
                 options={[
-                  { value: "g", label: "g" },
-                  { value: "kg", label: "kg" },
+                  { value: "g", label: t("common.g") },
+                  { value: "kg", label: t("common.kg") },
                 ]}
               />
             </div>

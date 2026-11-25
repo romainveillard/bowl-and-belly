@@ -108,7 +108,7 @@ export function LogWeightSheet({
             id={errors.idOf("weight")}
             label={t("logWeight.weight")}
             inputMode="decimal"
-            suffix="kg"
+            suffix={t("common.kg")}
             value={weight}
             onChange={setWeight}
             onBlur={errors.recheck("weight")}

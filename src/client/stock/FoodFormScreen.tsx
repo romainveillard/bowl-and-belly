@@ -252,7 +252,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
                 {...field("kcal")}
                 label={t("foodForm.energy")}
                 inputMode="decimal"
-                suffix="kcal"
+                suffix={t("common.kcal")}
                 value={form.kcal}
                 onChange={(value) => set("kcal", value)}
               />

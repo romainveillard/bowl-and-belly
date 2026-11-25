@@ -64,8 +64,8 @@ export function StockCard({
               value={value.stockIn}
               onChange={(stockIn) => onChange({ stockIn })}
               options={[
-                { value: "g", label: "g" },
-                { value: "kg", label: "kg" },
+                { value: "g", label: t("common.g") },
+                { value: "kg", label: t("common.kg") },
               ]}
             />
           </div>

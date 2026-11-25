@@ -81,7 +81,7 @@ export function DayInsights({ petId, today, onPeriod }: PeriodViewProps) {
           value={entries.length}
           note={
             <>
-              <span className="desktop:hidden">{split && `${split} ${t("common.kcal")}`}</span>
+              <span className="desktop:hidden">{split && t("insights.splitKcal", { split })}</span>
               <span className="hidden desktop:inline">
                 {lastFeed &&
                   t("insights.lastAt", {
@@ -104,7 +104,9 @@ export function DayInsights({ petId, today, onPeriod }: PeriodViewProps) {
               : byType.map((total) => formatNumber(total.kcal, i18n.language)).join(" / ")
           }
           unit={t("common.kcal")}
-          note={byType.map((total) => `${total.eatenG} g`).join(" / ")}
+          note={byType
+            .map((total) => t("insights.gramsValue", { grams: total.eatenG }))
+            .join(" / ")}
         />
       </div>
 

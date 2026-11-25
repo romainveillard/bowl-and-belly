@@ -148,7 +148,7 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
             id={errors.idOf("served")}
             label={t("editFeed.served")}
             inputMode="numeric"
-            suffix="g"
+            suffix={t("common.g")}
             value={served}
             onChange={setServed}
             onBlur={errors.recheck("served")}
@@ -164,7 +164,7 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
             label={t("editFeed.leftOver")}
             inputMode="numeric"
             placeholder="0"
-            suffix="g"
+            suffix={t("common.g")}
             value={leftover}
             onChange={setLeftover}
             onBlur={errors.recheck("leftover")}

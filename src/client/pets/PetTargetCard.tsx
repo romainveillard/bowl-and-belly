@@ -68,7 +68,7 @@ export function PetTargetCard({
           {...field}
           label={t("target.field")}
           inputMode="numeric"
-          suffix="kcal"
+          suffix={t("common.kcal")}
           value={value.ownTargetKcal}
           onChange={(ownTargetKcal) => onChange({ ownTargetKcal })}
         />

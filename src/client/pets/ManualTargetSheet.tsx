@@ -81,7 +81,7 @@ export function ManualTargetSheet({
           onChange={setKcal}
           onBlur={errors.recheck("kcal")}
           error={errors.problemOf("kcal") && t("target.errors.kcal")}
-          suffix="kcal"
+          suffix={t("common.kcal")}
           inputMode="numeric"
           hint={t("target.appliesFromToday")}
         />

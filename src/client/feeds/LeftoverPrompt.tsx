@@ -43,7 +43,7 @@ export function LeftoverPrompt({
           id={id}
           inputMode="numeric"
           placeholder="0"
-          suffix="g"
+          suffix={t("common.g")}
           boxClassName="w-24 flex-none desktop:w-[110px]"
           value={value}
           onChange={(event) => onChange(event.target.value)}
