@@ -221,7 +221,7 @@ Used on Today and History. A food-type tile on the left (blue drop for wet, peac
 - **Error snackbar:** for an error that doesn't belong to a field (a refused photo, a lost connection, a save the server turns down). White on the danger colour with an alert icon, it says what failed and why ("Couldn't upload the photo. It's larger than 20 MB. Try a smaller one."), uses `role="alert"`, and stays until dismissed. The reason comes from the API's error code; without one it falls back to the connection or a generic line. An error replaces a confirmation on screen, never the other way round. Field errors stay inline.
 - **Sheets and dialogs:** a sheet rises from the bottom on a phone and is a dialog near the top of the page on desktop. A confirmation is a dialog centred on a phone and near the top of the page on desktop.
 - **Desktop:** from 860 px the tabs move to a sidebar with Settings and the version at its foot, and Pets shows the list and the selected profile side by side.
-- **Navigation:** each screen titles the browser tab ("Today · Bowl & Belly"). Moving to another tab or page puts focus on the content and announces the new title; choosing a pet in the desktop list leaves focus in the list. A "Skip to content" link, shown on focus, leads past the sidebar.
+- **Navigation:** each screen titles the browser tab ("Today · Bowl & Belly"). Moving to another tab or page puts focus on the content and announces the new title; choosing a pet in the desktop list leaves focus in the list. A "Skip to content" link, shown on focus, leads past the sidebar. A form sheet opens on its first field with a mouse and keyboard, and on its title on a touch screen, so the on-screen keyboard only comes up when a field is tapped.
 
 ## UI design
 

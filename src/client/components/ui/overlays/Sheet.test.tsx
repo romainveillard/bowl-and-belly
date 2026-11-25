@@ -1,7 +1,9 @@
 import { act, render, screen, within } from "@testing-library/react";
-import { expect, it } from "vitest";
+import { afterEach, expect, it, vi } from "vitest";
 import { Sheet } from "./Sheet.js";
 import { reportInOpenSheet } from "./sheetErrors.js";
+
+afterEach(() => vi.unstubAllGlobals());
 
 it("is described by its subtitle", () => {
   render(
@@ -21,8 +23,12 @@ it("is described by its subtitle", () => {
   );
 });
 
-it("opens a form on its first field, and a sheet of actions as it was", () => {
-  const { unmount } = render(
+/** A form sheet opened on a device whose main pointer is, or isn't, fine. */
+function openForm(finePointer: boolean) {
+  vi.stubGlobal("matchMedia", (query: string) => ({
+    matches: query === "(pointer: fine)" && finePointer,
+  }));
+  return render(
     <Sheet
       open
       title="Log weight"
@@ -35,9 +41,21 @@ it("opens a form on its first field, and a sheet of actions as it was", () => {
       </label>
     </Sheet>,
   );
-  expect(document.activeElement).toBe(screen.getByLabelText("Weight"));
-  unmount();
+}
 
+it("opens a form on its first field with a mouse and keyboard", () => {
+  openForm(true);
+
+  expect(document.activeElement).toBe(screen.getByLabelText("Weight"));
+});
+
+it("opens a form on its title on a touch screen, so no keyboard comes up", () => {
+  openForm(false);
+
+  expect(document.activeElement).toBe(screen.getByRole("heading", { name: "Log weight" }));
+});
+
+it("opens a sheet of actions as Radix does", () => {
   render(
     <Sheet open title="Miso’s feed" onOpenChange={() => undefined} flush>
       <label>

@@ -39,6 +39,7 @@ export function Sheet({
   const { t } = useTranslation();
   const error = useSheetError(open);
   const body = useRef<HTMLDivElement>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -47,13 +48,19 @@ export function Sheet({
         <Dialog.Content
           aria-describedby={undefined}
           // A form sheet starts on its first field rather than on Close or the
-          // pet chip; a sheet of actions starts on its first action.
+          // pet chip, but only with a mouse and keyboard: on a touch screen a
+          // focused field brings up the keyboard, so it starts on the title.
+          // A sheet of actions starts on its first action.
           onOpenAutoFocus={(event) => {
-            const field =
-              footer && body.current?.querySelector<HTMLElement>("input, select, textarea");
-            if (field) {
+            if (!footer) {
+              return;
+            }
+            const start = window.matchMedia("(pointer: fine)").matches
+              ? body.current?.querySelector<HTMLElement>("input, select, textarea")
+              : heading.current;
+            if (start) {
               event.preventDefault();
-              field.focus();
+              start.focus();
             }
           }}
           className={`fixed inset-x-0 bottom-0 z-20 flex max-h-[calc(100dvh-env(safe-area-inset-top)-16px)] flex-col rounded-t-3xl bg-card pb-[env(safe-area-inset-bottom)] desktop:inset-x-auto desktop:top-24 desktop:bottom-auto desktop:left-1/2 desktop:-translate-x-1/2 desktop:overflow-hidden desktop:rounded-2xl desktop:pb-0 desktop:max-h-[calc(100dvh-128px)] desktop:shadow-[0_20px_48px_rgba(31,42,68,0.3)] ${tall ? "top-9 desktop:w-[min(560px,calc(100%-32px))]" : "desktop:w-[min(460px,calc(100%-32px))]"}`}
@@ -65,7 +72,11 @@ export function Sheet({
             />
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 flex-col gap-0.5">
-                <Dialog.Title className="truncate font-display text-title font-semibold desktop:text-2xl">
+                <Dialog.Title
+                  ref={heading}
+                  tabIndex={-1}
+                  className="truncate font-display text-title font-semibold focus:outline-none desktop:text-2xl"
+                >
                   {title}
                 </Dialog.Title>
                 {subtitle && (
