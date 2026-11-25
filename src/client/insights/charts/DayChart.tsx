@@ -109,13 +109,14 @@ export function DayChart({
                 }}
               />
             )}
+            {/* Wet and dry differ by more than hue, which not everyone sees: dry is hollow. */}
             {(["wet", "dry", "custom"] as const).map((kind) => (
               <Scatter
                 key={kind}
                 data={dots.filter((dot) => dot.kind === kind)}
                 dataKey="total"
-                fill={dotColour[kind]}
-                stroke="var(--color-card)"
+                fill={kind === "dry" ? "var(--color-card)" : dotColour[kind]}
+                stroke={kind === "dry" ? dotColour.dry : "var(--color-card)"}
                 strokeWidth={2}
                 isAnimationActive={false}
               />
@@ -129,7 +130,7 @@ export function DayChart({
           line="border-t-[3px] border-primary-strong"
         />
         <Dot label={t("insights.legendWet")} colour="bg-wet-foreground" />
-        <Dot label={t("insights.legendDry")} colour="bg-dry-foreground" />
+        <Dot label={t("insights.legendDry")} colour="border-2 border-dry-foreground bg-card" />
         {dots.some((dot) => dot.kind === "custom") && (
           <Dot label={t("insights.legendOther")} colour="bg-muted-foreground" />
         )}

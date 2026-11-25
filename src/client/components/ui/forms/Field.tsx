@@ -1,13 +1,25 @@
 import { useCallback, useId, useState, type InputHTMLAttributes, type ReactNode } from "react";
 import { AlertIcon, SearchIcon } from "../../icons.js";
 
-export const inputClass =
-  "h-11 w-full rounded-lg border border-input-border bg-card px-3 text-base tabular-nums text-foreground placeholder:text-muted-foreground focus:border-primary-strong focus:ring-1 focus:ring-primary-strong focus:outline-none disabled:bg-muted disabled:text-muted-foreground aria-invalid:border-[1.5px] aria-invalid:border-danger aria-invalid:ring-[3px] aria-invalid:ring-danger-soft";
+const inputBase =
+  "h-11 w-full rounded-lg bg-card px-3 text-base tabular-nums text-foreground placeholder:text-muted-foreground focus:outline-none disabled:bg-muted disabled:text-muted-foreground";
+
+// Each tone keeps a focus cue of its own: an invalid field's ring turns from
+// pale to full red, a warned one's to full amber.
+const inputTones = {
+  default:
+    "border border-input-border focus:border-primary-strong focus:ring-1 focus:ring-primary-strong aria-invalid:border-[1.5px] aria-invalid:border-danger aria-invalid:ring-[3px] aria-invalid:ring-danger-soft aria-invalid:focus:ring-danger",
+  /** A value worth a second look, explained by a note beside the field. */
+  warning: "border-[1.5px] border-warning ring-[3px] ring-warning-soft focus:ring-warning",
+};
+
+export const inputClass = `${inputBase} ${inputTones.default}`;
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   suffix?: string | undefined;
   /** Classes for the box around the input, such as its width. */
   boxClassName?: string;
+  tone?: keyof typeof inputTones | undefined;
 }
 
 /** Ids for aria-describedby, leaving out the missing ones. */
@@ -18,6 +30,7 @@ export function Input({
   suffix,
   boxClassName = "",
   className = "",
+  tone = "default",
   "aria-describedby": description,
   ...input
 }: InputProps) {
@@ -42,7 +55,7 @@ export function Input({
   return (
     <div className={`relative ${boxClassName}`}>
       <input
-        className={`${inputClass} ${className}`}
+        className={`${inputBase} ${inputTones[tone]} ${className}`}
         style={clearance ? { paddingInlineEnd: clearance } : undefined}
         // The unit is hidden as text of its own but read with the field: "4.5, kg".
         aria-describedby={describedBy(description, suffix && unitId)}
@@ -95,6 +108,7 @@ interface FieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "onChan
   hint?: ReactNode;
   /** Shown under the field, which is then marked invalid. */
   error?: string | undefined;
+  tone?: InputProps["tone"];
 }
 
 export function Field({

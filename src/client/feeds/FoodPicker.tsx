@@ -76,7 +76,7 @@ export function FoodPicker({
                   <span className="flex flex-none flex-col items-end gap-1">
                     <FoodTypeBadge type={food.type} />
                     <span
-                      className={`text-[13px] tabular-nums ${isOutOfStock(food) ? "font-semibold text-warning" : "text-muted-foreground"}`}
+                      className={`text-[13px] tabular-nums ${isOutOfStock(food) ? "font-semibold text-warning-strong" : "text-muted-foreground"}`}
                     >
                       {stockLeftLabel(food, i18n)}
                     </span>

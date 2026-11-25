@@ -100,6 +100,23 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Wherever keyboard focus goes, it shows. In the base layer, so a control
+   with a focus style of its own, such as an input, keeps it. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-primary-strong);
+    outline-offset: 2px;
+  }
+}
+
+/* For a row that fills a box clipping its overflow, which would hide an
+   outline drawn outside it. */
+@utility focus-inset {
+  &:focus-visible {
+    outline-offset: -2px;
+  }
+}
+
 /* Phone: full width above the bottom bar. Desktop: centred on the content
    column, clear of the floating buttons on the right. */
 /* Extends a control's tap area to at least 44 × 44 px without changing how it looks. */

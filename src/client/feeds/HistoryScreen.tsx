@@ -64,7 +64,7 @@ function DayCard({
         type="button"
         aria-expanded={expanded}
         onClick={onToggle}
-        className="flex w-full cursor-pointer flex-col gap-2 px-4 py-3.5 text-left desktop:px-[22px] desktop:py-4"
+        className="focus-inset flex w-full cursor-pointer flex-col gap-2 px-4 py-3.5 text-left desktop:px-[22px] desktop:py-4"
       >
         <span className="flex w-full items-center justify-between gap-2">
           <span className="text-[15px] font-semibold">

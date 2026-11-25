@@ -113,7 +113,7 @@ function TypesScreen({ kind, allRows }: { kind: TypeKind; allRows: Row[] | undef
                 key={row.id}
                 type="button"
                 data-type={row.id}
-                className={`${rowClass} cursor-pointer`}
+                className={`${rowClass} focus-inset cursor-pointer`}
                 onClick={() => setEditing(custom)}
               >
                 <RowLabel row={row} />

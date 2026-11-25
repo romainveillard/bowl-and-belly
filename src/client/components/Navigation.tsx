@@ -30,7 +30,7 @@ export function BottomNav() {
         <NavLink
           key={to}
           to={to}
-          className="group flex flex-1 flex-col items-center gap-1 pt-2 pb-2.5 text-caption font-medium text-muted-foreground aria-[current=page]:font-semibold aria-[current=page]:text-foreground"
+          className="group relative flex flex-1 flex-col items-center gap-1 pt-2 pb-2.5 text-caption font-medium text-muted-foreground before:absolute before:top-0 before:left-1/2 before:h-[3px] before:w-6 before:-translate-x-1/2 before:rounded-b-full aria-[current=page]:font-semibold aria-[current=page]:text-foreground aria-[current=page]:before:bg-primary-strong"
         >
           <span className="flex h-[30px] w-14 items-center justify-center rounded-full group-aria-[current=page]:bg-accent-soft">
             <Icon />
@@ -42,8 +42,9 @@ export function BottomNav() {
   );
 }
 
+// The current tab's bar sits on the white beside its pill, where it keeps 3:1.
 const sideLink =
-  "flex h-11 items-center gap-3 rounded-[10px] px-3 text-[15px] font-medium text-muted-foreground aria-[current=page]:bg-accent-soft aria-[current=page]:font-semibold aria-[current=page]:text-foreground";
+  "relative flex h-11 items-center gap-3 rounded-[10px] px-3 text-[15px] font-medium text-muted-foreground before:absolute before:top-2.5 before:bottom-2.5 before:-left-2.5 before:w-[3px] before:rounded-full aria-[current=page]:bg-accent-soft aria-[current=page]:font-semibold aria-[current=page]:text-foreground aria-[current=page]:before:bg-primary-strong";
 
 export function Sidebar() {
   const { t } = useTranslation();

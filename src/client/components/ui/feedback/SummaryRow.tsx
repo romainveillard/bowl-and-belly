@@ -13,7 +13,7 @@ export function SummaryRow({
   return (
     <div className="flex justify-between rounded-[10px] bg-muted px-3.5 py-3 text-sm tabular-nums">
       <span className="text-muted-foreground">{label}</span>
-      <span className={`font-semibold ${warning ? "text-warning" : ""}`}>{children}</span>
+      <span className={`font-semibold ${warning ? "text-warning-strong" : ""}`}>{children}</span>
     </div>
   );
 }
