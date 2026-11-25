@@ -13,6 +13,8 @@ import { Switch } from "../components/ui/Switch.js";
 import {
   foodTypeLabel,
   portionPlural,
+  SUGGESTED_PORTIONS,
+  suggestedPortion,
   useFood,
   useFoodTypes,
   useSaveFood,
@@ -29,8 +31,7 @@ import { offeredTypes, optionLabel } from "../lib/types.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
 import { KcalUpdateDialog } from "./KcalUpdateDialog.js";
 
-const SUGGESTED = ["pouch", "tin", "tray"] as const;
-type PortionChoice = (typeof SUGGESTED)[number] | "other";
+type PortionChoice = (typeof SUGGESTED_PORTIONS)[number] | "other";
 
 interface FormState {
   name: string;
@@ -78,11 +79,9 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
   const [archiving, setArchiving] = useState(false);
   const [askingBackfill, setAskingBackfill] = useState<FoodBody | null>(null);
 
-  const suggestedName = (key: (typeof SUGGESTED)[number]) => t(`portionName.${key}`);
+  const suggestedName = (key: (typeof SUGGESTED_PORTIONS)[number]) => t(`portionName.${key}`);
   const [form, setForm] = useState<FormState>(() => {
-    const known = SUGGESTED.find(
-      (key) => suggestedName(key).toLowerCase() === food?.portionName?.toLowerCase(),
-    );
+    const known = food?.portionName ? suggestedPortion(food.portionName, i18n) : undefined;
     const counted = food?.stockUnit === "portion" && food.portionG !== null;
     const stockG = Math.max(food?.stockG ?? 0, 0);
     return {
@@ -395,7 +394,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
                       aria-labelledby="food-portion-label"
                       className="flex flex-wrap gap-2"
                     >
-                      {([...SUGGESTED, "other"] as const).map((choice) => (
+                      {([...SUGGESTED_PORTIONS, "other"] as const).map((choice) => (
                         <button
                           key={choice}
                           type="button"

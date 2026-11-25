@@ -134,7 +134,7 @@ export function foodTypeLabel(
   return type.systemKey ? t(`foodType.${type.systemKey}`) : (type.name ?? "");
 }
 
-const SUGGESTED_PORTIONS = ["pouch", "tin", "tray"] as const;
+export const SUGGESTED_PORTIONS = ["pouch", "tin", "tray"] as const;
 const LANGUAGES = ["en-GB", "fr"];
 
 /**
@@ -142,7 +142,7 @@ const LANGUAGES = ["en-GB", "fr"];
  * the suggested names, in any language the app ships, it can be counted and
  * translated properly.
  */
-function suggestedPortion(name: string, i18n: I18n) {
+export function suggestedPortion(name: string, i18n: I18n) {
   return SUGGESTED_PORTIONS.find((key) =>
     LANGUAGES.some(
       (lng) => i18n.t(`portionName.${key}`, { lng }).toLowerCase() === name.toLowerCase(),
