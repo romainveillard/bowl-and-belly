@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { uploadPhoto } from "../lib/images.js";
+import { useUploadPhoto } from "../lib/images.js";
 import { CameraIcon } from "./icons.js";
 import { button } from "./ui/forms/button.js";
 
@@ -23,6 +23,7 @@ type PhotoPickerProps = {
 export function PhotoPicker(props: PhotoPickerProps) {
   const { photoId, onChange, label, alt, hint, shape } = props;
   const fileInput = useRef<HTMLInputElement>(null);
+  const upload = useUploadPhoto();
   const choose = () => fileInput.current?.click();
   const photo = photoId === null ? null : `/api/images/${photoId}`;
 
@@ -36,8 +37,10 @@ export function PhotoPicker(props: PhotoPickerProps) {
         onChange={(event) => {
           const file = event.target.files?.[0];
           if (file) {
-            void uploadPhoto(file).then(onChange);
+            upload.mutate(file, { onSuccess: onChange });
           }
+          // Picking the same file again, after a failed upload, must still fire change.
+          event.target.value = "";
         }}
       />
       {props.shape === "wide" && photo !== null ? (
