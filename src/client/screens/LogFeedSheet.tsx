@@ -5,7 +5,7 @@ import { FoodPicker } from "../components/FoodPicker.js";
 import { PetChip } from "../components/PetChip.js";
 import { button } from "../components/ui/forms/button.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
-import { Field, inputClass } from "../components/ui/forms/Field.js";
+import { Field, FieldError, Input, inputClass } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
 import {
@@ -142,30 +142,21 @@ function LogFeedForm({
                 })}
               </span>
             </label>
-            <div className="relative w-24 flex-none desktop:w-[110px]">
-              <input
-                id="log-leftover"
-                inputMode="numeric"
-                placeholder="0"
-                value={leftover}
-                onChange={(event) => setLeftover(event.target.value)}
-                onBlur={errors.recheck("leftover")}
-                aria-invalid={errorFor("leftover") ? true : undefined}
-                aria-describedby={errorFor("leftover") ? "log-leftover-error" : undefined}
-                className={`${inputClass} pr-7`}
-              />
-              <span
-                aria-hidden="true"
-                className="absolute top-3 right-3 text-[15px] text-muted-foreground"
-              >
-                g
-              </span>
-            </div>
+            <Input
+              id="log-leftover"
+              inputMode="numeric"
+              placeholder="0"
+              suffix="g"
+              boxClassName="w-24 flex-none desktop:w-[110px]"
+              value={leftover}
+              onChange={(event) => setLeftover(event.target.value)}
+              onBlur={errors.recheck("leftover")}
+              aria-invalid={errorFor("leftover") ? true : undefined}
+              aria-describedby={errorFor("leftover") ? "log-leftover-error" : undefined}
+            />
           </div>
           {errorFor("leftover") && (
-            <span id="log-leftover-error" className="text-[13px] font-medium text-danger">
-              {errorFor("leftover")}
-            </span>
+            <FieldError id="log-leftover-error">{errorFor("leftover")}</FieldError>
           )}
         </div>
       )}

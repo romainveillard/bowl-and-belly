@@ -3,8 +3,7 @@ import { useTranslation } from "react-i18next";
 import type { PickerFood } from "../lib/feeds.js";
 import { foodTypeLabel, isOutOfStock, stockLeftLabel } from "../lib/foods.js";
 import { FoodTypeBadge, FoodTypeTile } from "./FoodTypeMark.js";
-import { SearchIcon } from "./icons.js";
-import { inputClass } from "./ui/forms/Field.js";
+import { FieldError, SearchInput } from "./ui/forms/Field.js";
 
 const chip =
   "h-9 flex-none cursor-pointer rounded-full border border-border bg-card px-3.5 text-sm font-medium aria-pressed:border-primary-strong aria-pressed:bg-accent-soft aria-pressed:font-semibold";
@@ -49,21 +48,15 @@ export function FoodPicker({
         {t("logFeed.food")}
       </label>
       <div className="flex flex-col gap-2.5 desktop:flex-row desktop:items-center">
-        <div className="relative desktop:flex-1">
-          <span aria-hidden="true" className="absolute top-3 left-3 text-muted-foreground">
-            <SearchIcon size={20} />
-          </span>
-          <input
-            id={inputId}
-            type="search"
-            placeholder={t("logFeed.search")}
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            aria-invalid={error ? true : undefined}
-            aria-describedby={error ? errorId : undefined}
-            className={`${inputClass} pl-10`}
-          />
-        </div>
+        <SearchInput
+          id={inputId}
+          boxClassName="desktop:flex-1"
+          placeholder={t("logFeed.search")}
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
+        />
         <div className="flex gap-2">
           <button
             type="button"
@@ -86,11 +79,7 @@ export function FoodPicker({
           ))}
         </div>
       </div>
-      {error && (
-        <span id={errorId} className="text-[13px] font-medium text-danger">
-          {error}
-        </span>
-      )}
+      {error && <FieldError id={errorId}>{error}</FieldError>}
       {showRecentLabel && (
         <span className="mt-1 text-caption font-medium tracking-[0.6px] text-muted-foreground uppercase desktop:hidden">
           {t("logFeed.recent")}

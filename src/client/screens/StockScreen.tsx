@@ -4,11 +4,11 @@ import { Link } from "react-router";
 import { ArchivedLink } from "../components/ArchivedLink.js";
 import { FoodTypeBadge, FoodTypeTile } from "../components/FoodTypeMark.js";
 import { EmptyState } from "../components/EmptyState.js";
-import { PlusIcon, SearchIcon, StockIcon } from "../components/icons.js";
+import { PlusIcon, StockIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
 import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageTitle } from "../components/ui/layout/PageHeader.js";
-import { inputClass } from "../components/ui/forms/Field.js";
+import { SearchInput } from "../components/ui/forms/Field.js";
 import {
   foodTypeLabel,
   isOutOfStock,
@@ -87,22 +87,16 @@ export function StockScreen() {
       <header className="flex flex-col gap-3 px-5 pt-5 pb-2 desktop:gap-6 desktop:p-0">
         <PageTitle>{t("nav.stock")}</PageTitle>
         <div className="flex flex-col gap-3 desktop:flex-row desktop:flex-wrap desktop:items-center">
-          <div className="relative desktop:max-w-[420px] desktop:min-w-60 desktop:flex-1">
-            <label htmlFor="stock-search" className="sr-only">
-              {t("stock.search")}
-            </label>
-            <span aria-hidden="true" className="absolute top-3 left-3 text-muted-foreground">
-              <SearchIcon size={20} />
-            </span>
-            <input
-              id="stock-search"
-              type="search"
-              placeholder={t("stock.search")}
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              className={`${inputClass} pl-10`}
-            />
-          </div>
+          <label htmlFor="stock-search" className="sr-only">
+            {t("stock.search")}
+          </label>
+          <SearchInput
+            id="stock-search"
+            boxClassName="desktop:max-w-[420px] desktop:min-w-60 desktop:flex-1"
+            placeholder={t("stock.search")}
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
           <div className="flex flex-wrap gap-2">
             <button
               type="button"

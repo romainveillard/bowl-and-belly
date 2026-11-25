@@ -8,7 +8,7 @@ import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { ConfirmDialog } from "../components/ui/overlays/ConfirmDialog.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
-import { Field, inputClass } from "../components/ui/forms/Field.js";
+import { Field, FieldError, Input, inputClass } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { Switch } from "../components/ui/forms/Switch.js";
 import {
@@ -380,7 +380,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
                         <label htmlFor="food-portionName" className="sr-only">
                           {t("foodForm.otherName")}
                         </label>
-                        <input
+                        <Input
                           id="food-portionName"
                           placeholder={t("foodForm.otherPlaceholder")}
                           value={form.otherPortion}
@@ -390,15 +390,11 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
                           aria-describedby={
                             errorFor("portionName") ? "food-portionName-error" : undefined
                           }
-                          className={inputClass}
                         />
                         {errorFor("portionName") && (
-                          <span
-                            id="food-portionName-error"
-                            className="text-[13px] font-medium text-danger"
-                          >
+                          <FieldError id="food-portionName-error">
                             {errorFor("portionName")}
-                          </span>
+                          </FieldError>
                         )}
                       </>
                     )}
