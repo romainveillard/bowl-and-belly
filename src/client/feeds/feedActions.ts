@@ -1,18 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
 import { formatTime } from "../lib/format.js";
-import {
-  useDaySettings,
-  useDeleteFeed,
-  useLogFeed,
-  useRestoreFeed,
-  type FeedEntry,
-} from "./feeds.js";
+import { useDeleteFeed, useLogFeed, useRestoreFeed, type FeedEntry } from "./feeds.js";
+import { useSettings } from "../settings/settings.js";
 
 /** Log again and delete, shared by the row's swipes, its menu and its desktop buttons. */
 export function useFeedActions(petId: number) {
   const { t, i18n } = useTranslation();
-  const { data: settings } = useDaySettings();
+  const { data: settings } = useSettings();
   const showSnackbar = useSnackbar();
   const logFeed = useLogFeed();
   const deleteFeed = useDeleteFeed();

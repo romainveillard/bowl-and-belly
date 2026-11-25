@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { addDays } from "../../shared/app-day.js";
 import { periodIntake, weekStart } from "../../shared/insights.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
-import { useDaySettings } from "../feeds/feeds.js";
 import { isOverTarget } from "../lib/dayStatus.js";
 import { formatAppDay, formatAppDayRange, formatDay, formatKg } from "../lib/format.js";
 import { targetOn, usePet } from "../pets/pets.js";
@@ -12,6 +11,7 @@ import { WeightChart } from "./charts/WeightChart.js";
 import { PeriodBar, type PeriodViewProps } from "./PeriodBar.js";
 import { AverageStat, Stat, TargetStat } from "./Stat.js";
 import { useInsights } from "./useInsights.js";
+import { useSettings } from "../settings/settings.js";
 
 export function WeekInsights({ petId, today, onPeriod }: PeriodViewProps) {
   const { t, i18n } = useTranslation();
@@ -19,7 +19,7 @@ export function WeekInsights({ petId, today, onPeriod }: PeriodViewProps) {
   const end = addDays(start, 6);
   const { data } = useInsights(petId, start, end);
   const { data: pet } = usePet(petId);
-  const { data: settings } = useDaySettings();
+  const { data: settings } = useSettings();
   const timeZone = settings?.timeZone ?? "UTC";
   const isCurrentWeek = start === weekStart(today);
 

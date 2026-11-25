@@ -7,7 +7,7 @@ const foodTypes = api.api["food-types"];
 const petTypes = api.api["pet-types"];
 
 export type TypeKind = "pet" | "food";
-export type FoodTypeBody = InferRequestType<typeof foodTypes.$post>["json"];
+type FoodTypeBody = InferRequestType<typeof foodTypes.$post>["json"];
 
 // Labels of types appear on foods and pets, so those reload too.
 const affected = { food: ["food-types", "foods"], pet: ["pet-types", "pets", "foods"] };

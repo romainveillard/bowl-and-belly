@@ -171,7 +171,7 @@ function typedPlural(name: string, count: number): string {
 }
 
 /** "8 pouches", "1 tin", "3 cartons". */
-export function countPortions(name: string, count: number, i18n: I18n): string {
+function countPortions(name: string, count: number, i18n: I18n): string {
   const suggested = suggestedPortion(name, i18n);
   return suggested
     ? i18n.t(`portion.${suggested}`, { count })

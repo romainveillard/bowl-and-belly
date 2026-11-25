@@ -11,7 +11,7 @@ import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageHeader } from "../components/ui/layout/PageHeader.js";
 import { button } from "../components/ui/forms/button.js";
 import { dayStatus } from "../lib/dayStatus.js";
-import { useDaySettings, useHistory, type DaySummary, type FeedEntry } from "./feeds.js";
+import { useHistory, type DaySummary, type FeedEntry } from "./feeds.js";
 import { foodTypeLabel } from "../stock/foods.js";
 import { formatAppDay } from "../lib/format.js";
 import { usePets } from "../pets/pets.js";
@@ -20,6 +20,7 @@ import { useSelectedPet } from "../pets/selectedPet.js";
 import { FeedSheetsProvider, useFeedSheets } from "./FeedSheetsProvider.js";
 import { LogFeedSheet } from "./LogFeedSheet.js";
 import { LogWeightButton, WeightSheetsProvider } from "../pets/WeightSheetsProvider.js";
+import { useSettings } from "../settings/settings.js";
 
 const typeBackground = { wet: "bg-wet-soft", dry: "bg-dry-soft", custom: "bg-background" };
 
@@ -146,7 +147,7 @@ export function HistoryScreen() {
   const { t } = useTranslation();
   const { data: pets } = usePets();
   const { data: foodCount } = useFoodCount();
-  const { data: settings } = useDaySettings();
+  const { data: settings } = useSettings();
   const { pet } = useSelectedPet();
   const history = useHistory(pet?.id, pets?.today);
   const [toggled, setToggled] = useState<Record<string, boolean>>({});

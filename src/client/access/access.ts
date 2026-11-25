@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 
 /** "login" once the API refuses the session; "expired" once a proxy in front of the app redirects it. */
-export type Access = "ok" | "login" | "expired";
+type Access = "ok" | "login" | "expired";
 
 let access: Access = "ok";
 const listeners = new Set<() => void>();

@@ -4,7 +4,7 @@ import { addDays, appDayStart } from "../../shared/app-day.js";
 import { Card, CardHeading, cardEdgeRows } from "../components/ui/layout/Card.js";
 import { FeedRow } from "../feeds/FeedRow.js";
 import { useFeedSheets } from "../feeds/FeedSheetsProvider.js";
-import { useDay, useDaySettings } from "../feeds/feeds.js";
+import { useDay } from "../feeds/feeds.js";
 import { isOnTarget } from "../lib/dayStatus.js";
 import { formatAppDay, formatTime } from "../lib/format.js";
 import { useIsDesktop } from "../lib/useIsDesktop.js";
@@ -13,6 +13,7 @@ import { foodTypeLabel } from "../stock/foods.js";
 import { DayChart } from "./charts/DayChart.js";
 import { PeriodBar, type PeriodViewProps } from "./PeriodBar.js";
 import { Stat, TargetStat } from "./Stat.js";
+import { useSettings } from "../settings/settings.js";
 
 /** One day's intake and feeds, inside a FeedSheetsProvider. */
 export function DayInsights({ petId, today, onPeriod }: PeriodViewProps) {
@@ -22,7 +23,7 @@ export function DayInsights({ petId, today, onPeriod }: PeriodViewProps) {
   const isDesktop = useIsDesktop();
   const { data: summary, isPending } = useDay(petId, day);
   const { data: pet } = usePet(petId);
-  const { data: settings } = useDaySettings();
+  const { data: settings } = useSettings();
   const sheets = useFeedSheets();
   const format = (weekday: "short" | "long") =>
     formatAppDay(day, i18n.language, { weekday, day: "numeric", month: weekday });

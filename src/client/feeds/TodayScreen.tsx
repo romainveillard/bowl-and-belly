@@ -18,10 +18,11 @@ import { useFoodCount } from "../stock/foods.js";
 import { CaloriesCard } from "./CaloriesCard.js";
 import { FeedRow } from "./FeedRow.js";
 import { FeedSheetsProvider, useFeedSheets } from "./FeedSheetsProvider.js";
-import { useDay, useDaySettings } from "./feeds.js";
+import { useDay } from "./feeds.js";
 import { FirstRun } from "./FirstRun.js";
 import { LogFeedSheet } from "./LogFeedSheet.js";
 import { useSwipeHint } from "./useSwipeHint.js";
+import { useSettings } from "../settings/settings.js";
 
 // The charting library only loads where a chart is shown.
 const ThisWeekCard = lazy(() => import("../insights/ThisWeekCard.js"));
@@ -31,7 +32,7 @@ const card = "bg-card inset-ring inset-ring-border";
 function TodayFeeds({ pet, today }: { pet: PetSummary; today: string }) {
   const { t } = useTranslation();
   const { data: summary } = useDay(pet.id, today);
-  const { data: settings } = useDaySettings();
+  const { data: settings } = useSettings();
   const sheets = useFeedSheets();
   const isDesktop = useIsDesktop();
   const entries = summary?.entries ?? [];

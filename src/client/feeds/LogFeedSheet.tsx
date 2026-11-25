@@ -9,7 +9,7 @@ import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field, inputClass } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
-import { useDaySettings, useLogFeed, useLogForm, type LogForm, type PickerFood } from "./feeds.js";
+import { useLogFeed, useLogForm, type LogForm, type PickerFood } from "./feeds.js";
 import { formatTime } from "../lib/format.js";
 import { portionPlural } from "../stock/foods.js";
 import {
@@ -21,6 +21,7 @@ import {
 } from "./logFeed.js";
 import { useSelectedPet } from "../pets/selectedPet.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
+import { useSettings } from "../settings/settings.js";
 
 type FieldName = "food" | "amount" | "leftover";
 const FIELD_ORDER: FieldName[] = ["leftover", "food", "amount"];
@@ -196,7 +197,7 @@ function LogFeedForm({
 export function LogFeedSheet({ onClose }: { onClose: () => void }) {
   const { pet } = useSelectedPet();
   const { data: form } = useLogForm(pet?.id);
-  const { data: settings } = useDaySettings();
+  const { data: settings } = useSettings();
 
   if (!pet || !form || !settings) {
     return null;

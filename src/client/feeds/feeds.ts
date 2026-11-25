@@ -8,7 +8,6 @@ import {
 import type { InferRequestType, InferResponseType } from "hono/client";
 import { addDays } from "../../shared/app-day.js";
 import { api } from "../api.js";
-import { useSettings } from "../settings/settings.js";
 
 const feeds = api.api.feeds;
 
@@ -16,7 +15,7 @@ export type DaySummary = InferResponseType<typeof feeds.$get, 200>["days"][numbe
 export type FeedEntry = DaySummary["entries"][number];
 export type LogForm = InferResponseType<(typeof feeds)["log-form"]["$get"], 200>;
 export type PickerFood = LogForm["foods"][number];
-export type LogBody = InferRequestType<typeof feeds.$post>["json"];
+type LogBody = InferRequestType<typeof feeds.$post>["json"];
 
 /** History loads this many days at a time as the user scrolls back. */
 const HISTORY_WINDOW_DAYS = 14;
@@ -149,8 +148,4 @@ export function useRestoreFeed() {
     },
     onSuccess: () => refreshAfterFeed(queryClient),
   });
-}
-
-export function useDaySettings() {
-  return useSettings();
 }

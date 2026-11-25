@@ -3,7 +3,8 @@ import { AddLeftoverSheet } from "./AddLeftoverSheet.js";
 import { EditFeedSheet } from "./EditFeedSheet.js";
 import { FeedActionsSheet } from "./FeedActionsSheet.js";
 import { useFeedActions } from "./feedActions.js";
-import { useDaySettings, type FeedEntry } from "./feeds.js";
+import type { FeedEntry } from "./feeds.js";
+import { useSettings } from "../settings/settings.js";
 
 interface FeedSheets {
   /** Opens a feed row's actions, for a feed on the app day `day`. */
@@ -30,7 +31,7 @@ export function FeedSheetsProvider({
   today: string;
   children: ReactNode;
 }) {
-  const { data: settings } = useDaySettings();
+  const { data: settings } = useSettings();
   const timeZone = settings?.timeZone ?? "UTC";
   const actions = useFeedActions(petId);
   const [opened, setOpened] = useState<Opened | null>(null);

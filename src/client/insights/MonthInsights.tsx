@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { addDays, addMonths } from "../../shared/app-day.js";
 import { periodIntake, rollingAverage } from "../../shared/insights.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
-import { useDaySettings } from "../feeds/feeds.js";
 import { dayStatus } from "../lib/dayStatus.js";
 import { formatAppDay, formatDateInput, formatDay, formatKg } from "../lib/format.js";
 import { targetOn, usePet } from "../pets/pets.js";
@@ -14,6 +13,7 @@ import { WeightChart } from "./charts/WeightChart.js";
 import { PeriodBar, type PeriodViewProps } from "./PeriodBar.js";
 import { AverageStat, Stat, TargetStat } from "./Stat.js";
 import { useInsights } from "./useInsights.js";
+import { useSettings } from "../settings/settings.js";
 
 /** "Steady this month", or how far the rolling average moved over the month's readings. */
 function trendNote(averagesG: number[], locale: string, t: TFunction): string | undefined {
@@ -35,7 +35,7 @@ export function MonthInsights({ petId, today, onPeriod }: PeriodViewProps) {
   const end = addDays(next, -1);
   const { data } = useInsights(petId, start, end, addDays(start, -7));
   const { data: pet } = usePet(petId);
-  const { data: settings } = useDaySettings();
+  const { data: settings } = useSettings();
   const isCurrentMonth = start === `${today.slice(0, 7)}-01`;
   const month = formatAppDay(start, i18n.language, { month: "long", year: "numeric" });
 

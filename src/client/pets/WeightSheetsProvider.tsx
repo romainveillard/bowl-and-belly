@@ -3,13 +3,13 @@ import { useTranslation } from "react-i18next";
 import { PlusIcon } from "../components/icons.js";
 import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
 import { button } from "../components/ui/forms/button.js";
-import { useDaySettings } from "../feeds/feeds.js";
 import { formatDay, formatReadingKg } from "../lib/format.js";
 import { LogWeightSheet } from "./LogWeightSheet.js";
 import { usePet, type PetDetail } from "./pets.js";
 import { TargetPromptDialog } from "./TargetPromptDialog.js";
 import { WeighInActionsSheet } from "./WeighInActionsSheet.js";
 import { useDeleteWeight, useRestoreWeight, type TargetPrompt } from "./weights.js";
+import { useSettings } from "../settings/settings.js";
 
 type Reading = PetDetail["weights"][number];
 
@@ -37,7 +37,7 @@ export function WeightSheetsProvider({
 }) {
   const { t, i18n } = useTranslation();
   const { data: pet } = usePet(petId);
-  const { data: settings } = useDaySettings();
+  const { data: settings } = useSettings();
   const deleteWeight = useDeleteWeight();
   const restoreWeight = useRestoreWeight();
   const showSnackbar = useSnackbar();
