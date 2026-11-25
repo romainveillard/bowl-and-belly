@@ -4,6 +4,7 @@ import { addDays } from "../../shared/app-day.js";
 import { weekStart } from "../../shared/insights.js";
 import { useInsights } from "../lib/insights.js";
 import { IntakeChart } from "./charts/IntakeChart.js";
+import { Card, CardHeading } from "./ui/layout/Card.js";
 
 /** This week's intake on desktop Today, linking to Insights. Loaded on demand, with the charts. */
 export default function ThisWeekCard({ petId, today }: { petId: number; today: string }) {
@@ -15,13 +16,15 @@ export default function ThisWeekCard({ petId, today }: { petId: number; today: s
     return null;
   }
   return (
-    <section className="flex flex-col gap-4 rounded-[14px] bg-card p-[22px] inset-ring inset-ring-border">
-      <div className="flex items-baseline justify-between">
-        <h2 className="text-base font-semibold">{t("today.thisWeek")}</h2>
-        <Link to="/insights" className="text-sm font-semibold">
-          {t("today.insightsLink")}
-        </Link>
-      </div>
+    <Card>
+      <CardHeading
+        title={t("today.thisWeek")}
+        action={
+          <Link to="/insights" className="text-sm font-semibold">
+            {t("today.insightsLink")}
+          </Link>
+        }
+      />
       <IntakeChart
         days={data.days}
         today={data.today}
@@ -29,6 +32,6 @@ export default function ThisWeekCard({ petId, today }: { petId: number; today: s
         legend={false}
         height={150}
       />
-    </section>
+    </Card>
   );
 }

@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import { BowlIcon, CheckIcon, LogoMark, PlusIcon, SettingsIcon } from "../components/icons.js";
 import { FeedRow } from "../components/FeedRow.js";
 import { PetChip } from "../components/PetChip.js";
+import { Card } from "../components/ui/layout/Card.js";
 import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageHeader } from "../components/ui/layout/PageHeader.js";
 import { WeightCard } from "../components/WeightCard.js";
@@ -94,14 +95,12 @@ function NoPets() {
           {t("today.addFirstPet")}
         </Link>
       </section>
-      <section
-        className={`${card} flex flex-col gap-3.5 rounded-xl p-[18px] desktop:gap-4 desktop:rounded-[14px] desktop:p-[22px]`}
-      >
+      <Card>
         <h2 className="text-caption font-medium tracking-[0.6px] text-muted-foreground uppercase desktop:text-base desktop:font-semibold desktop:tracking-normal desktop:text-foreground desktop:normal-case">
           {t("today.gettingStarted")}
         </h2>
         <GettingStarted petAdded={false} />
-      </section>
+      </Card>
     </div>
   );
 }
