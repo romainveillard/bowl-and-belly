@@ -318,6 +318,7 @@
     "archivedHint": "Les repas passés sont conservés. Restaurez un aliment pour l’utiliser à nouveau.",
     "archivedRow": "{type} · archivé le {date}",
     "withRemainder": "{portions} + {grams, number} g",
+    "remainder": "+ {grams, number} g",
     "out": "Rupture de stock",
     "emptyTitle": "Pas encore d’aliments",
     "emptyBody": "Ajoutez les aliments que vous avez dans le placard, avec les calories de l’étiquette. Vous les choisirez en notant un repas.",

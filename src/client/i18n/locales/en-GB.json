@@ -318,6 +318,7 @@
     "archivedHint": "Past feeds are kept. Restore a food to log it again.",
     "archivedRow": "{type} · archived {date}",
     "withRemainder": "{portions} + {grams, number} g",
+    "remainder": "+ {grams, number} g",
     "out": "Out of stock",
     "emptyTitle": "No foods yet",
     "emptyBody": "Add the foods you keep in the cupboard, with calories from the label. You’ll pick from them when you log a feed.",

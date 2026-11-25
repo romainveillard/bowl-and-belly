@@ -211,10 +211,10 @@ export function isOutOfStock(food: Stocked): boolean {
   return food.stockG <= 0;
 }
 
-/** Stock in the food's own unit: "1.4 kg", "650 g", "8 pouches + 45 g", "Out of stock". */
-export function stockLabel(food: Stocked, i18n: I18n): string {
+/** The stock's main figure, and the grams of an open portion beside a count of portions. */
+function stockAmounts(food: Stocked, i18n: I18n): { stock: string; openG: number } {
   if (isOutOfStock(food)) {
-    return i18n.t("stock.out");
+    return { stock: i18n.t("stock.out"), openG: 0 };
   }
   const counted = food.stockUnit === "portion" && food.portionName !== null;
   const parts = stockParts({ stockG: food.stockG, portionG: counted ? food.portionG : null });
@@ -225,16 +225,31 @@ export function stockLabel(food: Stocked, i18n: I18n): string {
       : i18n.t("stock.g", { value: number.format(value) });
   };
   if ("grams" in parts) {
-    return grams(parts.grams);
+    return { stock: grams(parts.grams), openG: 0 };
   }
   // Less than one portion left reads better as plain grams than as "0 pouches + 45 g".
   if (parts.portions === 0) {
-    return grams(parts.openG);
+    return { stock: grams(parts.openG), openG: 0 };
   }
-  const portions = countPortions(food.portionName ?? "", parts.portions, i18n);
-  return parts.openG > 0
-    ? i18n.t("stock.withRemainder", { portions, grams: parts.openG })
-    : portions;
+  return {
+    stock: countPortions(food.portionName ?? "", parts.portions, i18n),
+    openG: parts.openG,
+  };
+}
+
+/** Stock in the food's own unit: "1.4 kg", "650 g", "8 pouches + 45 g", "Out of stock". */
+export function stockLabel(food: Stocked, i18n: I18n): string {
+  const { stock, openG } = stockAmounts(food, i18n);
+  return openG > 0 ? i18n.t("stock.withRemainder", { portions: stock, grams: openG }) : stock;
+}
+
+/** The same in two parts, for a remainder set apart: "8 pouches" and "+ 45 g". */
+export function stockFigure(
+  food: Stocked,
+  i18n: I18n,
+): { stock: string; remainder: string | null } {
+  const { stock, openG } = stockAmounts(food, i18n);
+  return { stock, remainder: openG > 0 ? i18n.t("stock.remainder", { grams: openG }) : null };
 }
 
 /** "1.4 kg left", or "Out of stock" on its own. */

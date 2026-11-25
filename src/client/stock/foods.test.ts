@@ -3,7 +3,7 @@ import ICU from "i18next-icu";
 import { describe, expect, it } from "vitest";
 import enGB from "../i18n/locales/en-GB.json" with { type: "json" };
 import fr from "../i18n/locales/fr.json" with { type: "json" };
-import { matchesFood, portionUnit, stockLabel } from "./foods.js";
+import { matchesFood, portionUnit, stockFigure, stockLabel } from "./foods.js";
 
 const i18n = i18next.createInstance();
 await i18n.use(ICU).init({
@@ -19,6 +19,17 @@ describe("stockLabel", () => {
     expect(stockLabel({ ...pouches, stockG: 725 }, i18n)).toBe("8 pouches + 45 g");
     expect(stockLabel({ ...pouches, stockG: 85 }, i18n)).toBe("1 pouch");
     expect(stockLabel({ ...pouches, stockG: 45 }, i18n)).toBe("45 g");
+  });
+
+  it("sets the remainder apart only beside a count of portions", () => {
+    expect(stockFigure({ ...pouches, stockG: 725 }, i18n)).toEqual({
+      stock: "8 pouches",
+      remainder: "+ 45 g",
+    });
+    expect(stockFigure({ ...pouches, stockG: 45 }, i18n)).toEqual({
+      stock: "45\u00a0g",
+      remainder: null,
+    });
   });
 
   it("switches to kg from 1,000 g", () => {

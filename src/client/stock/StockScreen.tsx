@@ -14,7 +14,7 @@ import { SearchInput } from "../components/ui/forms/Field.js";
 import {
   isOutOfStock,
   matchesFood,
-  stockLabel,
+  stockFigure,
   useFoods,
   useFoodTypes,
   type FoodSummary,
@@ -40,6 +40,24 @@ function FoodName({ food, wholeRow = false }: { food: FoodSummary; wholeRow?: bo
         <span className="truncate text-[13px] text-muted-foreground">{food.brand}</span>
       )}
     </Link>
+  );
+}
+
+/** The stock, with an open portion's grams quieter: under the count on a phone, after it on desktop. */
+function StockFigure({ food, className }: { food: FoodSummary; className: string }) {
+  const { i18n } = useTranslation();
+  const { stock, remainder } = stockFigure(food, i18n);
+  return (
+    <span
+      className={`flex flex-col items-end font-semibold tabular-nums desktop:block ${isOutOfStock(food) ? "text-warning" : ""} ${className}`}
+    >
+      {stock}
+      {remainder && (
+        <span className="text-[13px] font-normal text-muted-foreground desktop:text-[15px]">
+          {/* The space a screen reader and the desktop line need between the two. */} {remainder}
+        </span>
+      )}
+    </span>
   );
 }
 
@@ -119,11 +137,7 @@ export function StockScreen() {
                 >
                   <FoodTypeTile type={food.type} />
                   <FoodName food={food} />
-                  <span
-                    className={`flex-none text-sm font-semibold tabular-nums ${isOutOfStock(food) ? "text-warning" : ""}`}
-                  >
-                    {stockLabel(food, i18n)}
-                  </span>
+                  <StockFigure food={food} className="flex-none text-sm" />
                   <button
                     type="button"
                     aria-label={t("stock.restockNamed", { name: food.name })}
@@ -171,11 +185,8 @@ export function StockScreen() {
                     <span role="cell">
                       <FoodTypeBadge type={food.type} />
                     </span>
-                    <span
-                      role="cell"
-                      className={`text-[15px] font-semibold tabular-nums ${isOutOfStock(food) ? "text-warning" : ""}`}
-                    >
-                      {stockLabel(food, i18n)}
+                    <span role="cell">
+                      <StockFigure food={food} className="text-[15px]" />
                     </span>
                     <span role="cell" className="text-sm text-muted-foreground tabular-nums">
                       {kcalPer100(food)}
