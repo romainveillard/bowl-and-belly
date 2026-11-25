@@ -136,40 +136,38 @@ function LogFeedForm({
         error={errorFor("food")}
       />
 
+      {food && countsInPortions(food) && food.portionName && (
+        <Segmented
+          label={t("logFeed.unit")}
+          hideLabel
+          value={amounts.unit}
+          onChange={(unit) =>
+            setAmounts({ amount: amountIn(servedG, unit, food.portionG, i18n.language), unit })
+          }
+          options={[
+            { value: "g", label: t("logFeed.grams") },
+            { value: "portion", label: portionPlural(food.portionName, i18n) },
+          ]}
+        />
+      )}
       <div className="grid grid-cols-[1fr_120px] items-start gap-3">
-        <div className="flex flex-col gap-2">
-          <Field
-            id={errors.idOf("amount")}
-            label={t("logFeed.amount")}
-            inputMode="decimal"
-            suffix={
-              inPortions && food?.portionName ? portionUnit(food.portionName, i18n) : t("common.g")
-            }
-            error={errorFor("amount")}
-            onBlur={errors.recheck("amount")}
-            value={amounts.amount}
-            onChange={(amount) => setAmounts((current) => ({ ...current, amount }))}
-            hint={
-              servedG !== null && food
-                ? t("logFeed.approx", { kcal: Math.round(kcalIn(servedG, food.kcalPerKg)) })
-                : undefined
-            }
-          />
-          {food && countsInPortions(food) && food.portionName && (
-            <Segmented
-              label={t("logFeed.unit")}
-              hideLabel
-              value={amounts.unit}
-              onChange={(unit) =>
-                setAmounts({ amount: amountIn(servedG, unit, food.portionG, i18n.language), unit })
-              }
-              options={[
-                { value: "g", label: t("logFeed.grams") },
-                { value: "portion", label: portionPlural(food.portionName, i18n) },
-              ]}
-            />
-          )}
-        </div>
+        <Field
+          id={errors.idOf("amount")}
+          label={t("logFeed.amount")}
+          inputMode="decimal"
+          suffix={
+            inPortions && food?.portionName ? portionUnit(food.portionName, i18n) : t("common.g")
+          }
+          error={errorFor("amount")}
+          onBlur={errors.recheck("amount")}
+          value={amounts.amount}
+          onChange={(amount) => setAmounts((current) => ({ ...current, amount }))}
+          hint={
+            servedG !== null && food
+              ? t("logFeed.approx", { kcal: Math.round(kcalIn(servedG, food.kcalPerKg)) })
+              : undefined
+          }
+        />
         <label className="flex flex-col gap-1.5 text-sm font-semibold">
           {t("logFeed.time")}
           <input

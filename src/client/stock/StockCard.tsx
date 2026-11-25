@@ -55,18 +55,17 @@ export function StockCard({
           onChange={(stock) => onChange({ stock })}
         />
         {!counted && (
-          <div className="flex-none">
-            <Segmented
-              label={t("stock.unit")}
-              hideLabel
-              value={value.stockIn}
-              onChange={(stockIn) => onChange({ stockIn })}
-              options={[
-                { value: "g", label: t("common.g") },
-                { value: "kg", label: t("common.kg") },
-              ]}
-            />
-          </div>
+          <Segmented
+            label={t("stock.unit")}
+            hideLabel
+            inline
+            value={value.stockIn}
+            onChange={(stockIn) => onChange({ stockIn })}
+            options={[
+              { value: "g", label: t("common.g") },
+              { value: "kg", label: t("common.kg") },
+            ]}
+          />
         )}
       </div>
     </Card>

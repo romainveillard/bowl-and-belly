@@ -223,17 +223,16 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
                 value={form.kcal}
                 onChange={(value) => set("kcal", value)}
               />
-              <div className="flex-none">
-                <Segmented
-                  label={t("foodForm.per")}
-                  value={form.per}
-                  onChange={(value) => set("per", value)}
-                  options={[
-                    { value: "100g", label: perUnit("100g") },
-                    { value: "kg", label: perUnit("kg") },
-                  ]}
-                />
-              </div>
+              <Segmented
+                label={t("foodForm.per")}
+                inline
+                value={form.per}
+                onChange={(value) => set("per", value)}
+                options={[
+                  { value: "100g", label: perUnit("100g") },
+                  { value: "kg", label: perUnit("kg") },
+                ]}
+              />
             </div>
             <span className="text-[13px] text-muted-foreground">
               {kcalStored ? t("foodForm.storedAs", { kcal: kcalStored }) : t("foodForm.asPrinted")}

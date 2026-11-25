@@ -80,18 +80,17 @@ export function RestockSheet({ food, onClose }: { food: FoodSummary; onClose: ()
               onBlur={errors.recheck("amount")}
               error={amountError}
             />
-            <div className="w-[130px] flex-none">
-              <Segmented
-                label={t("stock.unit")}
-                hideLabel
-                value={unit}
-                onChange={setUnit}
-                options={[
-                  { value: "g", label: t("common.g") },
-                  { value: "kg", label: t("common.kg") },
-                ]}
-              />
-            </div>
+            <Segmented
+              label={t("stock.unit")}
+              hideLabel
+              inline
+              value={unit}
+              onChange={setUnit}
+              options={[
+                { value: "g", label: t("common.g") },
+                { value: "kg", label: t("common.kg") },
+              ]}
+            />
           </div>
         ) : (
           <>
