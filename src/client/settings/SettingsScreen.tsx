@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { listRow } from "../components/ui/layout/List.js";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -11,7 +10,13 @@ import { Field } from "../components/ui/forms/Field.js";
 import { useAuth, useLogOut } from "../access/auth.js";
 import { useDemo } from "../lib/instance.js";
 import { BackupsCard } from "./BackupsCard.js";
-import { useSaveSettings, useSettings, type Settings, type SettingsBody } from "./settings.js";
+import {
+  bodyOf,
+  useSaveSettings,
+  useSettings,
+  type Settings,
+  type SettingsBody,
+} from "./settings.js";
 import { parseTime, useTypedSetting } from "./useTypedSetting.js";
 
 const LANGUAGES = [
@@ -36,18 +41,6 @@ function TypeLink({ to, label }: { to: string; label: string }) {
   );
 }
 
-function bodyOf(settings: Settings): SettingsBody {
-  return {
-    timeZone: settings.timeZone,
-    dayStartsAt: settings.dayStartsAt,
-    backupEnabled: settings.backupEnabled,
-    backupFrequency: settings.backupFrequency,
-    backupWeekday: settings.backupWeekday,
-    backupTime: settings.backupTime,
-    backupKeep: settings.backupKeep,
-  };
-}
-
 function timeZones(current: string): string[] {
   const zones = Intl.supportedValuesOf("timeZone");
   return zones.includes(current) ? zones : [current, ...zones];
@@ -59,14 +52,10 @@ function SettingsForm({ settings }: { settings: Settings }) {
   const { data: auth } = useAuth();
   const demo = useDemo();
   const logOut = useLogOut();
-  const [saved, setSaved] = useState(() => bodyOf(settings));
 
-  const commit = (changes: Partial<SettingsBody>) => {
-    const next = { ...saved, ...changes };
-    setSaved(next);
-    save.mutate(next);
-  };
-  const dayStartsAt = useTypedSetting(settings.dayStartsAt, parseTime, saved.dayStartsAt, (value) =>
+  const commit = (changes: Partial<SettingsBody>) =>
+    save.mutate({ ...bodyOf(settings), ...changes });
+  const dayStartsAt = useTypedSetting(settings.dayStartsAt, parseTime, (value) =>
     commit({ dayStartsAt: value }),
   );
 
@@ -98,12 +87,12 @@ function SettingsForm({ settings }: { settings: Settings }) {
           <Select
             id="settings-time-zone"
             label={t("settings.timeZone")}
-            value={saved.timeZone}
+            value={settings.timeZone}
             disabled={demo}
             {...(demo ? { hint: t("demo.fixed") } : {})}
             onChange={(timeZone) => commit({ timeZone })}
           >
-            {timeZones(saved.timeZone).map((zone) => (
+            {timeZones(settings.timeZone).map((zone) => (
               <option key={zone} value={zone}>
                 {zone}
               </option>
@@ -131,7 +120,7 @@ function SettingsForm({ settings }: { settings: Settings }) {
         </Card>
       </div>
       <div className="flex flex-col gap-3.5 desktop:gap-6">
-        {!demo && <BackupsCard settings={settings} saved={saved} commit={commit} />}
+        {!demo && <BackupsCard settings={settings} commit={commit} />}
         {!demo && auth?.passwordRequired && (
           <Card>
             <CardHeading title={t("settings.access.title")} hint={t("settings.access.hint")} />

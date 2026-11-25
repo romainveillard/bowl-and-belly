@@ -19,25 +19,19 @@ const parseKeep = (text: string) => {
 /** Scheduled backups, the last failure if any, and a download of the database. */
 export function BackupsCard({
   settings,
-  saved,
   commit,
 }: {
   settings: Settings;
-  /** The settings as last saved from this form, ahead of the server's copy. */
-  saved: SettingsBody;
   commit: (changes: Partial<SettingsBody>) => void;
 }) {
   const { t, i18n } = useTranslation();
   const backUpNow = useBackUpNow();
   const [openedAt] = useState(() => new Date());
-  const time = useTypedSetting(settings.backupTime, parseTime, saved.backupTime, (backupTime) =>
+  const time = useTypedSetting(settings.backupTime, parseTime, (backupTime) =>
     commit({ backupTime }),
   );
-  const keep = useTypedSetting(
-    String(settings.backupKeep),
-    parseKeep,
-    saved.backupKeep,
-    (backupKeep) => commit({ backupKeep }),
+  const keep = useTypedSetting(settings.backupKeep, parseKeep, (backupKeep) =>
+    commit({ backupKeep }),
   );
   const when = (iso: string, future: boolean) =>
     formatWhen(
@@ -56,7 +50,7 @@ export function BackupsCard({
 
   let note: string | undefined;
   if (settings.backupError === null) {
-    if (!saved.backupEnabled) {
+    if (!settings.backupEnabled) {
       note = t("settings.backups.off");
     } else if (settings.lastBackupAt) {
       note = t("settings.backups.last", { when: when(settings.lastBackupAt, false) });
@@ -109,26 +103,26 @@ export function BackupsCard({
               time: formatTime(failedAt, settings.timeZone, i18n.language),
               reason: t(`settings.backups.errors.${settings.backupError}`),
             })}
-            {saved.backupEnabled && ` ${t("settings.backups.retry")}`}
+            {settings.backupEnabled && ` ${t("settings.backups.retry")}`}
           </span>
         </div>
       )}
       <SwitchRow
         label={t("settings.backups.scheduled")}
         hint={t("settings.backups.scheduledHint")}
-        checked={saved.backupEnabled}
+        checked={settings.backupEnabled}
         onCheckedChange={(backupEnabled) => commit({ backupEnabled })}
       />
-      {saved.backupEnabled && (
+      {settings.backupEnabled && (
         <>
           <Segmented
             label={t("settings.backups.frequency")}
-            value={saved.backupFrequency}
+            value={settings.backupFrequency}
             onChange={(backupFrequency) =>
               commit({
                 backupFrequency,
                 // Sunday, unless a day was chosen before.
-                backupWeekday: saved.backupWeekday ?? 7,
+                backupWeekday: settings.backupWeekday ?? 7,
               })
             }
             options={[
@@ -137,11 +131,11 @@ export function BackupsCard({
             ]}
           />
           <div className="grid grid-cols-2 items-start gap-3 desktop:gap-4">
-            {saved.backupFrequency === "weekly" && (
+            {settings.backupFrequency === "weekly" && (
               <Select
                 id="settings-weekday"
                 label={t("settings.backups.day")}
-                value={saved.backupWeekday ?? 7}
+                value={settings.backupWeekday ?? 7}
                 onChange={(day) => commit({ backupWeekday: Number(day) })}
               >
                 {weekdays.map((day) => (
@@ -160,9 +154,9 @@ export function BackupsCard({
               onBlur={time.onBlur}
               error={time.invalid ? t("settings.errors.time") : undefined}
             />
-            {saved.backupFrequency === "daily" && keepField}
+            {settings.backupFrequency === "daily" && keepField}
           </div>
-          {saved.backupFrequency === "weekly" && keepField}
+          {settings.backupFrequency === "weekly" && keepField}
         </>
       )}
       {settings.backupError === null ? (

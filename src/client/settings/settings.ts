@@ -20,6 +20,20 @@ export function useSettings() {
   });
 }
 
+/** The fields a save sends, taken from the settings as loaded. */
+export function bodyOf(current: Settings): SettingsBody {
+  return {
+    timeZone: current.timeZone,
+    dayStartsAt: current.dayStartsAt,
+    backupEnabled: current.backupEnabled,
+    backupFrequency: current.backupFrequency,
+    backupWeekday: current.backupWeekday,
+    backupTime: current.backupTime,
+    backupKeep: current.backupKeep,
+  };
+}
+
+/** Shows the change at once, and puts the stored settings back if the save fails. */
 export function useSaveSettings() {
   const queryClient = useQueryClient();
 
@@ -29,6 +43,20 @@ export function useSaveSettings() {
       if (!response.ok) {
         throw new Error("Could not save the settings");
       }
+    },
+    onMutate: async (body) => {
+      await queryClient.cancelQueries({ queryKey: ["settings"] });
+      const previous = queryClient.getQueryData<Settings>(["settings"]);
+      if (previous) {
+        queryClient.setQueryData<Settings>(["settings"], { ...previous, ...body });
+      }
+      return { previous };
+    },
+    onError: (_error, _body, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["settings"], context.previous);
+      }
+      return queryClient.invalidateQueries({ queryKey: ["settings"] });
     },
     // The time zone and day start regroup every day the app shows.
     onSuccess: () => queryClient.invalidateQueries(),
