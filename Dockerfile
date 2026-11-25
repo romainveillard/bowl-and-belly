@@ -3,12 +3,19 @@ WORKDIR /app
 COPY package.json package-lock.json .npmrc ./
 
 FROM base AS build
-RUN npm ci
+# The npm cache survives between builds, so unchanged packages aren't fetched again.
+RUN --mount=type=cache,target=/root/.npm npm ci
 COPY . .
 RUN npm run build
 
 FROM base AS deps
-RUN npm ci --omit=dev
+# better-sqlite3 ships every platform's binary and SQLite's sources for compiling
+# one; the image needs only the binary it loads here, which it reports itself.
+RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev \
+  && keep="$(node -p "require('./node_modules/better-sqlite3/lib/binding.js').getPrebuildPath()")" \
+  && test -f "$keep" \
+  && find node_modules/better-sqlite3/prebuilds -type f ! -name "$(basename "$keep")" -delete \
+  && rm -rf node_modules/better-sqlite3/deps node_modules/better-sqlite3/src
 
 FROM node:24-bookworm-slim
 ENV NODE_ENV=production PORT=3000 DATA_DIR=/data
