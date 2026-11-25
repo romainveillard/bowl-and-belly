@@ -6,6 +6,9 @@ import { Field } from "../components/ui/forms/Field.js";
 import { useLogIn } from "./auth.js";
 import { accessCard, accessPage } from "./layout.js";
 
+/** Focus on the field reads it out with its error, which a refusal would otherwise not. */
+const focusPassword = () => document.getElementById("login-password")?.focus();
+
 export function LoginScreen() {
   const { t } = useTranslation();
   const [password, setPassword] = useState("");
@@ -19,9 +22,15 @@ export function LoginScreen() {
     setEmpty(password === "");
     if (password === "") {
       logIn.reset();
-      document.getElementById("login-password")?.focus();
+      focusPassword();
     } else {
-      logIn.mutate(password);
+      logIn.mutate(password, {
+        onSuccess: (refusal) => {
+          if (refusal !== null) {
+            focusPassword();
+          }
+        },
+      });
     }
   };
 
