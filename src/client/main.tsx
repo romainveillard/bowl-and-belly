@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { App } from "./App.js";
 import { SnackbarProvider } from "./components/ui/feedback/Snackbar.js";
-import "./i18n/index.js";
+import { i18nReady } from "./i18n/index.js";
 import "./styles.css";
 
 const root = document.getElementById("root");
@@ -23,12 +23,17 @@ const Agentation = import.meta.env.DEV
   ? lazy(() => import("agentation").then((module) => ({ default: module.Agentation })))
   : null;
 
+// The first screen waits for its language, which now loads on its own.
+await i18nReady;
+
 createRoot(root).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <SnackbarProvider>
-          <App />
+          <Suspense fallback={null}>
+            <App />
+          </Suspense>
         </SnackbarProvider>
       </BrowserRouter>
     </QueryClientProvider>
