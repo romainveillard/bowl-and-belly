@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/readme-banner.png" alt="Bowl & Belly" width="640">
+  <img src="docs/brand/readme-banner.png" alt="Bowl & Belly" width="640">
 </p>
 
 Bowl & Belly is a small self-hosted app for keeping track of what your pets eat and weigh. Log each feed in a couple of taps, see the day's calories against a target worked out for each pet, and keep an eye on stock and weight over time. It installs on a phone's home screen as a web app and runs as a single container with a single SQLite file.
