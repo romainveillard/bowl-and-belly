@@ -252,7 +252,7 @@ One Docker container serves both the API and the built frontend, with a single v
 | Database | SQLite via Drizzle ORM and migrations |
 | Frontend | React SPA built with Vite, React Router, Tailwind CSS and shadcn/ui, TanStack Query, Recharts (chart export via a small SVG-to-PNG helper), served as static files by the backend |
 | PWA | Web app manifest for install; no service worker, since the app is online-only and browsers no longer need one to offer installation |
-| Images | amd64 and arm64, built with `docker buildx` on GitHub Actions native runners, published to GHCR |
+| Images | amd64 and arm64, built with `docker buildx` on GitHub Actions native runners and published to GHCR once lint, tests and build pass, with an SBOM and provenance; pull requests build the image without publishing it |
 | Licence | MIT |
 
 - **Auth:** optional single password in `BOWL_PASSWORD`; unset means no auth. The README warns against exposing an unprotected instance.
