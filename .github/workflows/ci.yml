@@ -56,7 +56,38 @@ jobs:
           context: .
           platforms: linux/amd64
           push: false
+          load: true
+          tags: bowl-and-belly:check
           cache-from: type=gha,scope=amd64
+      # Runs the image: it answers, sharp turns an upload into WebP, which needs
+      # the native build for the image's C library, and its healthcheck reports.
+      - name: Try the image
+        env:
+          # A 1×1 PNG.
+          PNG: iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==
+        run: |
+          docker run -d --name app -p 3000:3000 bowl-and-belly:check
+          for attempt in $(seq 30); do
+            curl -fs http://localhost:3000/api/health && break
+            sleep 1
+          done
+          base64 -d <<< "$PNG" > photo.png
+          # Same-site forms only: the CSRF check needs the Origin a browser sends.
+          id=$(curl -fs -H "Origin: http://localhost:3000" -F photo=@photo.png \
+            http://localhost:3000/api/images | jq -r .id)
+          curl -fs "http://localhost:3000/api/images/$id" -o photo.webp
+          test "$(head -c 4 photo.webp)" = RIFF
+          test "$(tail -c +9 photo.webp | head -c 4)" = WEBP
+          for attempt in $(seq 60); do
+            status=$(docker inspect --format '{{.State.Health.Status}}' app)
+            [ "$status" = healthy ] && exit 0
+            sleep 1
+          done
+          echo "::error::The container never reported healthy (last: $status)."
+          exit 1
+      - name: Show the app's logs
+        if: failure()
+        run: docker logs app
 
   build:
     needs: check

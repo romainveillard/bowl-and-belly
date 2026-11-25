@@ -1,4 +1,6 @@
-FROM node:24-bookworm-slim AS base
+# Alpine, about 100 MB smaller: sharp and better-sqlite3 both ship musl builds,
+# and the pull request check runs the image and converts a photo to prove it.
+FROM node:24-alpine AS base
 WORKDIR /app
 COPY package.json package-lock.json .npmrc ./
 
@@ -17,7 +19,7 @@ RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev \
   && find node_modules/better-sqlite3/prebuilds -type f ! -name "$(basename "$keep")" -delete \
   && rm -rf node_modules/better-sqlite3/deps node_modules/better-sqlite3/src
 
-FROM node:24-bookworm-slim
+FROM node:24-alpine
 ENV NODE_ENV=production PORT=3000 DATA_DIR=/data
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
