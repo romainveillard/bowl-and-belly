@@ -478,6 +478,10 @@
     "noFeedsDay": "Aucun repas ce jour-là",
     "date": "Date",
     "kcalValue": "{kcal, number} kcal",
+    "barOfTarget": "{eaten, number} / {target, number} kcal",
+    "barSoFar": "En cours",
+    "barOver": "Au-dessus de l’objectif",
+    "barUnder": "Sous l’objectif",
     "kgValue": "{weight} kg",
     "splitKcal": "{split} kcal",
     "gramsValue": "{grams, number} g"

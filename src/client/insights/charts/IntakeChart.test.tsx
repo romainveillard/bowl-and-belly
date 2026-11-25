@@ -8,10 +8,10 @@ it("lists each day's intake as text, skipping the days still to come", () => {
       label="Daily calories for 23–29 Nov"
       today="2026-11-25"
       days={[
-        { day: "2026-11-23", eatenKcal: 248, targetKcal: 260, fed: true },
-        { day: "2026-11-24", eatenKcal: 0, targetKcal: 260, fed: false },
-        { day: "2026-11-25", eatenKcal: 120, targetKcal: 260, fed: true },
-        { day: "2026-11-26", eatenKcal: 0, targetKcal: 260, fed: false },
+        { day: "2026-11-23", eatenKcal: 248, targetKcal: 260, fed: true, byType: [] },
+        { day: "2026-11-24", eatenKcal: 0, targetKcal: 260, fed: false, byType: [] },
+        { day: "2026-11-25", eatenKcal: 120, targetKcal: 260, fed: true, byType: [] },
+        { day: "2026-11-26", eatenKcal: 0, targetKcal: 260, fed: false, byType: [] },
       ]}
     />,
   );
