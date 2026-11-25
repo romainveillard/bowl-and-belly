@@ -103,7 +103,7 @@ function TypesScreen({ kind, allRows }: { kind: TypeKind; allRows: Row[] | undef
         desktopLink={{ to: "/settings", label: t("nav.settings") }}
       />
 
-      <div className="flex flex-col gap-3 px-5 pt-1 pb-6 desktop:max-w-[720px] desktop:gap-4 desktop:p-0">
+      <div className="flex flex-col gap-3 px-5 pt-1 pb-6 desktop:gap-4 desktop:p-0">
         <p className="text-sm text-muted-foreground desktop:hidden">{hint}</p>
         <List>
           {rows.map((row) => {

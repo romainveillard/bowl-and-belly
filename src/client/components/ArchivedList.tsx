@@ -27,7 +27,7 @@ export function ArchivedList({ hint, items, restoring, onRestore }: ArchivedList
   return (
     <div className="flex flex-col gap-3 px-5 pt-1 desktop:p-0">
       <p className="text-sm text-muted-foreground desktop:hidden">{hint}</p>
-      <List className="desktop:max-w-[720px]">
+      <List>
         {items.map((item) => (
           <div
             key={item.id}
