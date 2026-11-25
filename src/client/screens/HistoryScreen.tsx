@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { List } from "../components/ui/layout/List.js";
 import { useTranslation } from "react-i18next";
 import { FeedRow } from "../components/FeedRow.js";
 import { FoodTypeTile } from "../components/FoodTypeMark.js";
@@ -55,7 +56,7 @@ function DayCard({
   });
 
   return (
-    <div className="overflow-hidden rounded-xl bg-card inset-ring inset-ring-border desktop:rounded-[14px]">
+    <List>
       <button
         type="button"
         aria-expanded={expanded}
@@ -136,7 +137,7 @@ function DayCard({
           </div>
         </>
       )}
-    </div>
+    </List>
   );
 }
 

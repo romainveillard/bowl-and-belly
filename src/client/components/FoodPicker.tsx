@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { listRow } from "./ui/layout/List.js";
 import { useTranslation } from "react-i18next";
 import type { PickerFood } from "../lib/feeds.js";
 import { isOutOfStock, matchesFood, stockLeftLabel } from "../lib/foods.js";
@@ -66,7 +67,7 @@ export function FoodPicker({
               type="button"
               aria-pressed={food.id === chosenId}
               onClick={() => onChoose(food)}
-              className="flex min-h-[60px] w-full cursor-pointer items-center gap-3 border-t border-border px-3 py-2 text-left first:border-t-0 aria-pressed:bg-accent-soft aria-pressed:inset-ring-2 aria-pressed:inset-ring-primary-strong desktop:min-h-14"
+              className={`flex min-h-[60px] w-full cursor-pointer items-center gap-3 px-3 py-2 text-left aria-pressed:bg-accent-soft aria-pressed:inset-ring-2 aria-pressed:inset-ring-primary-strong desktop:min-h-14 ${listRow}`}
             >
               <FoodImage food={food} />
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">

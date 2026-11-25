@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { listRow } from "../components/ui/layout/List.js";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { AlertIcon, ChevronRightIcon, DownloadIcon } from "../components/icons.js";
@@ -34,7 +35,7 @@ function TypeLink({ to, label }: { to: string; label: string }) {
   return (
     <Link
       to={to}
-      className="flex min-h-14 items-center justify-between gap-3 border-t border-border text-base first:border-t-0 desktop:min-h-[52px]"
+      className={`flex min-h-14 items-center justify-between gap-3 text-base desktop:min-h-[52px] ${listRow}`}
     >
       {label}
       <span className="flex text-muted-foreground">

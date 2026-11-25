@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { List, listRow } from "../components/ui/layout/List.js";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { ArchivedLink } from "../components/ArchivedLink.js";
@@ -105,11 +106,11 @@ export function StockScreen() {
       <div className="flex flex-col gap-2.5 px-5 pt-1 pb-24 desktop:gap-6 desktop:p-0 desktop:pb-24">
         {foods.length > 0 && (
           <>
-            <div className="overflow-hidden rounded-xl bg-card inset-ring inset-ring-border desktop:hidden">
+            <List className="desktop:hidden">
               {foods.map((food) => (
                 <div
                   key={food.id}
-                  className="flex min-h-16 items-center gap-3 border-t border-border py-2 pr-2 pl-4 first:border-t-0"
+                  className={`flex min-h-16 items-center gap-3 py-2 pr-2 pl-4 ${listRow}`}
                 >
                   <FoodTypeTile type={food.type} />
                   <FoodName food={food} />
@@ -128,7 +129,7 @@ export function StockScreen() {
                   </button>
                 </div>
               ))}
-            </div>
+            </List>
 
             <div
               role="table"

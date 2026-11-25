@@ -1,4 +1,5 @@
 import { useRef, useState, type PointerEvent } from "react";
+import { listRow } from "./ui/layout/List.js";
 import { useTranslation } from "react-i18next";
 import type { FeedEntry } from "../lib/feeds.js";
 import { formatTime } from "../lib/format.js";
@@ -79,7 +80,7 @@ export function FeedRow({
   };
 
   return (
-    <div className="group relative overflow-hidden border-t border-border first:border-t-0">
+    <div className={`group relative overflow-hidden ${listRow}`}>
       <div
         aria-hidden="true"
         className={`absolute inset-0 flex items-center gap-2 px-5 text-sm font-semibold ${offset < 0 ? "justify-end bg-danger text-card" : "bg-primary"}`}

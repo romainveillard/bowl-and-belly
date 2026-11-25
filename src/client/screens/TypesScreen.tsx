@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { List, listRow } from "../components/ui/layout/List.js";
 import { useTranslation } from "react-i18next";
 import { ChevronRightIcon, LockIcon, PlusIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
@@ -62,8 +63,7 @@ function RowLabel({ row }: { row: Row }) {
   );
 }
 
-const rowClass =
-  "flex min-h-[60px] w-full items-center justify-between gap-3 border-t border-border px-4 py-2 text-left first:border-t-0 desktop:px-[22px]";
+const rowClass = `flex min-h-[60px] w-full items-center justify-between gap-3 px-4 py-2 text-left desktop:px-[22px] ${listRow}`;
 
 export function TypesScreen({ kind }: { kind: TypeKind }) {
   const { t } = useTranslation();
@@ -94,7 +94,7 @@ export function TypesScreen({ kind }: { kind: TypeKind }) {
 
       <div className="flex flex-col gap-3 px-5 pt-1 pb-6 desktop:max-w-[720px] desktop:gap-4 desktop:p-0">
         <p className="text-sm text-muted-foreground desktop:hidden">{hint}</p>
-        <div className="overflow-hidden rounded-xl bg-card inset-ring inset-ring-border desktop:rounded-[14px]">
+        <List>
           {rows.map((row) => {
             const { custom } = row;
             return custom ? (
@@ -155,7 +155,7 @@ export function TypesScreen({ kind }: { kind: TypeKind }) {
                 </button>
               </div>
             ))}
-        </div>
+        </List>
         <button
           type="button"
           className={`${button.outline} self-start`}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { listRow } from "../components/ui/layout/List.js";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 import { addDays } from "../../shared/app-day.js";
@@ -27,7 +28,7 @@ function Rows({ rows }: { rows: { key: string; title: string; note?: string; val
       {rows.map((row) => (
         <div
           key={row.key}
-          className="flex min-h-12 items-center justify-between gap-3 border-t border-border first:border-t-0"
+          className={`flex min-h-12 items-center justify-between gap-3 ${listRow}`}
         >
           <span className="flex flex-col gap-0.5">
             <span className="text-[15px]">{row.title}</span>
@@ -185,10 +186,7 @@ export function PetProfile({
                   .map((reading) => {
                     const date = day(new Date(reading.measuredAt));
                     return (
-                      <div
-                        key={reading.id}
-                        className="group relative border-t border-border first:border-t-0"
-                      >
+                      <div key={reading.id} className={`group relative ${listRow}`}>
                         <button
                           type="button"
                           onClick={() => weightSheets.openActions(reading)}
