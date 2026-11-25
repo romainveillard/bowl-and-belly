@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { ACTIVITY_LEVELS, GOALS } from "../../shared/enums.js";
-import { ageInMonths, explainTarget } from "../../shared/target.js";
+import { explainTarget } from "../../shared/target.js";
 import { BackIcon, CameraIcon, ChevronDownIcon, CloseIcon } from "../components/icons.js";
 import { button } from "../components/ui/button.js";
 import { Card, CardHeading } from "../components/ui/Card.js";
@@ -14,6 +14,7 @@ import { Switch } from "../components/ui/Switch.js";
 import { parsePositive, petTypeLabel } from "../lib/format.js";
 import { useDemo } from "../lib/instance.js";
 import { offeredTypes, optionLabel } from "../lib/types.js";
+import { birthDateOf, initialPetForm, type PetFormState } from "../lib/petForm.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
 import {
   uploadPhoto,
@@ -24,76 +25,6 @@ import {
   type PetBody,
   type PetDetail,
 } from "../lib/pets.js";
-
-type AgeMode = PetBody["birthDatePrecision"];
-
-interface FormState {
-  name: string;
-  petTypeId: number | null;
-  photoId: number | null;
-  ageMode: AgeMode;
-  birthDate: string;
-  birthYear: string;
-  ageYears: string;
-  neutered: boolean;
-  activityLevel: PetBody["activityLevel"];
-  goal: PetBody["goal"];
-  targetWeight: string;
-  weight: string;
-  ownTarget: boolean;
-  ownTargetKcal: string;
-}
-
-const kgText = (weightG: number | null | undefined) => (weightG ? String(weightG / 1000) : "");
-
-function initialState(pet: PetDetail | undefined): FormState {
-  const target = pet?.targets[0];
-  return {
-    name: pet?.name ?? "",
-    petTypeId: pet?.petTypeId ?? null,
-    photoId: pet?.photoId ?? null,
-    ageMode: pet?.birthDatePrecision ?? "exact",
-    birthDate: pet?.birthDate ?? "",
-    birthYear: pet ? pet.birthDate.slice(0, 4) : "",
-    ageYears: pet ? String(Math.floor(ageInMonths(pet.birthDate, pet.today) / 12)) : "",
-    neutered: pet?.neutered ?? true,
-    activityLevel: pet?.activityLevel ?? "normal",
-    goal: pet?.goal ?? "maintain",
-    targetWeight: kgText(pet?.targetWeightG),
-    weight: kgText(pet?.weights[0]?.weightG),
-    ownTarget: target?.source === "manual",
-    ownTargetKcal: target?.source === "manual" ? String(target.kcalPerDay) : "",
-  };
-}
-
-/** The birth date the age section stands for, or null while it is incomplete. */
-function birthDateOf(form: FormState, today: string, original: PetDetail | undefined) {
-  if (form.ageMode === "exact") {
-    return /^\d{4}-\d{2}-\d{2}$/.test(form.birthDate) && form.birthDate <= today
-      ? form.birthDate
-      : null;
-  }
-  if (form.ageMode === "year") {
-    const year = Number(form.birthYear);
-    // 1 January, so the age reads as this year minus the birth year.
-    const date = `${year}-01-01`;
-    return Number.isInteger(year) && year > 1900 && date <= today ? date : null;
-  }
-  const years = parsePositive(form.ageYears);
-  if (years === null) {
-    return null;
-  }
-  // An unchanged estimate keeps its date, so the pet still ages between edits.
-  if (
-    original?.birthDatePrecision === "estimated" &&
-    form.ageYears === initialState(original).ageYears
-  ) {
-    return original.birthDate;
-  }
-  const born = new Date(`${today}T00:00:00Z`);
-  born.setUTCMonth(born.getUTCMonth() - Math.round(years * 12));
-  return born.toISOString().slice(0, 10);
-}
 
 type FieldName = "name" | "birth" | "targetWeight" | "weight" | "ownTarget";
 type ErrorKey =
@@ -116,9 +47,9 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
   const demo = useDemo();
   const save = useSavePet(pet?.id);
   const fileInput = useRef<HTMLInputElement>(null);
-  const [form, setForm] = useState(() => initialState(pet));
+  const [form, setForm] = useState(() => initialPetForm(pet));
   const showSnackbar = useSnackbar();
-  const set = <Key extends keyof FormState>(key: Key, value: FormState[Key]) =>
+  const set = <Key extends keyof PetFormState>(key: Key, value: PetFormState[Key]) =>
     setForm((current) => ({ ...current, [key]: value }));
 
   const petTypeId = form.petTypeId ?? petTypes?.[0]?.id ?? null;
