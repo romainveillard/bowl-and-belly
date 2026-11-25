@@ -114,11 +114,12 @@ Nine tables in SQLite, accessed through Drizzle. Only fields an MVP screen reads
 ```sql
 settings      (id, time_zone, day_starts_at,                      -- 'HH:MM'
                backup_enabled, backup_frequency,                  -- 'daily' | 'weekly'
-               backup_weekday NULL, backup_time, backup_keep)                          -- single row
+               backup_weekday NULL, backup_time, backup_keep,
+               backup_failed_at NULL, backup_error NULL)          -- single row; error: 'disk_full' | 'cannot_write' | 'unknown'
 
-pet_type      (id, name NULL, system_key NULL, archived_at)       -- 'cat' | 'dog'
+pet_type      (id, name NULL, system_key NULL, archived_at NULL)  -- 'cat' | 'dog'
 food_type     (id, name NULL, system_key NULL,                    -- 'wet' | 'dry'
-               leftover_returns_to_stock, archived_at)
+               leftover_returns_to_stock, archived_at NULL)
 
 image         (id, data)                                          -- WebP blob
 
@@ -126,7 +127,7 @@ pet           (id, name, pet_type_id, photo_id NULL,
                birth_date, birth_date_precision,                  -- 'exact' | 'year' | 'estimated'
                neutered, activity_level,
                goal, target_weight_g NULL,                        -- 'maintain' | 'lose' | 'gain'
-               archived_at)
+               archived_at NULL, age_prompt_months NULL)          -- the age step last asked about
 pet_target    (id, pet_id, effective_from, kcal_per_day,          -- app day, unique per pet
                source)                                            -- 'calculated' | 'manual'
 weight_entry  (id, pet_id, measured_at, weight_g)
@@ -136,7 +137,7 @@ food          (id, brand NULL, name, photo_id NULL,
                kcal_per_kg,
                portion_name NULL, portion_g NULL,
                stock_unit, stock_g,                               -- 'g' | 'portion'
-               archived_at)
+               archived_at NULL)
 feed_entry    (id, pet_id, food_id, fed_at,                       -- UTC
                served_g, leftover_g NULL,
                leftover_returned_to_stock,
@@ -218,13 +219,13 @@ Used on Today and History. A food-type tile on the left (blue drop for wet, peac
 - **Validation:** Save stays enabled, since a disabled button doesn't say what's wrong. A failed save shows a summary at the top ("2 things to fix before saving: name and current weight."), a message under each invalid field, and moves focus to the first. Fields are then re-validated on blur. Invalid fields carry `aria-invalid` and `aria-describedby`.
 - **Snackbar:** one shared component, navy with white text and an optional action (Undo for deletes, none for target changes). A plain confirmation shows for about 5 seconds and one with an action, which also has a dismiss button, for about 10; neither closes while the pointer or focus is on it. When a delete has taken focus with it, focus moves to Undo, so keyboard and screen-reader users have all the time they need. On a phone it spans the width above the bottom bar; on desktop it sits at the bottom centre of the content column, clear of the floating buttons.
 - **Error snackbar:** for an error that doesn't belong to a field (a refused photo, a lost connection, a save the server turns down). White on the danger colour with an alert icon, it says what failed and why ("Couldn't upload the photo. It's larger than 20 MB. Try a smaller one."), uses `role="alert"`, and stays until dismissed. The reason comes from the API's error code; without one it falls back to the connection or a generic line. An error replaces a confirmation on screen, never the other way round. Field errors stay inline.
-- **Sheets and dialogs:** a sheet rises from the bottom on a phone and is a dialog near the top of the page on desktop. A confirmation is a centred dialog.
+- **Sheets and dialogs:** a sheet rises from the bottom on a phone and is a dialog near the top of the page on desktop. A confirmation is a dialog centred on a phone and near the top of the page on desktop.
 - **Desktop:** from 860 px the tabs move to a sidebar with Settings and the version at its foot, and Pets shows the list and the selected profile side by side.
 - **Navigation:** each screen titles the browser tab ("Today · Bowl & Belly"). Moving to another tab or page puts focus on the content and announces the new title; choosing a pet in the desktop list leaves focus in the list. A "Skip to content" link, shown on focus, leads past the sidebar.
 
 ## UI design
 
-- **Components:** Tailwind CSS with shadcn/ui. Colour tokens use shadcn's names, so they drop straight into its theme.
+- **Components:** Tailwind CSS with hand-written components on Radix primitives. Colour tokens use shadcn's names, so they would drop straight into its theme.
 - **Colours:** foreground `#1F2A44`, primary `#F08A4B`, primary-strong `#CE7741`, accent `#FFC9A3`, accent-soft `#FFE6D4`, background `#F6F7F9`, card `#FFFFFF`, muted `#EEF0F4`, border `#E3E6EC`, input-border `#8A92A3`, muted-foreground `#5B6478`, success `#2A7049`, warning `#9A6412`, danger `#B93A32`.
 - **Primary buttons** use navy text on orange (about 5.3:1). White on the brand orange fails contrast.
 - **Controls:** switches only turn a feature on or off (portions, own target). Facts and choices (neutered, activity, goal, units) use segmented controls or chips.
@@ -250,7 +251,7 @@ One Docker container serves both the API and the built frontend, with a single v
 | --- | --- |
 | Backend | Node with Hono (via its Node adapter), TypeScript, Zod validation; the frontend calls it through Hono's typed RPC client |
 | Database | SQLite via Drizzle ORM and migrations |
-| Frontend | React SPA built with Vite, React Router, Tailwind CSS and shadcn/ui, TanStack Query, Recharts (chart export via a small SVG-to-PNG helper), served as static files by the backend |
+| Frontend | React SPA built with Vite, React Router, Tailwind CSS with components on Radix primitives, TanStack Query and Recharts, served as static files by the backend |
 | PWA | Web app manifest for install; no service worker, since the app is online-only and browsers no longer need one to offer installation |
 | Images | amd64 and arm64, built with `docker buildx` on GitHub Actions native runners and published to GHCR once lint, tests and build pass, with an SBOM and provenance; pull requests build the image without publishing it |
 | Licence | MIT |
@@ -301,7 +302,7 @@ The app is called **Bowl & Belly**, in English for every language.
 **Later slices**
 
 1. **Cost tracking:** a purchases table (quantity, optional price in minor units), cost per kg from the last priced purchase, snapshot on each feed entry, currency setting.
-2. **Export:** CSV of feeds and weights for the vet, plus the Insights charts as images.
+2. **Export:** CSV of feeds and weights for the vet, plus the Insights charts as images, through a small SVG-to-PNG helper.
 3. **Units:** lb support as an app setting.
 4. **Multiple users:** households, "who fed".
 5. **Treats:** quick logging of treats and other calories.
