@@ -160,7 +160,10 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
   const units = usePortion && portionName ? portionPlural(portionName, i18n) : null;
 
   const send = (body: FoodBody, kcalBackfill: KcalBackfill) =>
-    save.mutate({ body, kcalBackfill }, { onSuccess: () => navigate("/stock") });
+    save.mutate(
+      { body, keepStock: food !== undefined && !stockTouched, kcalBackfill },
+      { onSuccess: () => navigate("/stock") },
+    );
 
   const submit = () => {
     if (errors.reject() || foodTypeId === null || kcalStored === null || stockAmount === null) {
@@ -181,8 +184,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
       portionName: usePortion ? portionName : null,
       portionG: grams,
       stockUnit: counted ? "portion" : "g",
-      // An untouched figure is sent back as it was, free of rounding.
-      stockG: food && !stockTouched ? food.stockG : stockG,
+      stockG,
     };
     if (food?.hasFeeds && food.kcalPerKg !== kcalStored) {
       setAskingBackfill(body);

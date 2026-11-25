@@ -69,13 +69,23 @@ export function useSaveFood(id: number | undefined) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ body, kcalBackfill }: { body: FoodBody; kcalBackfill: KcalBackfill }) => {
+    mutationFn: async ({
+      body,
+      keepStock,
+      kcalBackfill,
+    }: {
+      body: FoodBody;
+      /** Leaves an edited food's stock as the server has it, not as the form loaded it. */
+      keepStock: boolean;
+      kcalBackfill: KcalBackfill;
+    }) => {
+      const { stockG, ...rest } = body;
       const response =
         id === undefined
           ? await foods.$post({ json: body })
           : await foods[":id"].$put({
               param: { id: String(id) },
-              json: { ...body, kcalBackfill },
+              json: keepStock ? { ...rest, kcalBackfill } : { ...rest, stockG, kcalBackfill },
             });
       if (!response.ok) {
         throw new Error("Could not save the food");
