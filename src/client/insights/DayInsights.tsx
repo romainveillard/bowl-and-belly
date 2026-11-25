@@ -93,7 +93,11 @@ export function DayInsights({ petId, today, onPeriod }: PeriodViewProps) {
         />
         <Stat
           className="hidden desktop:flex"
-          label={t("insights.wetDry")}
+          label={
+            byType.length === 0
+              ? t("insights.wetDry")
+              : byType.map((total) => foodTypeLabel(total.type, t)).join(" / ")
+          }
           value={byType.length === 0 ? "–" : byType.map((total) => total.kcal).join(" / ")}
           unit={t("common.kcal")}
           note={byType.map((total) => `${total.eatenG} g`).join(" / ")}
