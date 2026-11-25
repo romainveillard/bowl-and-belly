@@ -24,11 +24,16 @@ import { RestockSheet } from "./RestockSheet.js";
 const columns = "grid grid-cols-[minmax(0,2.4fr)_90px_140px_150px_132px] gap-4 px-[22px]";
 const columnHeader = "text-caption font-medium tracking-[0.6px] text-muted-foreground uppercase";
 
-function FoodName({ food }: { food: FoodSummary }) {
+/**
+ * The food's name, linking to its form. `wholeRow` stretches the link over
+ * its row, so a click anywhere on it opens the food, while the name stays the
+ * one link that keyboards and screen readers find.
+ */
+function FoodName({ food, wholeRow = false }: { food: FoodSummary; wholeRow?: boolean }) {
   return (
     <Link
       to={`/stock/${food.id}/edit`}
-      className="flex min-w-0 flex-1 flex-col gap-[3px] desktop:gap-0.5"
+      className={`flex min-w-0 flex-1 flex-col gap-[3px] desktop:gap-0.5 ${wholeRow ? "after:absolute after:inset-0" : ""}`}
     >
       <span className="truncate text-[15px] font-semibold">{food.name}</span>
       {food.brand && (
@@ -157,11 +162,11 @@ export function StockScreen() {
                   <div
                     key={food.id}
                     role="row"
-                    className={`${columns} min-h-16 items-center border-t border-border py-2`}
+                    className={`${columns} relative min-h-16 items-center border-t border-border py-2 hover:bg-row-hover`}
                   >
                     <span role="cell" className="flex min-w-0 items-center gap-3">
                       <FoodTypeTile type={food.type} decorative />
-                      <FoodName food={food} />
+                      <FoodName food={food} wholeRow />
                     </span>
                     <span role="cell">
                       <FoodTypeBadge type={food.type} />
@@ -175,7 +180,8 @@ export function StockScreen() {
                     <span role="cell" className="text-sm text-muted-foreground tabular-nums">
                       {kcalPer100(food)}
                     </span>
-                    <span role="cell" className="flex justify-end">
+                    {/* Above the name's link, which covers the rest of the row. */}
+                    <span role="cell" className="relative flex justify-end">
                       <button
                         type="button"
                         aria-label={t("stock.restockNamed", { name: food.name })}
