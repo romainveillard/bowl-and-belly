@@ -18,7 +18,6 @@ const tabs = [
   { to: "/pets", label: "nav.pets", Icon: PetsIcon },
 ] as const;
 
-/** Phone layout: the five tabs along the bottom. */
 export function BottomNav() {
   const { t } = useTranslation();
 
@@ -46,7 +45,6 @@ export function BottomNav() {
 const sideLink =
   "flex h-11 items-center gap-3 rounded-[10px] px-3 text-[15px] font-medium text-muted-foreground aria-[current=page]:bg-accent-soft aria-[current=page]:font-semibold aria-[current=page]:text-foreground";
 
-/** Desktop layout: the same tabs down the side, with Settings at the foot. */
 export function Sidebar() {
   const { t } = useTranslation();
 

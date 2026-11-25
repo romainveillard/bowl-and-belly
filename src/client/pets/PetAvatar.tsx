@@ -2,7 +2,6 @@ import { PetsIcon } from "../components/icons.js";
 
 interface PetAvatarProps {
   photoId: number | null;
-  /** Diameter in px. */
   size: number;
   /** White instead of peach, for use on a selected (peach) card. */
   onAccent?: boolean;

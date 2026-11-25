@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next";
 
 const REPOSITORY = "https://github.com/romainveillard/bowl-and-belly";
 
-/** A strip across the top on a phone; a box above the content on desktop. */
 export function DemoBanner() {
   const { t } = useTranslation();
 

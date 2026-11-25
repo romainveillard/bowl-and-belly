@@ -19,7 +19,6 @@ interface FoodPickerProps {
   error?: string | undefined;
 }
 
-/** Search, type chips and the list of foods, recent ones first. */
 export function FoodPicker({
   inputId,
   foods,
