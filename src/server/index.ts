@@ -1,44 +1,8 @@
 import { serve } from "@hono/node-server";
-import { serveStatic } from "@hono/node-server/serve-static";
-import { Hono, type Context } from "hono";
-import { secureHeaders } from "hono/secure-headers";
-import { app } from "./app.js";
 import { startBackups } from "./backups/scheduler.js";
 import { demo, startDemoResets } from "./demo/mode.js";
 import { db } from "./db/client.js";
-
-const clientDir = "dist/client";
-
-// Vite fingerprints everything under assets/; index.html must be revalidated
-// so a new deploy is picked up.
-const setCacheControl = (path: string, c: Context) => {
-  c.header(
-    "Cache-Control",
-    path.includes("/assets/") ? "public, max-age=31536000, immutable" : "no-cache",
-  );
-};
-
-const web = new Hono()
-  .use(
-    secureHeaders({
-      contentSecurityPolicy: {
-        defaultSrc: ["'self'"],
-        // Recharts and React set inline style attributes.
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        objectSrc: ["'none'"],
-        baseUri: ["'self'"],
-        formAction: ["'self'"],
-        frameAncestors: ["'none'"],
-      },
-      xFrameOptions: "DENY",
-      // HTTPS ends at the operator's proxy, which decides whether to pin it.
-      strictTransportSecurity: false,
-    }),
-  )
-  .route("/", app)
-  .all("/api/*", (c) => c.json({ code: "not_found" }, 404))
-  .use(serveStatic({ root: clientDir, onFound: setCacheControl }))
-  .get("*", serveStatic({ root: clientDir, path: "index.html", onFound: setCacheControl }));
+import { web } from "./web.js";
 
 if (demo) {
   startDemoResets(db);
