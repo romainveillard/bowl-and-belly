@@ -27,20 +27,19 @@ function PetOptions({ onChosen }: { onChosen: () => void }) {
 
   return (
     <>
-      <div role="listbox" aria-label={t("petChip.pets")} className="flex flex-col gap-1">
+      <div role="group" aria-label={t("petChip.pets")} className="flex flex-col gap-1">
         {data?.pets.map((pet) => {
           const isSelected = pet.id === selected?.id;
           return (
             <button
               key={pet.id}
               type="button"
-              role="option"
-              aria-selected={isSelected}
+              aria-current={isSelected ? "true" : undefined}
               onClick={() => {
                 select(pet.id);
                 onChosen();
               }}
-              className="flex min-h-16 w-full cursor-pointer items-center gap-3 rounded-xl px-3.5 py-2.5 text-left aria-selected:bg-accent-soft desktop:min-h-14 desktop:rounded-[10px] desktop:px-3 desktop:py-2"
+              className="flex min-h-16 w-full cursor-pointer items-center gap-3 rounded-xl px-3.5 py-2.5 text-left aria-[current]:bg-accent-soft desktop:min-h-14 desktop:rounded-[10px] desktop:px-3 desktop:py-2"
             >
               <span className="desktop:hidden">
                 <PetAvatar photoId={pet.photoId} size={44} onAccent={isSelected} />
@@ -104,7 +103,6 @@ export function PetChip() {
   const trigger = (onClick?: () => void) => (
     <button
       type="button"
-      aria-haspopup="listbox"
       aria-label={t("petChip.label", { name: pet.name })}
       className={`${chip} cursor-pointer`}
       onClick={onClick}
