@@ -37,3 +37,16 @@ export function FoodTypeBadge({ type }: { type: FoodType }) {
 
   return <Badge tone={type.systemKey ?? "neutral"}>{foodTypeLabel(type, t)}</Badge>;
 }
+
+/** The food's photo, or its type tile when it has none. */
+export function FoodImage({ food }: { food: { photoId: number | null; type: FoodType } }) {
+  return food.photoId === null ? (
+    <FoodTypeTile type={food.type} />
+  ) : (
+    <img
+      src={`/api/images/${food.photoId}`}
+      alt=""
+      className="size-10 flex-none rounded-[10px] object-cover"
+    />
+  );
+}

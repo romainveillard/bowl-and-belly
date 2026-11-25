@@ -3,7 +3,8 @@ import { listRow } from "./ui/layout/List.js";
 import { useTranslation } from "react-i18next";
 import type { PickerFood } from "../lib/feeds.js";
 import { isOutOfStock, matchesFood, stockLeftLabel } from "../lib/foods.js";
-import { FoodTypeBadge, FoodTypeTile } from "./FoodTypeMark.js";
+import { FoodTypeBadge } from "./FoodTypeMark.js";
+import { FoodRow } from "./FoodRow.js";
 import { FoodTypeChips } from "./FoodTypeChips.js";
 import { FieldError, SearchInput } from "./ui/forms/Field.js";
 
@@ -69,42 +70,23 @@ export function FoodPicker({
               onClick={() => onChoose(food)}
               className={`flex min-h-[60px] w-full cursor-pointer items-center gap-3 px-3 py-2 text-left aria-pressed:bg-accent-soft aria-pressed:inset-ring-2 aria-pressed:inset-ring-primary-strong desktop:min-h-14 ${listRow}`}
             >
-              <FoodImage food={food} />
-              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="truncate text-[15px] font-semibold">{food.name}</span>
-                {food.brand && (
-                  <span className="truncate text-[13px] text-muted-foreground">{food.brand}</span>
-                )}
-              </span>
-              <span className="flex flex-none flex-col items-end gap-1">
-                <FoodTypeBadge type={food.type} />
-                <span
-                  className={`text-[13px] tabular-nums ${isOutOfStock(food) ? "font-semibold text-warning" : "text-muted-foreground"}`}
-                >
-                  {stockLeftLabel(food, i18n)}
-                </span>
-              </span>
+              <FoodRow
+                food={food}
+                trailing={
+                  <span className="flex flex-none flex-col items-end gap-1">
+                    <FoodTypeBadge type={food.type} />
+                    <span
+                      className={`text-[13px] tabular-nums ${isOutOfStock(food) ? "font-semibold text-warning" : "text-muted-foreground"}`}
+                    >
+                      {stockLeftLabel(food, i18n)}
+                    </span>
+                  </span>
+                }
+              />
             </button>
           ))}
         </div>
       )}
     </div>
-  );
-}
-
-/** The food's photo, or its type tile when it has none. */
-export function FoodImage({
-  food,
-}: {
-  food: { photoId: number | null; type: { systemKey: "wet" | "dry" | null; name: string | null } };
-}) {
-  return food.photoId === null ? (
-    <FoodTypeTile type={food.type} />
-  ) : (
-    <img
-      src={`/api/images/${food.photoId}`}
-      alt=""
-      className="size-10 flex-none rounded-[10px] object-cover"
-    />
   );
 }

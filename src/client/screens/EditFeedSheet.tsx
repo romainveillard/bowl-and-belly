@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { kcalIn, leftoverFits } from "../../shared/feeds.js";
-import { FoodImage, FoodPicker } from "../components/FoodPicker.js";
+import { FoodPicker } from "../components/FoodPicker.js";
+import { FoodRow } from "../components/FoodRow.js";
 import { button } from "../components/ui/forms/button.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field } from "../components/ui/forms/Field.js";
@@ -126,22 +127,19 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
           <div className="flex flex-col gap-1.5">
             <span className="text-sm font-semibold">{t("editFeed.food")}</span>
             <div className="flex min-h-[60px] items-center gap-3 rounded-xl bg-accent-soft py-2 pr-2 pl-3 inset-ring-2 inset-ring-primary-strong">
-              <FoodImage food={shownFood} />
-              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="truncate text-[15px] font-semibold">{shownFood.name}</span>
-                {shownFood.brand && (
-                  <span className="truncate text-[13px] text-accent-foreground">
-                    {shownFood.brand}
-                  </span>
-                )}
-              </span>
-              <button
-                type="button"
-                className={`${button.outline} h-10 flex-none px-3.5 text-sm`}
-                onClick={() => setChanging(true)}
-              >
-                {t("editFeed.change")}
-              </button>
+              <FoodRow
+                food={shownFood}
+                onAccent
+                trailing={
+                  <button
+                    type="button"
+                    className={`${button.outline} h-10 flex-none px-3.5 text-sm`}
+                    onClick={() => setChanging(true)}
+                  >
+                    {t("editFeed.change")}
+                  </button>
+                }
+              />
             </div>
           </div>
         )}
