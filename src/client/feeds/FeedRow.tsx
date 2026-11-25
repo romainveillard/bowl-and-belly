@@ -2,7 +2,7 @@ import { useRef, useState, type PointerEvent } from "react";
 import { listRow, RowHoverActions } from "../components/ui/layout/List.js";
 import { useTranslation } from "react-i18next";
 import type { FeedEntry } from "./feeds.js";
-import { formatTime } from "../lib/format.js";
+import { formatTime, formatNumber } from "../lib/format.js";
 import { FoodTypeTile } from "../stock/FoodTypeMark.js";
 import { RepeatIcon, TrashIcon } from "../components/icons.js";
 
@@ -119,7 +119,7 @@ export function FeedRow({
           <span className="truncate text-[13px] text-muted-foreground tabular-nums">{detail}</span>
         </span>
         <span className="flex flex-none items-baseline gap-[3px] tabular-nums desktop:w-[76px] desktop:justify-end">
-          <span className="text-base font-semibold">{entry.kcal}</span>
+          <span className="text-base font-semibold">{formatNumber(entry.kcal, i18n.language)}</span>
           <span className="text-[13px] text-muted-foreground">{t("common.kcal")}</span>
         </span>
       </button>

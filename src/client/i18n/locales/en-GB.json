@@ -19,7 +19,7 @@
   },
   "common": {
     "kcal": "kcal",
-    "ofTarget": "/ {target} kcal"
+    "ofTarget": "/ {target, number} kcal"
   },
   "errors": {
     "failed": {
@@ -81,7 +81,7 @@
     "editShort": "Edit",
     "back": "Back to pets",
     "today": "Today",
-    "progress": "{percent}% of today’s target",
+    "progress": "{percent, number}% of today’s target",
     "neutered": "neutered",
     "intact": "not neutered",
     "activity": {
@@ -101,7 +101,7 @@
     "archiveBody": "Their feeds, weights and targets are kept. They’ll disappear from the pet switcher, and you can restore them any time from Archived pets on the Pets tab.",
     "archiveBodyDesktop": "Their feeds, weights and targets are kept. They’ll disappear from the pet switcher, and you can restore them any time from Archived pets.",
     "archiveConfirm": "Archive",
-    "archivedLink": "Archived pets ({count})",
+    "archivedLink": "Archived pets ({count, number})",
     "archivedTitle": "Archived pets",
     "archivedHint": "History is kept. Restore a pet to log for them again.",
     "archivedRow": "{type} · archived {date}"
@@ -113,7 +113,7 @@
     "setOwn": "Set my own target",
     "setOwnHint": "For a vet’s recommendation or special diet.",
     "calculatedSince": "Calculated {since}.",
-    "calculatedSinceHow": "Calculated {since}: resting needs of {resting} kcal × {factor} for {profile}.",
+    "calculatedSinceHow": "Calculated {since}: resting needs of {resting, number} kcal × {factor} for {profile}.",
     "manualSince": "Set by you {since}.",
     "none": "No daily target yet.",
     "profile": {
@@ -143,17 +143,17 @@
     "range": "{from} – {to}",
     "calculated": "Calculated",
     "manual": "Set by you",
-    "kcal": "{kcal} kcal",
-    "sheetSubtitle": "{name} · suggested {kcal} kcal / day",
+    "kcal": "{kcal, number} kcal",
+    "sheetSubtitle": "{name} · suggested {kcal, number} kcal / day",
     "field": "Daily target",
     "appliesFromToday": "Applies from today. Past days keep their target.",
     "save": "Save target",
-    "useSuggested": "Use the suggested {kcal} kcal",
+    "useSuggested": "Use the suggested {kcal, number} kcal",
     "basedOnTargetLose": "Based on the target weight while losing weight.",
     "basedOnTargetGain": "Based on the target weight while gaining weight.",
     "needsWeight": "Add a weight to see a suggestion.",
     "sinceToday": "Since today",
-    "changed": "Daily target now {kcal} kcal from today",
+    "changed": "Daily target now {kcal, number} kcal from today",
     "errors": {
       "kcal": "Enter a target of at least 1 kcal"
     },
@@ -169,7 +169,7 @@
     "sparkline": "Weight over the last weigh-ins",
     "current": "Current weight",
     "target": "Target weight",
-    "showAll": "Show all ({count})"
+    "showAll": "Show all ({count, number})"
   },
   "petForm": {
     "details": "Details",
@@ -272,13 +272,13 @@
     "add": "Add food",
     "restock": "Restock",
     "restockNamed": "Restock {name}",
-    "archivedLink": "Archived foods ({count})",
+    "archivedLink": "Archived foods ({count, number})",
     "colFood": "Food",
     "colType": "Type",
     "colLeft": "Stock left",
     "colCalories": "Calories",
     "colActions": "Actions",
-    "per100": "{kcal} kcal/100 g",
+    "per100": "{kcal, number} kcal/100 g",
     "kg": "{value} kg",
     "g": "{value} g",
     "left": "{stock} left",
@@ -292,7 +292,7 @@
     "archivedTitle": "Archived foods",
     "archivedHint": "Past feeds are kept. Restore a food to log it again.",
     "archivedRow": "{type} · archived {date}",
-    "withRemainder": "{portions} + {grams} g",
+    "withRemainder": "{portions} + {grams, number} g",
     "out": "Out of stock",
     "emptyTitle": "No foods yet",
     "emptyBody": "Add the foods you keep in the cupboard, with calories from the label. You’ll pick from them when you log a feed.",
@@ -326,7 +326,7 @@
     "per100": "100 g",
     "perKg": "kg",
     "asPrinted": "Enter it as printed on the label.",
-    "storedAs": "Enter it as printed on the label. Stored as {kcal} kcal/kg.",
+    "storedAs": "Enter it as printed on the label. Stored as {kcal, number} kcal/kg.",
     "portion": "Portion",
     "portionHint": "Log and restock in pouches, tins or trays.",
     "usePortion": "Use a portion size",
@@ -386,8 +386,8 @@
     "today": "Today · {date}",
     "soFar": "So far",
     "onTarget": "On target",
-    "byType": "{type} · {grams} g",
-    "progress": "{percent}% of target",
+    "byType": "{type} · {grams, number} g",
+    "progress": "{percent, number}% of target",
     "noFeedsTitle": "No feeds yet",
     "noFeedsBody": "Every feed you log for {name} will show up here, day by day."
   },
@@ -403,7 +403,7 @@
     "dailyAverage": "Daily average",
     "fullDaysOnly": "Full days only",
     "target": "Target",
-    "targetValue": "Target {kcal}",
+    "targetValue": "Target {kcal, number}",
     "noTarget": "No target",
     "onOrUnder": "On or under target",
     "ofDays": "{count, plural, one {of # day} other {of # days}}",
@@ -438,8 +438,8 @@
     "previousMonth": "Previous month",
     "nextMonth": "Next month",
     "eaten": "Eaten",
-    "underTarget": "{kcal} under target",
-    "overTarget": "{kcal} over target",
+    "underTarget": "{kcal, number} under target",
+    "overTarget": "{kcal, number} over target",
     "dayOnTarget": "On target",
     "feeds": "Feeds",
     "lastAt": "Last at {time}",
@@ -450,7 +450,7 @@
     "legendWet": "Wet feed",
     "legendDry": "Dry feed",
     "legendOther": "Other feed",
-    "dayLabel": "Calories through {date}, {kcal} kcal",
+    "dayLabel": "Calories through {date}, {kcal, number} kcal",
     "feedList": "Feeds",
     "onTarget": "On target",
     "within": "Within 5% of target",
@@ -463,26 +463,26 @@
     "down": "Down {weight} kg this month",
     "noFeedsDay": "No feeds this day",
     "date": "Date",
-    "kcalValue": "{kcal} kcal",
+    "kcalValue": "{kcal, number} kcal",
     "kgValue": "{weight} kg"
   },
   "petChip": {
     "label": "Pet: {name}. Change pet",
     "switchTitle": "Switch pet",
     "pets": "Pets",
-    "option": "{type} · {eaten} / {target} kcal today",
-    "optionNoTarget": "{type} · {eaten} kcal today",
+    "option": "{type} · {eaten, number} / {target, number} kcal today",
+    "optionNoTarget": "{type} · {eaten, number} kcal today",
     "manage": "Manage pets"
   },
   "feed": {
-    "detail": "{time} · {served} g",
-    "detailLeft": "{time} · {served} g · {left} g left",
+    "detail": "{time} · {served, number} g",
+    "detailLeft": "{time} · {served, number} g · {left, number} g left",
     "logFeed": "Log feed",
     "feeds": "{count, plural, one {# feed} other {# feeds}}",
-    "kcalLeft": "{kcal} kcal left",
-    "kcalOver": "{kcal} kcal over",
-    "split": "{type} {kcal}",
-    "actionsSubtitle": "{day} {time} · {served} g · {kcal} kcal",
+    "kcalLeft": "{kcal, number} kcal left",
+    "kcalOver": "{kcal, number} kcal over",
+    "split": "{type} {kcal, number}",
+    "actionsSubtitle": "{day} {time} · {served, number} g · {kcal, number} kcal",
     "today": "Today",
     "edit": "Edit",
     "editHint": "Food, amount or time",
@@ -495,19 +495,19 @@
     "deleteHint": "You can undo for a few seconds",
     "deleteNamed": "Delete: {name}",
     "deleted": "Feed deleted",
-    "deletedDetail": "{time} · {name} · {served} g",
+    "deletedDetail": "{time} · {name} · {served, number} g",
     "undo": "Undo",
     "loggedAgain": "Logged again"
   },
   "logFeed": {
     "title": "Log a feed",
     "leftoverQuestion": "Left over from {time}?",
-    "leftoverFood": "{name} · {served} g",
+    "leftoverFood": "{name} · {served, number} g",
     "food": "Food",
     "search": "Search foods",
     "recent": "Recent",
     "amount": "Amount",
-    "approx": "≈ {kcal} kcal",
+    "approx": "≈ {kcal, number} kcal",
     "time": "Time",
     "save": "Save feed",
     "grams": "Grams",
@@ -515,7 +515,7 @@
     "errors": {
       "food": "Choose a food",
       "amount": "Enter an amount above 0",
-      "leftover": "Enter at most {served} g"
+      "leftover": "Enter at most {served, number} g"
     },
     "errorNames": {
       "food": "food",
@@ -525,7 +525,7 @@
   },
   "editFeed": {
     "title": "Edit feed",
-    "subtitle": "{day} · {time} · {kcal} kcal",
+    "subtitle": "{day} · {time} · {kcal, number} kcal",
     "food": "Food",
     "change": "Change",
     "served": "Served",
@@ -546,16 +546,16 @@
   },
   "addLeftover": {
     "title": "Add leftover",
-    "subtitle": "{name} · {time} · {served} g served",
+    "subtitle": "{name} · {time} · {served, number} g served",
     "leftOver": "Left over",
     "fate": "What happened to it?",
     "back": "Back in stock",
     "binned": "Binned",
     "eaten": "Eaten",
-    "eatenValue": "{grams} g · {kcal} kcal",
+    "eatenValue": "{grams, number} g · {kcal, number} kcal",
     "save": "Save leftover",
     "errors": {
-      "leftover": "Enter at most {served} g"
+      "leftover": "Enter at most {served, number} g"
     },
     "errorNames": {
       "leftover": "left over"
@@ -601,8 +601,8 @@
     "current": "Current",
     "suggested": "Suggested",
     "applies": "Applies from today. Past days keep their target.",
-    "update": "Update to {kcal} kcal",
-    "keep": "Keep {kcal} kcal"
+    "update": "Update to {kcal, number} kcal",
+    "keep": "Keep {kcal, number} kcal"
   },
   "settings": {
     "back": "Back",

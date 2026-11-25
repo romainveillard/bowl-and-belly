@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Card } from "../components/ui/layout/Card.js";
 import { targetBasis, type PetDetail } from "../pets/pets.js";
+import { formatNumber } from "../lib/format.js";
 
 type TargetRow = PetDetail["targets"][number];
 
@@ -48,13 +49,13 @@ export function TargetStat({
   /** When the day's summary already holds the target. */
   kcal?: number | null;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const basis = row && targetBasis(pet, row);
   return (
     <Stat
       className="hidden desktop:flex"
       label={t("insights.target")}
-      value={kcal ?? "–"}
+      value={kcal === null ? "–" : formatNumber(kcal, i18n.language)}
       unit={t("common.kcal")}
       note={basis && t(`insights.basis.${basis.kind === "formula" ? basis.row : basis.kind}`)}
     />
@@ -69,11 +70,11 @@ export function AverageStat({
   averageKcal: number | null;
   row: TargetRow | undefined;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
     <Stat
       label={t("insights.dailyAverage")}
-      value={averageKcal ?? "–"}
+      value={averageKcal === null ? "–" : formatNumber(averageKcal, i18n.language)}
       unit={t("common.kcal")}
       note={
         <>

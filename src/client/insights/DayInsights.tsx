@@ -6,7 +6,7 @@ import { FeedRow } from "../feeds/FeedRow.js";
 import { useFeedSheets } from "../feeds/FeedSheetsProvider.js";
 import { useDay } from "../feeds/feeds.js";
 import { isOnTarget } from "../lib/dayStatus.js";
-import { formatAppDay, formatTime } from "../lib/format.js";
+import { formatAppDay, formatTime, formatNumber } from "../lib/format.js";
 import { useIsDesktop } from "../lib/useIsDesktop.js";
 import { targetOn, usePet } from "../pets/pets.js";
 import { foodTypeLabel } from "../stock/foods.js";
@@ -71,7 +71,7 @@ export function DayInsights({ petId, today, onPeriod }: PeriodViewProps) {
       <div className="flex gap-3 desktop:grid desktop:grid-cols-4 desktop:gap-4">
         <Stat
           label={t("insights.eaten")}
-          value={eatenKcal}
+          value={formatNumber(eatenKcal, i18n.language)}
           unit={t("common.kcal")}
           note={eatenNote}
         />
@@ -98,7 +98,11 @@ export function DayInsights({ petId, today, onPeriod }: PeriodViewProps) {
               ? t("insights.wetDry")
               : byType.map((total) => foodTypeLabel(total.type, t)).join(" / ")
           }
-          value={byType.length === 0 ? "–" : byType.map((total) => total.kcal).join(" / ")}
+          value={
+            byType.length === 0
+              ? "–"
+              : byType.map((total) => formatNumber(total.kcal, i18n.language)).join(" / ")
+          }
           unit={t("common.kcal")}
           note={byType.map((total) => `${total.eatenG} g`).join(" / ")}
         />

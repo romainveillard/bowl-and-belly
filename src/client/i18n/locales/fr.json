@@ -19,7 +19,7 @@
   },
   "common": {
     "kcal": "kcal",
-    "ofTarget": "/ {target} kcal"
+    "ofTarget": "/ {target, number} kcal"
   },
   "errors": {
     "failed": {
@@ -81,7 +81,7 @@
     "editShort": "Modifier",
     "back": "Retour aux animaux",
     "today": "Aujourd’hui",
-    "progress": "{percent} % de l’objectif du jour",
+    "progress": "{percent, number} % de l’objectif du jour",
     "neutered": "stérilisé",
     "intact": "non stérilisé",
     "activity": {
@@ -101,7 +101,7 @@
     "archiveBody": "Ses repas, ses pesées et ses objectifs sont conservés. Il disparaîtra du sélecteur d’animal, et vous pourrez le restaurer à tout moment depuis Animaux archivés, dans l’onglet Animaux.",
     "archiveBodyDesktop": "Ses repas, ses pesées et ses objectifs sont conservés. Il disparaîtra du sélecteur d’animal, et vous pourrez le restaurer à tout moment depuis Animaux archivés.",
     "archiveConfirm": "Archiver",
-    "archivedLink": "Animaux archivés ({count})",
+    "archivedLink": "Animaux archivés ({count, number})",
     "archivedTitle": "Animaux archivés",
     "archivedHint": "L’historique est conservé. Restaurez un animal pour enregistrer à nouveau ses repas.",
     "archivedRow": "{type} · archivé le {date}"
@@ -113,7 +113,7 @@
     "setOwn": "Définir mon propre objectif",
     "setOwnHint": "Pour une recommandation du vétérinaire ou un régime particulier.",
     "calculatedSince": "Calculé {since}.",
-    "calculatedSinceHow": "Calculé {since} : besoins au repos de {resting} kcal × {factor} pour {profile}.",
+    "calculatedSinceHow": "Calculé {since} : besoins au repos de {resting, number} kcal × {factor} pour {profile}.",
     "manualSince": "Défini par vous {since}.",
     "none": "Pas encore d’objectif quotidien.",
     "profile": {
@@ -143,17 +143,17 @@
     "range": "{from} – {to}",
     "calculated": "Calculé",
     "manual": "Défini par vous",
-    "kcal": "{kcal} kcal",
-    "sheetSubtitle": "{name} · {kcal} kcal / jour suggérés",
+    "kcal": "{kcal, number} kcal",
+    "sheetSubtitle": "{name} · {kcal, number} kcal / jour suggérés",
     "field": "Objectif quotidien",
     "appliesFromToday": "S’applique à partir d’aujourd’hui. Les jours passés gardent leur objectif.",
     "save": "Enregistrer l’objectif",
-    "useSuggested": "Utiliser les {kcal} kcal suggérés",
+    "useSuggested": "Utiliser les {kcal, number} kcal suggérés",
     "basedOnTargetLose": "D’après le poids cible, pendant la perte de poids.",
     "basedOnTargetGain": "D’après le poids cible, pendant la prise de poids.",
     "needsWeight": "Ajoutez un poids pour voir une suggestion.",
     "sinceToday": "Depuis aujourd’hui",
-    "changed": "Objectif quotidien désormais de {kcal} kcal à partir d’aujourd’hui",
+    "changed": "Objectif quotidien désormais de {kcal, number} kcal à partir d’aujourd’hui",
     "errors": {
       "kcal": "Saisissez un objectif d’au moins 1 kcal"
     },
@@ -169,7 +169,7 @@
     "sparkline": "Poids lors des dernières pesées",
     "current": "Poids actuel",
     "target": "Poids cible",
-    "showAll": "Tout afficher ({count})"
+    "showAll": "Tout afficher ({count, number})"
   },
   "petForm": {
     "details": "Informations",
@@ -272,13 +272,13 @@
     "add": "Ajouter un aliment",
     "restock": "Réapprovisionner",
     "restockNamed": "Réapprovisionner {name}",
-    "archivedLink": "Aliments archivés ({count})",
+    "archivedLink": "Aliments archivés ({count, number})",
     "colFood": "Aliment",
     "colType": "Type",
     "colLeft": "Stock restant",
     "colCalories": "Calories",
     "colActions": "Actions",
-    "per100": "{kcal} kcal/100 g",
+    "per100": "{kcal, number} kcal/100 g",
     "kg": "{value} kg",
     "g": "{value} g",
     "left": "{stock} restants",
@@ -292,7 +292,7 @@
     "archivedTitle": "Aliments archivés",
     "archivedHint": "Les repas passés sont conservés. Restaurez un aliment pour l’utiliser à nouveau.",
     "archivedRow": "{type} · archivé le {date}",
-    "withRemainder": "{portions} + {grams} g",
+    "withRemainder": "{portions} + {grams, number} g",
     "out": "Rupture de stock",
     "emptyTitle": "Pas encore d’aliments",
     "emptyBody": "Ajoutez les aliments que vous avez dans le placard, avec les calories de l’étiquette. Vous les choisirez en notant un repas.",
@@ -326,7 +326,7 @@
     "per100": "100 g",
     "perKg": "kg",
     "asPrinted": "Saisissez la valeur imprimée sur l’étiquette.",
-    "storedAs": "Saisissez la valeur imprimée sur l’étiquette. Enregistrée comme {kcal} kcal/kg.",
+    "storedAs": "Saisissez la valeur imprimée sur l’étiquette. Enregistrée comme {kcal, number} kcal/kg.",
     "portion": "Portion",
     "portionHint": "Notez les repas et le stock en sachets, boîtes ou barquettes.",
     "usePortion": "Utiliser une taille de portion",
@@ -386,8 +386,8 @@
     "today": "Aujourd’hui · {date}",
     "soFar": "En cours",
     "onTarget": "Objectif atteint",
-    "byType": "{type} · {grams} g",
-    "progress": "{percent} % de l’objectif",
+    "byType": "{type} · {grams, number} g",
+    "progress": "{percent, number} % de l’objectif",
     "noFeedsTitle": "Pas encore de repas",
     "noFeedsBody": "Chaque repas noté pour {name} apparaîtra ici, jour après jour."
   },
@@ -403,7 +403,7 @@
     "dailyAverage": "Moyenne quotidienne",
     "fullDaysOnly": "Journées complètes seulement",
     "target": "Objectif",
-    "targetValue": "Objectif {kcal}",
+    "targetValue": "Objectif {kcal, number}",
     "noTarget": "Pas d’objectif",
     "onOrUnder": "Objectif respecté",
     "ofDays": "{count, plural, one {sur # jour} other {sur # jours}}",
@@ -438,8 +438,8 @@
     "previousMonth": "Mois précédent",
     "nextMonth": "Mois suivant",
     "eaten": "Mangé",
-    "underTarget": "{kcal} sous l’objectif",
-    "overTarget": "{kcal} au-dessus de l’objectif",
+    "underTarget": "{kcal, number} sous l’objectif",
+    "overTarget": "{kcal, number} au-dessus de l’objectif",
     "dayOnTarget": "Objectif atteint",
     "feeds": "Repas",
     "lastAt": "Dernier à {time}",
@@ -450,7 +450,7 @@
     "legendWet": "Repas humide",
     "legendDry": "Repas sec",
     "legendOther": "Autre repas",
-    "dayLabel": "Calories au fil du {date}, {kcal} kcal",
+    "dayLabel": "Calories au fil du {date}, {kcal, number} kcal",
     "feedList": "Repas",
     "onTarget": "Objectif atteint",
     "within": "À 5 % près de l’objectif",
@@ -463,26 +463,26 @@
     "down": "−{weight} kg ce mois-ci",
     "noFeedsDay": "Aucun repas ce jour-là",
     "date": "Date",
-    "kcalValue": "{kcal} kcal",
+    "kcalValue": "{kcal, number} kcal",
     "kgValue": "{weight} kg"
   },
   "petChip": {
     "label": "Animal : {name}. Changer d’animal",
     "switchTitle": "Changer d’animal",
     "pets": "Animaux",
-    "option": "{type} · {eaten} / {target} kcal aujourd’hui",
-    "optionNoTarget": "{type} · {eaten} kcal aujourd’hui",
+    "option": "{type} · {eaten, number} / {target, number} kcal aujourd’hui",
+    "optionNoTarget": "{type} · {eaten, number} kcal aujourd’hui",
     "manage": "Gérer les animaux"
   },
   "feed": {
-    "detail": "{time} · {served} g",
-    "detailLeft": "{time} · {served} g · {left} g de reste",
+    "detail": "{time} · {served, number} g",
+    "detailLeft": "{time} · {served, number} g · {left, number} g de reste",
     "logFeed": "Noter un repas",
     "feeds": "{count, plural, one {# repas} other {# repas}}",
-    "kcalLeft": "{kcal} kcal restantes",
-    "kcalOver": "{kcal} kcal en trop",
-    "split": "{type} {kcal}",
-    "actionsSubtitle": "{day} {time} · {served} g · {kcal} kcal",
+    "kcalLeft": "{kcal, number} kcal restantes",
+    "kcalOver": "{kcal, number} kcal en trop",
+    "split": "{type} {kcal, number}",
+    "actionsSubtitle": "{day} {time} · {served, number} g · {kcal, number} kcal",
     "today": "Aujourd’hui",
     "edit": "Modifier",
     "editHint": "Aliment, quantité ou heure",
@@ -495,19 +495,19 @@
     "deleteHint": "Vous pouvez annuler pendant quelques secondes",
     "deleteNamed": "Supprimer : {name}",
     "deleted": "Repas supprimé",
-    "deletedDetail": "{time} · {name} · {served} g",
+    "deletedDetail": "{time} · {name} · {served, number} g",
     "undo": "Annuler",
     "loggedAgain": "Noté à nouveau"
   },
   "logFeed": {
     "title": "Noter un repas",
     "leftoverQuestion": "Un reste de {time} ?",
-    "leftoverFood": "{name} · {served} g",
+    "leftoverFood": "{name} · {served, number} g",
     "food": "Aliment",
     "search": "Rechercher un aliment",
     "recent": "Récents",
     "amount": "Quantité",
-    "approx": "≈ {kcal} kcal",
+    "approx": "≈ {kcal, number} kcal",
     "time": "Heure",
     "save": "Enregistrer le repas",
     "grams": "Grammes",
@@ -515,7 +515,7 @@
     "errors": {
       "food": "Choisissez un aliment",
       "amount": "Saisissez une quantité supérieure à 0",
-      "leftover": "Saisissez au plus {served} g"
+      "leftover": "Saisissez au plus {served, number} g"
     },
     "errorNames": {
       "food": "aliment",
@@ -525,7 +525,7 @@
   },
   "editFeed": {
     "title": "Modifier le repas",
-    "subtitle": "{day} · {time} · {kcal} kcal",
+    "subtitle": "{day} · {time} · {kcal, number} kcal",
     "food": "Aliment",
     "change": "Changer",
     "served": "Servi",
@@ -546,16 +546,16 @@
   },
   "addLeftover": {
     "title": "Ajouter un reste",
-    "subtitle": "{name} · {time} · {served} g servis",
+    "subtitle": "{name} · {time} · {served, number} g servis",
     "leftOver": "Reste",
     "fate": "Qu’est-il devenu ?",
     "back": "Remis en stock",
     "binned": "Jeté",
     "eaten": "Mangé",
-    "eatenValue": "{grams} g · {kcal} kcal",
+    "eatenValue": "{grams, number} g · {kcal, number} kcal",
     "save": "Enregistrer le reste",
     "errors": {
-      "leftover": "Saisissez au plus {served} g"
+      "leftover": "Saisissez au plus {served, number} g"
     },
     "errorNames": {
       "leftover": "reste"
@@ -601,8 +601,8 @@
     "current": "Actuel",
     "suggested": "Suggéré",
     "applies": "S’applique à partir d’aujourd’hui. Les jours passés gardent leur objectif.",
-    "update": "Passer à {kcal} kcal",
-    "keep": "Garder {kcal} kcal"
+    "update": "Passer à {kcal, number} kcal",
+    "keep": "Garder {kcal, number} kcal"
   },
   "settings": {
     "back": "Retour",

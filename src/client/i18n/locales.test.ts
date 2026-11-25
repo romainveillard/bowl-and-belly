@@ -1,4 +1,7 @@
+import i18next from "i18next";
+import ICU from "i18next-icu";
 import { expect, it } from "vitest";
+import enGB from "./locales/en-GB.json" with { type: "json" };
 import fr from "./locales/fr.json" with { type: "json" };
 
 function strings(node: unknown, path = ""): [string, string][] {
@@ -17,4 +20,26 @@ function strings(node: unknown, path = ""): [string, string][] {
 it("keeps French punctuation on the line of the word before it", () => {
   const breakable = strings(fr).filter(([, text]) => / [?!;:%»]|« /.test(text));
   expect(breakable).toEqual([]);
+});
+
+// i18next-icu formats an argument only when the message says so.
+it("formats the numbers in messages, which no plain argument would", () => {
+  const plain = [enGB, fr].flatMap((locale) =>
+    strings(locale).filter(([, text]) =>
+      /\{(kcal|served|grams|target|eaten|resting|left|percent|count)\}/.test(text),
+    ),
+  );
+  expect(plain).toEqual([]);
+});
+
+it("groups thousands as each language does", async () => {
+  const i18n = i18next.createInstance();
+  await i18n.use(ICU).init({
+    lng: "en-GB",
+    resources: { "en-GB": { translation: enGB }, fr: { translation: fr } },
+  });
+
+  expect(i18n.t("target.kcal", { kcal: 1500 })).toBe("1,500 kcal");
+  // French groups with a narrow no-break space.
+  expect(i18n.t("target.kcal", { kcal: 1500, lng: "fr" })).toBe("1\u202F500 kcal");
 });

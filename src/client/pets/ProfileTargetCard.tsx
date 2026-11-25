@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { button } from "../components/ui/forms/button.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
-import { formatSince } from "../lib/format.js";
+import { formatSince, formatNumber } from "../lib/format.js";
 import { ManualTargetSheet } from "./ManualTargetSheet.js";
 import { suggestionFor, targetBasis, type PetDetail } from "./pets.js";
 
@@ -40,7 +40,7 @@ export function ProfileTargetCard({ pet }: { pet: PetDetail }) {
         {target && (
           <span className="flex items-baseline gap-1.5">
             <span className="font-display text-[32px] font-semibold tabular-nums desktop:text-4xl">
-              {target.kcalPerDay}
+              {formatNumber(target.kcalPerDay, locale)}
             </span>
             <span className="text-[15px] text-muted-foreground">{t("target.perDay")}</span>
           </span>

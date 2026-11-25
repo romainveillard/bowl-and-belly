@@ -269,9 +269,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
               </div>
             </div>
             <span className="text-[13px] text-muted-foreground">
-              {kcalStored
-                ? t("foodForm.storedAs", { kcal: number.format(kcalStored) })
-                : t("foodForm.asPrinted")}
+              {kcalStored ? t("foodForm.storedAs", { kcal: kcalStored }) : t("foodForm.asPrinted")}
             </span>
           </Card>
         </div>

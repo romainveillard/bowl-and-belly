@@ -4,6 +4,7 @@ import { Card } from "../components/ui/layout/Card.js";
 import { isOverTarget } from "../lib/dayStatus.js";
 import { foodTypeLabel } from "../stock/foods.js";
 import type { DaySummary } from "./feeds.js";
+import { formatNumber } from "../lib/format.js";
 
 /** Today's calories against the target, with the split by food type. */
 export function CaloriesCard({
@@ -15,7 +16,7 @@ export function CaloriesCard({
   targetKcal: number | null;
   byType: DaySummary["byType"];
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const percent = targetKcal ? Math.round((eatenKcal / targetKcal) * 100) : 0;
   const over = targetKcal !== null && eatenKcal > targetKcal;
   // Warn only past the on-target band, like the bar and History.
@@ -26,7 +27,7 @@ export function CaloriesCard({
       <h2 className="hidden text-base font-semibold desktop:block">{t("today.caloriesToday")}</h2>
       <span className="flex items-baseline gap-2 tabular-nums">
         <span className="font-display text-4xl leading-10 font-semibold desktop:text-[44px] desktop:leading-[48px]">
-          {eatenKcal}
+          {formatNumber(eatenKcal, i18n.language)}
         </span>
         <span className="text-base text-muted-foreground desktop:text-heading">
           {targetKcal === null ? t("common.kcal") : t("common.ofTarget", { target: targetKcal })}

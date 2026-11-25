@@ -10,6 +10,11 @@ export function formatReadingKg(weightG: number, locale: string): string {
   }).format(weightG / 1000);
 }
 
+/** Whole kcal and grams, grouped as the locale does: "1,500", "1 500". */
+export function formatNumber(value: number, locale: string): string {
+  return new Intl.NumberFormat(locale).format(value);
+}
+
 /** Derived weights (lists, averages) always show one decimal. */
 export function formatKg(weightG: number, locale: string): string {
   return new Intl.NumberFormat(locale, {

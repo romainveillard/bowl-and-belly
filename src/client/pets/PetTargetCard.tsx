@@ -5,6 +5,7 @@ import { SwitchRow } from "../components/ui/forms/SwitchRow.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import type { CheckedField } from "../lib/useFormErrors.js";
 import type { PetFormState } from "./petForm.js";
+import { formatNumber } from "../lib/format.js";
 
 type TargetValues = Pick<PetFormState, "ownTarget" | "ownTargetKcal">;
 
@@ -29,7 +30,7 @@ export function PetTargetCard({
   showOwn: boolean;
   field: CheckedField;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <Card>
@@ -39,7 +40,7 @@ export function PetTargetCard({
           <>
             <span className="flex items-baseline gap-1.5">
               <span className="font-display text-figure font-semibold tabular-nums desktop:text-[32px]">
-                {suggestion.kcalPerDay}
+                {formatNumber(suggestion.kcalPerDay, i18n.language)}
               </span>
               <span className="text-[15px] text-muted-foreground">
                 {t("target.perDaySuggested")}

@@ -2,7 +2,7 @@ import { AlertDialog } from "radix-ui";
 import { useTranslation } from "react-i18next";
 import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
 import { Dialog, dialogButton } from "../components/ui/overlays/Dialog.js";
-import { formatReadingKg } from "../lib/format.js";
+import { formatReadingKg, formatNumber } from "../lib/format.js";
 import { useSetTarget } from "./pets.js";
 import { useAnswerAgePrompt, type TargetPrompt } from "./weights.js";
 
@@ -97,7 +97,7 @@ export function TargetPromptDialog({
           <span className="text-caption text-muted-foreground">{t("targetPrompt.current")}</span>
           <span className="flex items-baseline gap-1">
             <span className="font-display text-2xl font-semibold tabular-nums">
-              {prompt.currentKcal}
+              {formatNumber(prompt.currentKcal, i18n.language)}
             </span>
             <span className="text-[13px] text-muted-foreground">{t("common.kcal")}</span>
           </span>
@@ -106,7 +106,7 @@ export function TargetPromptDialog({
           <span className="text-caption text-accent-foreground">{t("targetPrompt.suggested")}</span>
           <span className="flex items-baseline gap-1">
             <span className="font-display text-2xl font-semibold tabular-nums">
-              {prompt.suggestedKcal}
+              {formatNumber(prompt.suggestedKcal, i18n.language)}
             </span>
             <span className="text-[13px] text-muted-foreground">{t("common.kcal")}</span>
           </span>

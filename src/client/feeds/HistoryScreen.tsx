@@ -14,7 +14,7 @@ import { button } from "../components/ui/forms/button.js";
 import { dayStatus, isOverTarget } from "../lib/dayStatus.js";
 import { useHistory, type DaySummary, type FeedEntry } from "./feeds.js";
 import { foodTypeLabel } from "../stock/foods.js";
-import { formatAppDay } from "../lib/format.js";
+import { formatAppDay, formatNumber } from "../lib/format.js";
 import { usePets } from "../pets/pets.js";
 import { useFoodCount } from "../stock/foods.js";
 import { useSelectedPet } from "../pets/selectedPet.js";
@@ -78,7 +78,9 @@ function DayCard({
         </span>
         <span className="flex w-full items-center justify-between gap-2">
           <span className="flex items-baseline gap-1 tabular-nums">
-            <span className="font-display text-title font-semibold">{summary.eatenKcal}</span>
+            <span className="font-display text-title font-semibold">
+              {formatNumber(summary.eatenKcal, i18n.language)}
+            </span>
             <span className="text-[13px] text-muted-foreground">
               {summary.targetKcal === null
                 ? t("common.kcal")
@@ -116,7 +118,7 @@ function DayCard({
                 </span>
                 <span className="flex flex-col tabular-nums">
                   <span className="text-sm font-semibold">
-                    {total.kcal} {t("common.kcal")}
+                    {formatNumber(total.kcal, i18n.language)} {t("common.kcal")}
                   </span>
                   <span className="text-caption text-muted-foreground">
                     {t("history.byType", {
