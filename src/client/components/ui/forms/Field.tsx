@@ -1,4 +1,4 @@
-import { useId, type InputHTMLAttributes, type ReactNode } from "react";
+import { useCallback, useId, useState, type InputHTMLAttributes, type ReactNode } from "react";
 import { AlertIcon, SearchIcon } from "../../icons.js";
 
 export const inputClass =
@@ -13,14 +13,33 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 /** A text input, with an optional unit on the right. */
 export function Input({ suffix, boxClassName = "", className = "", ...input }: InputProps) {
-  // A one-letter unit such as "g" fits narrow boxes like the leftover field.
-  const padding = suffix ? (suffix.length === 1 ? "pr-7" : "pr-14") : "";
+  const [unitWidth, setUnitWidth] = useState<number | null>(null);
+
+  // Units run from "g" to translated or typed portion names such as
+  // "sachets", so the text keeps clear of the unit's measured width, which
+  // also changes once the bundled font has loaded.
+  const measureUnit = useCallback((element: HTMLSpanElement) => {
+    const observer = new ResizeObserver(() => setUnitWidth(element.offsetWidth));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  const clearance = suffix
+    ? unitWidth === null
+      ? `calc(${suffix.length}ch + 20px)`
+      : `${unitWidth + 20}px`
+    : undefined;
 
   return (
     <div className={`relative ${boxClassName}`}>
-      <input className={`${inputClass} ${padding} ${className}`} {...input} />
+      <input
+        className={`${inputClass} ${className}`}
+        style={clearance ? { paddingInlineEnd: clearance } : undefined}
+        {...input}
+      />
       {suffix && (
         <span
+          ref={measureUnit}
           aria-hidden="true"
           className="absolute top-3 right-3 text-[15px] text-muted-foreground"
         >
