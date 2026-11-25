@@ -15,8 +15,7 @@ import { WeighInsCard } from "./WeighInsCard.js";
 
 /** A pet's profile, inside the Pets screen's WeightSheetsProvider. */
 export function PetProfile({ petId }: { petId: number }) {
-  const { t, i18n } = useTranslation();
-  const locale = i18n.language;
+  const { t } = useTranslation();
   const { data: pet } = usePet(petId);
   const [archiving, setArchiving] = useState(false);
   const archive = useSetArchived("archive");
@@ -60,7 +59,9 @@ export function PetProfile({ petId }: { petId: number }) {
           <div className="flex min-w-[200px] flex-1 flex-col gap-1">
             <h2 className="font-display text-[28px] font-semibold">{pet.name}</h2>
             <span className="text-sm text-muted-foreground">
-              {[...identity, lifestyle[0]?.toLocaleLowerCase(locale), lifestyle[1]].join(" · ")}
+              {[...identity, t(`pets.activityInline.${pet.activityLevel}`), lifestyle[1]].join(
+                " · ",
+              )}
             </span>
           </div>
           <Link to={editLink} className={button.outline}>

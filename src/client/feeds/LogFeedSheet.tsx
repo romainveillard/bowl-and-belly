@@ -11,7 +11,7 @@ import { Segmented } from "../components/ui/forms/Segmented.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
 import { useLogFeed, useLogForm, type LogForm, type PickerFood } from "./feeds.js";
 import { formatTime } from "../lib/format.js";
-import { portionPlural } from "../stock/foods.js";
+import { portionPlural, portionUnit } from "../stock/foods.js";
 import {
   amountIn,
   countsInPortions,
@@ -149,11 +149,7 @@ function LogFeedForm({
             id={errors.idOf("amount")}
             label={t("logFeed.amount")}
             inputMode="decimal"
-            suffix={
-              inPortions && food?.portionName
-                ? portionPlural(food.portionName, i18n).toLowerCase()
-                : "g"
-            }
+            suffix={inPortions && food?.portionName ? portionUnit(food.portionName, i18n) : "g"}
             error={errorFor("amount")}
             onBlur={errors.recheck("amount")}
             value={amounts.amount}

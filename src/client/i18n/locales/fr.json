@@ -106,7 +106,12 @@
     "archivedLink": "Animaux archivés ({count, number})",
     "archivedTitle": "Animaux archivés",
     "archivedHint": "L’historique est conservé. Restaurez un animal pour enregistrer à nouveau ses repas.",
-    "archivedRow": "{type} · archivé le {date}"
+    "archivedRow": "{type} · archivé le {date}",
+    "activityInline": {
+      "inactive": "peu actif",
+      "normal": "activité normale",
+      "active": "actif"
+    }
   },
   "target": {
     "title": "Objectif quotidien",
@@ -267,6 +272,11 @@
     "pouch": "Sachets",
     "tin": "Boîtes",
     "tray": "Barquettes"
+  },
+  "portionUnit": {
+    "pouch": "sachets",
+    "tin": "boîtes",
+    "tray": "barquettes"
   },
   "stock": {
     "search": "Rechercher un aliment",

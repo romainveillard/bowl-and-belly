@@ -14,6 +14,7 @@ import { Segmented } from "../components/ui/forms/Segmented.js";
 import {
   foodTypeLabel,
   portionPlural,
+  portionUnit,
   suggestedPortion,
   type SUGGESTED_PORTIONS,
   useFood,
@@ -132,7 +133,8 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
   });
 
   const title = food ? t("foodForm.edit") : t("foodForm.add");
-  const units = usePortion && portionName ? portionPlural(portionName, i18n) : null;
+  const hasPortions = usePortion && portionName !== "";
+  const portionsLabel = hasPortions ? portionPlural(portionName, i18n) : null;
 
   const send = (body: FoodBody, kcalBackfill: KcalBackfill) =>
     save.mutate(
@@ -286,7 +288,8 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
           <StockCard
             value={form}
             onChange={updateStock}
-            units={units}
+            portionsLabel={portionsLabel}
+            portionUnit={hasPortions ? portionUnit(portionName, i18n) : null}
             counted={counted}
             editing={food !== undefined}
             field={field("stock")}

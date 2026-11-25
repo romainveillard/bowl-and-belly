@@ -8,7 +8,7 @@ import { Segmented } from "../components/ui/forms/Segmented.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
 import {
   isOutOfStock,
-  portionPlural,
+  portionUnit,
   stockLabel,
   stockLeftLabel,
   useRestock,
@@ -34,7 +34,7 @@ export function RestockSheet({ food, onClose }: { food: FoodSummary; onClose: ()
   if (value !== null) {
     addG = Math.round(portionG === null ? value * (unit === "kg" ? 1000 : 1) : value * portionG);
   }
-  const units = portionG === null ? "" : portionPlural(food.portionName ?? "", i18n).toLowerCase();
+  const units = portionG === null ? "" : portionUnit(food.portionName ?? "", i18n);
   const errors = useFormErrors(
     new Map(addG !== null && addG >= 1 ? [] : [["amount", "amount"] as const]),
     ORDER,

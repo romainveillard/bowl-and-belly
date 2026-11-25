@@ -192,6 +192,16 @@ export function portionPlural(name: string, i18n: I18n): string {
   return plural.charAt(0).toUpperCase() + plural.slice(1);
 }
 
+/**
+ * The portions as a unit after a number, "pouches" or "sachets": its own key
+ * rather than the label lower-cased, which not every language allows. A typed
+ * name gets the same plural as the stock count.
+ */
+export function portionUnit(name: string, i18n: I18n): string {
+  const suggested = suggestedPortion(name, i18n);
+  return suggested ? i18n.t(`portionUnit.${suggested}`) : typedPlural(name, 2);
+}
+
 type Stocked = Pick<FoodSummary, "stockG" | "stockUnit" | "portionName" | "portionG">;
 
 /** Feeds logged against a stale count can take stock below zero; it shows as out of stock. */

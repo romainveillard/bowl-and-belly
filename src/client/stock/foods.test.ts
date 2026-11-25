@@ -3,7 +3,7 @@ import ICU from "i18next-icu";
 import { describe, expect, it } from "vitest";
 import enGB from "../i18n/locales/en-GB.json" with { type: "json" };
 import fr from "../i18n/locales/fr.json" with { type: "json" };
-import { matchesFood, stockLabel } from "./foods.js";
+import { matchesFood, portionUnit, stockLabel } from "./foods.js";
 
 const i18n = i18next.createInstance();
 await i18n.use(ICU).init({
@@ -54,5 +54,21 @@ describe("matchesFood", () => {
   it("keeps only the chosen type", () => {
     expect(matchesFood(kibbles, "", 2, "en-GB")).toBe(true);
     expect(matchesFood(kibbles, "", 1, "en-GB")).toBe(false);
+  });
+});
+
+describe("portionUnit", () => {
+  it("uses each language's own word after a number, not its label lower-cased", () => {
+    expect(portionUnit("Pouch", i18n)).toBe("pouches");
+    expect(portionUnit("Pouch", i18n.cloneInstance({ lng: "fr" }))).toBe("sachets");
+    // A key of its own, so a language that capitalises nouns keeps "Beutel", not "beutel".
+    const german = i18n.cloneInstance({ lng: "de" });
+    german.addResourceBundle("de", "translation", {
+      portionPlural: { pouch: "Beutel" },
+      portionUnit: { pouch: "Beutel" },
+    });
+    expect(portionUnit("Pouch", german)).toBe("Beutel");
+    // A typed name matches the stock count: "8 scoops".
+    expect(portionUnit("Scoop", i18n)).toBe("scoops");
   });
 });

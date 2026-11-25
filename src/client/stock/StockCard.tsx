@@ -14,7 +14,8 @@ export interface StockValues {
 export function StockCard({
   value,
   onChange,
-  units,
+  portionsLabel,
+  portionUnit,
   counted,
   editing,
   field,
@@ -22,7 +23,9 @@ export function StockCard({
   value: StockValues;
   onChange: (patch: Partial<StockValues>) => void;
   /** The portion's plural, such as "Pouches", when the food has portions. */
-  units: string | null;
+  portionsLabel: string | null;
+  /** The same, after a number: "pouches". */
+  portionUnit: string | null;
   /** The stock is counted in portions. */
   counted: boolean;
   editing: boolean;
@@ -36,14 +39,14 @@ export function StockCard({
         title={t("foodForm.stock")}
         hint={t(editing ? "foodForm.stockHintEdit" : "foodForm.stockHint")}
       />
-      {units && (
+      {portionsLabel && (
         <Segmented
           label={t("foodForm.countIn")}
           value={value.countIn}
           onChange={(countIn) => onChange({ countIn })}
           options={[
             { value: "g", label: t("foodForm.grams") },
-            { value: "portion", label: units },
+            { value: "portion", label: portionsLabel },
           ]}
         />
       )}
@@ -52,7 +55,7 @@ export function StockCard({
           {...field}
           label={t("foodForm.current")}
           inputMode="decimal"
-          suffix={counted && units ? units.toLowerCase() : undefined}
+          suffix={counted && portionUnit ? portionUnit : undefined}
           value={value.stock}
           onChange={(stock) => onChange({ stock })}
         />

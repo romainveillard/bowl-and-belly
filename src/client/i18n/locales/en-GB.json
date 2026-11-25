@@ -106,7 +106,12 @@
     "archivedLink": "Archived pets ({count, number})",
     "archivedTitle": "Archived pets",
     "archivedHint": "History is kept. Restore a pet to log for them again.",
-    "archivedRow": "{type} · archived {date}"
+    "archivedRow": "{type} · archived {date}",
+    "activityInline": {
+      "inactive": "inactive",
+      "normal": "normal activity",
+      "active": "active"
+    }
   },
   "target": {
     "title": "Daily target",
@@ -267,6 +272,11 @@
     "pouch": "Pouches",
     "tin": "Tins",
     "tray": "Trays"
+  },
+  "portionUnit": {
+    "pouch": "pouches",
+    "tin": "tins",
+    "tray": "trays"
   },
   "stock": {
     "search": "Search foods",
