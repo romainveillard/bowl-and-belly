@@ -25,6 +25,10 @@ export function Card({ children, className = "", size = "default", label }: Card
   );
 }
 
+/** Rows that run to a default card's edges, so swipe and hover colours fill them. */
+export const cardEdgeRows =
+  "-mx-[18px] -mb-[18px] overflow-hidden rounded-b-xl border-t border-border desktop:-mx-[22px] desktop:-mb-[22px] desktop:rounded-b-[14px]";
+
 interface CardHeadingProps {
   title: string;
   hint?: string | undefined;

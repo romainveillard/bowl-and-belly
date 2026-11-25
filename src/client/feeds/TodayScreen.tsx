@@ -5,7 +5,7 @@ import { EmptyMessage } from "../components/EmptyState.js";
 import { BowlIcon, CheckIcon, LogoMark, PlusIcon, SettingsIcon } from "../components/icons.js";
 import { FeedRow } from "./FeedRow.js";
 import { PetChip } from "../pets/PetChip.js";
-import { Card, CardHeading } from "../components/ui/layout/Card.js";
+import { Card, CardHeading, cardEdgeRows } from "../components/ui/layout/Card.js";
 import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageHeader } from "../components/ui/layout/PageHeader.js";
 import { WeightCard } from "../pets/WeightCard.js";
@@ -205,8 +205,7 @@ function TodayFeeds({ pet, today }: { pet: PetSummary; today: string }) {
         {entries.length > 0 && (
           <Card>
             <CardHeading title={t("feed.feeds", { count: entries.length })} />
-            {/* The rows run to the card's edges, so swipe and hover colours fill them. */}
-            <div className="-mx-[18px] -mb-[18px] overflow-hidden rounded-b-xl border-t border-border desktop:-mx-[22px] desktop:-mb-[22px] desktop:rounded-b-[14px]">
+            <div className={cardEdgeRows}>
               {entries.map((entry, index) => (
                 <FeedRow
                   key={entry.id}
