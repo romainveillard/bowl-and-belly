@@ -43,7 +43,7 @@ export function RestockSheet({ food, onClose }: { food: FoodSummary; onClose: ()
       footer={
         <button
           type="button"
-          className={`${button.primaryLarge} desktop:h-11 desktop:w-auto desktop:rounded-[10px] desktop:text-[15px]`}
+          className={button.sheetPrimary}
           disabled={addG === null || restock.isPending}
           onClick={() => addG !== null && restock.mutate(addG, { onSuccess: onClose })}
         >

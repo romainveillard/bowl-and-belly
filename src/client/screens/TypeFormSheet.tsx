@@ -82,19 +82,10 @@ export function TypeFormSheet({ kind, type, otherLabels, onClose }: TypeFormShee
       title={t(`types.${kind}.${type ? "editTitle" : "addTitle"}`)}
       footer={
         <>
-          <button
-            type="button"
-            className={`${button.primaryLarge} desktop:h-11 desktop:w-auto desktop:rounded-[10px] desktop:text-[15px]`}
-            disabled={pending}
-            onClick={submit}
-          >
+          <button type="button" className={button.sheetPrimary} disabled={pending} onClick={submit}>
             {t(`types.${kind}.save`)}
           </button>
-          <button
-            type="button"
-            className={`${button.outline} hidden desktop:inline-flex`}
-            onClick={onClose}
-          >
+          <button type="button" className={button.sheetCancel} onClick={onClose}>
             {t("action.cancel")}
           </button>
           {type && (

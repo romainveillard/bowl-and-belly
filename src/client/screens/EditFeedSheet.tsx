@@ -94,17 +94,13 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
         <>
           <button
             type="button"
-            className={`${button.primaryLarge} desktop:h-11 desktop:w-auto desktop:rounded-[10px] desktop:text-[15px]`}
+            className={button.sheetPrimary}
             disabled={edit.isPending}
             onClick={submit}
           >
             {t("editFeed.save")}
           </button>
-          <button
-            type="button"
-            className={`${button.outline} hidden desktop:inline-flex`}
-            onClick={onClose}
-          >
+          <button type="button" className={button.sheetCancel} onClick={onClose}>
             {t("action.cancel")}
           </button>
         </>

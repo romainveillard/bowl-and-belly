@@ -42,7 +42,7 @@ export function ManualTargetSheet({
         <>
           <button
             type="button"
-            className={`${button.primaryLarge} desktop:h-11 desktop:w-auto desktop:rounded-[10px] desktop:text-[15px]`}
+            className={button.sheetPrimary}
             disabled={value === null || setTarget.isPending}
             onClick={() => value !== null && save(Math.round(value))}
           >

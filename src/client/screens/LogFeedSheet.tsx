@@ -109,17 +109,13 @@ function LogFeedForm({
         <>
           <button
             type="button"
-            className={`${button.primaryLarge} desktop:h-11 desktop:w-auto desktop:rounded-[10px] desktop:text-[15px]`}
+            className={button.sheetPrimary}
             disabled={logFeed.isPending}
             onClick={submit}
           >
             {t("logFeed.save")}
           </button>
-          <button
-            type="button"
-            className={`${button.outline} hidden desktop:inline-flex`}
-            onClick={onDone}
-          >
+          <button type="button" className={button.sheetCancel} onClick={onDone}>
             {t("action.cancel")}
           </button>
         </>
