@@ -6,7 +6,8 @@ import { useState } from "react";
  * is checked again as the user leaves it.
  *
  * `problems` is what is wrong right now. `order` lists the fields top to
- * bottom, and each field's input has the id `${idPrefix}-${field}`.
+ * bottom, and each field's input takes its id from `idOf`, which is how the
+ * first one is found to focus.
  */
 export function useFormErrors<Field extends string, Problem extends string>(
   problems: ReadonlyMap<Field, Problem>,
@@ -15,8 +16,11 @@ export function useFormErrors<Field extends string, Problem extends string>(
 ) {
   const [shown, setShown] = useState<ReadonlyMap<Field, Problem>>(new Map());
   const [attempted, setAttempted] = useState(false);
+  const idOf = (field: Field) => `${idPrefix}-${field}`;
 
   return {
+    /** The id for the field's input. */
+    idOf,
     /** The problems on display, top to bottom. */
     shown: order.flatMap((field) => shown.get(field) ?? []),
     problemOf: (field: Field) => shown.get(field),
@@ -43,7 +47,7 @@ export function useFormErrors<Field extends string, Problem extends string>(
       }
       setShown(problems);
       setAttempted(true);
-      document.getElementById(`${idPrefix}-${firstInvalid}`)?.focus();
+      document.getElementById(idOf(firstInvalid))?.focus();
       return true;
     },
   };

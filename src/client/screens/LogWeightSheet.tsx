@@ -98,7 +98,7 @@ export function LogWeightSheet({
         />
         <div className="grid grid-cols-2 items-start gap-3">
           <Field
-            id="weight-weight"
+            id={errors.idOf("weight")}
             label={t("logWeight.weight")}
             inputMode="decimal"
             suffix="kg"
@@ -116,7 +116,7 @@ export function LogWeightSheet({
               : {})}
           />
           <Field
-            id="weight-date"
+            id={errors.idOf("date")}
             label={t("logWeight.date")}
             type="date"
             max={pet.today}

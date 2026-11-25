@@ -145,7 +145,7 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
         )}
         <div className="grid grid-cols-2 items-start gap-3">
           <Field
-            id="edit-served"
+            id={errors.idOf("served")}
             label={t("editFeed.served")}
             inputMode="numeric"
             suffix="g"
@@ -160,7 +160,7 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
             }
           />
           <Field
-            id="edit-leftover"
+            id={errors.idOf("leftover")}
             label={t("editFeed.leftOver")}
             inputMode="numeric"
             placeholder="0"
@@ -173,7 +173,7 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
         </div>
         <div className="grid grid-cols-2 items-start gap-3">
           <Field
-            id="edit-when"
+            id={errors.idOf("when")}
             label={t("editFeed.date")}
             type="date"
             value={date}

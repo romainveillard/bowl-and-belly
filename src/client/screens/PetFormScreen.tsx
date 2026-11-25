@@ -164,7 +164,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             )}
             <div className="flex flex-col gap-3.5 desktop:grid desktop:grid-cols-2 desktop:gap-4">
               <Field
-                id="pet-name"
+                id={errors.idOf("name")}
                 label={t("petForm.name")}
                 error={errorFor("name")}
                 onBlur={recheck("name")}
@@ -200,7 +200,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             />
             {form.ageMode === "exact" && (
               <Field
-                id="pet-birth"
+                id={errors.idOf("birth")}
                 error={errorFor("birth")}
                 onBlur={recheck("birth")}
                 label={t("petForm.birthDate")}
@@ -212,7 +212,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             )}
             {form.ageMode === "year" && (
               <Field
-                id="pet-birth"
+                id={errors.idOf("birth")}
                 error={errorFor("birth")}
                 onBlur={recheck("birth")}
                 label={t("petForm.birthYear")}
@@ -223,7 +223,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             )}
             {form.ageMode === "estimated" && (
               <Field
-                id="pet-birth"
+                id={errors.idOf("birth")}
                 error={errorFor("birth")}
                 onBlur={recheck("birth")}
                 label={t("petForm.age")}
@@ -263,7 +263,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             />
             {hasWeightGoal && (
               <Field
-                id="pet-targetWeight"
+                id={errors.idOf("targetWeight")}
                 error={errorFor("targetWeight")}
                 onBlur={recheck("targetWeight")}
                 label={t("weight.target")}
@@ -278,7 +278,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
           <Card>
             <CardHeading title={t("weight.title")} />
             <Field
-              id="pet-weight"
+              id={errors.idOf("weight")}
               error={errorFor("weight")}
               onBlur={recheck("weight")}
               label={t("weight.current")}
@@ -325,7 +325,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             )}
             {ownTarget && (
               <Field
-                id="pet-ownTarget"
+                id={errors.idOf("ownTarget")}
                 error={errorFor("ownTarget")}
                 onBlur={recheck("ownTarget")}
                 label={t("target.field")}

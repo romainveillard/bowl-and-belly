@@ -77,7 +77,7 @@ export function AddLeftoverSheet({
           names={errors.shown.map(() => t("addLeftover.errorNames.leftover"))}
         />
         <Field
-          id="leftover-leftover"
+          id={errors.idOf("leftover")}
           label={t("addLeftover.leftOver")}
           inputMode="numeric"
           suffix="g"

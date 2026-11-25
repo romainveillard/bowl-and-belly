@@ -129,7 +129,7 @@ function LogFeedForm({
 
       {previous && (
         <LeftoverPrompt
-          id="log-leftover"
+          id={errors.idOf("leftover")}
           previous={previous}
           timeZone={timeZone}
           value={leftover}
@@ -140,7 +140,7 @@ function LogFeedForm({
       )}
 
       <FoodPicker
-        inputId="log-food"
+        inputId={errors.idOf("food")}
         foods={form.foods}
         recentCount={form.recentCount}
         chosenId={foodId}
@@ -151,7 +151,7 @@ function LogFeedForm({
       <div className="grid grid-cols-[1fr_120px] items-start gap-3">
         <div className="flex flex-col gap-2">
           <Field
-            id="log-amount"
+            id={errors.idOf("amount")}
             label={t("logFeed.amount")}
             inputMode="decimal"
             suffix={

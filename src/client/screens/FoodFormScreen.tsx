@@ -222,7 +222,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
               onChange={(value) => set("brand", value)}
             />
             <Field
-              id="food-name"
+              id={errors.idOf("name")}
               label={t("foodForm.name")}
               error={errorFor("name")}
               onBlur={recheck("name")}
@@ -258,7 +258,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
             <CardHeading title={t("foodForm.calories")} hint={t("foodForm.caloriesHint")} />
             <div className="flex items-start gap-3">
               <Field
-                id="food-kcal"
+                id={errors.idOf("kcal")}
                 label={t("foodForm.energy")}
                 inputMode="decimal"
                 suffix="kcal"
@@ -327,18 +327,20 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
                           {t("foodForm.otherName")}
                         </label>
                         <Input
-                          id="food-portionName"
+                          id={errors.idOf("portionName")}
                           placeholder={t("foodForm.otherPlaceholder")}
                           value={form.otherPortion}
                           onChange={(event) => set("otherPortion", event.target.value)}
                           onBlur={recheck("portionName")}
                           aria-invalid={errorFor("portionName") ? true : undefined}
                           aria-describedby={
-                            errorFor("portionName") ? "food-portionName-error" : undefined
+                            errorFor("portionName")
+                              ? `${errors.idOf("portionName")}-error`
+                              : undefined
                           }
                         />
                         {errorFor("portionName") && (
-                          <FieldError id="food-portionName-error">
+                          <FieldError id={`${errors.idOf("portionName")}-error`}>
                             {errorFor("portionName")}
                           </FieldError>
                         )}
@@ -347,7 +349,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
                   </div>
                   <div className="w-[140px]">
                     <Field
-                      id="food-portionG"
+                      id={errors.idOf("portionG")}
                       label={t("foodForm.weight")}
                       inputMode="numeric"
                       suffix="g"
@@ -380,7 +382,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
             )}
             <div className="flex items-end gap-3">
               <Field
-                id="food-stock"
+                id={errors.idOf("stock")}
                 label={t("foodForm.current")}
                 inputMode="decimal"
                 suffix={counted && units ? units.toLowerCase() : undefined}

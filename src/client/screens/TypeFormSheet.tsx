@@ -103,7 +103,7 @@ export function TypeFormSheet({ kind, type, otherLabels, onClose }: TypeFormShee
       <div className="flex flex-col gap-4 pt-2 desktop:gap-[18px] desktop:pt-0">
         <ErrorSummary inSheet names={errors.shown.length > 0 ? [t("types.errorName")] : []} />
         <Field
-          id="type-name"
+          id={errors.idOf("name")}
           label={t("types.name")}
           value={name}
           onChange={setName}
