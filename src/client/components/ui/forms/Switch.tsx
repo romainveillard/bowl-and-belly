@@ -1,15 +1,20 @@
 import { Switch as RadixSwitch } from "radix-ui";
 
-interface SwitchProps {
-  label: string;
+type SwitchProps = {
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
-}
+} & (
+  | { label: string }
+  /** The ids of visible text that names and describes the switch. */
+  | { labelledBy: string; describedBy?: string }
+);
 
-export function Switch({ label, checked, onCheckedChange }: SwitchProps) {
+export function Switch({ checked, onCheckedChange, ...naming }: SwitchProps) {
   return (
     <RadixSwitch.Root
-      aria-label={label}
+      {...("label" in naming
+        ? { "aria-label": naming.label }
+        : { "aria-labelledby": naming.labelledBy, "aria-describedby": naming.describedBy })}
       checked={checked}
       onCheckedChange={onCheckedChange}
       className="group flex size-11 flex-none cursor-pointer items-center justify-center"

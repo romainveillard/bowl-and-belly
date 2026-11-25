@@ -12,7 +12,7 @@ import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
-import { Switch } from "../components/ui/forms/Switch.js";
+import { SwitchRow } from "../components/ui/forms/SwitchRow.js";
 import { parsePositive, petTypeLabel } from "../lib/format.js";
 import { useDemo } from "../lib/instance.js";
 import { offeredTypes, optionLabel } from "../lib/types.js";
@@ -343,19 +343,12 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
                 <span className="text-[13px] text-muted-foreground">{t("target.needsWeight")}</span>
               ))}
             {systemKey !== null && (
-              <div className="flex items-center justify-between gap-3">
-                <span className="flex flex-col gap-0.5">
-                  <span className="text-sm font-semibold">{t("target.setOwn")}</span>
-                  <span className="text-[13px] text-muted-foreground">
-                    {t("target.setOwnHint")}
-                  </span>
-                </span>
-                <Switch
-                  label={t("target.setOwn")}
-                  checked={form.ownTarget}
-                  onCheckedChange={(checked) => set("ownTarget", checked)}
-                />
-              </div>
+              <SwitchRow
+                label={t("target.setOwn")}
+                hint={t("target.setOwnHint")}
+                checked={form.ownTarget}
+                onCheckedChange={(checked) => set("ownTarget", checked)}
+              />
             )}
             {ownTarget && (
               <Field

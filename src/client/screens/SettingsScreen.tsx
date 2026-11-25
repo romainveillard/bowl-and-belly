@@ -8,7 +8,7 @@ import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { Field } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
-import { Switch } from "../components/ui/forms/Switch.js";
+import { SwitchRow } from "../components/ui/forms/SwitchRow.js";
 import { useAuth, useLogOut } from "../lib/auth.js";
 import { formatTime, formatWhen } from "../lib/format.js";
 import { useDemo } from "../lib/instance.js";
@@ -242,19 +242,12 @@ function SettingsForm({ settings }: { settings: Settings }) {
           </span>
         </div>
       )}
-      <div className="flex items-center justify-between gap-3">
-        <span className="flex flex-col gap-0.5">
-          <span className="text-sm font-semibold">{t("settings.backups.scheduled")}</span>
-          <span className="text-[13px] text-muted-foreground">
-            {t("settings.backups.scheduledHint")}
-          </span>
-        </span>
-        <Switch
-          label={t("settings.backups.scheduled")}
-          checked={saved.backupEnabled}
-          onCheckedChange={(backupEnabled) => commit({ backupEnabled })}
-        />
-      </div>
+      <SwitchRow
+        label={t("settings.backups.scheduled")}
+        hint={t("settings.backups.scheduledHint")}
+        checked={saved.backupEnabled}
+        onCheckedChange={(backupEnabled) => commit({ backupEnabled })}
+      />
       {saved.backupEnabled && (
         <>
           <Segmented
