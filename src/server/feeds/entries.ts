@@ -1,4 +1,5 @@
 import { eq, sql } from "drizzle-orm";
+import { leftoverFits } from "../../shared/feeds.js";
 import type { DbOrTx } from "../db/open.js";
 import { feedEntry, food, foodType } from "../db/schema.js";
 
@@ -58,7 +59,10 @@ export function logFeedWithLeftover(
       .from(feedEntry)
       .where(eq(feedEntry.id, previousLeftover.entryId))
       .get();
-    if (previous?.petId !== values.petId || previousLeftover.leftoverG > previous.servedG) {
+    if (
+      previous?.petId !== values.petId ||
+      !leftoverFits(previousLeftover.leftoverG, previous.servedG)
+    ) {
       return "invalid_leftover";
     }
     editFeed(db, previous.id, {

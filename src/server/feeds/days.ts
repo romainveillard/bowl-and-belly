@@ -1,5 +1,6 @@
 import { and, asc, desc, eq, gte, lt } from "drizzle-orm";
 import { addDays, appDayOf, appDayStart } from "../../shared/app-day.js";
+import { kcalIn } from "../../shared/feeds.js";
 import type { DbOrTx } from "../db/open.js";
 import { feedEntry, food, foodType } from "../db/schema.js";
 import { targetHistory, targetIn } from "../pets/targets.js";
@@ -62,7 +63,7 @@ export function daySummaries(db: DbOrTx, petId: number, from: string, to: string
   return [...byDay.entries()]
     .toSorted(([a], [b]) => b.localeCompare(a))
     .map(([day, dayEntries]) => {
-      const kcalOf = (entry: (typeof entries)[number]) => (eatenG(entry) * entry.kcalPerKg) / 1000;
+      const kcalOf = (entry: (typeof entries)[number]) => kcalIn(eatenG(entry), entry.kcalPerKg);
       const types = new Map<
         number,
         { type: (typeof entries)[number]["type"]; eatenG: number; kcal: number }
@@ -83,7 +84,7 @@ export function daySummaries(db: DbOrTx, petId: number, from: string, to: string
           .map((total) => ({ ...total, kcal: Math.round(total.kcal) })),
         entries: dayEntries.map((entry) => ({
           ...entry,
-          kcal: Math.round((eatenG(entry) * entry.kcalPerKg) / 1000),
+          kcal: Math.round(kcalIn(eatenG(entry), entry.kcalPerKg)),
         })),
       };
     });

@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { instantAt, latestAt } from "../../shared/app-day.js";
+import { leftoverFits } from "../../shared/feeds.js";
 import { db } from "../db/client.js";
 import { feedEntry } from "../db/schema.js";
 import { hasFeedsBefore, daySummaries } from "../feeds/days.js";
@@ -82,7 +83,7 @@ export const feedsRoutes = new Hono()
     (c) => {
       const { id } = c.req.valid("param");
       const { date, time: clock, ...values } = c.req.valid("json");
-      if (values.leftoverG !== null && values.leftoverG > values.servedG) {
+      if (values.leftoverG !== null && !leftoverFits(values.leftoverG, values.servedG)) {
         return c.json({ code: "invalid_leftover" as const }, 400);
       }
       const fedAt = instantAt(date, clock, daySettings(db).timeZone);
@@ -122,7 +123,7 @@ export const feedsRoutes = new Hono()
         if (!before) {
           return "not_found" as const;
         }
-        if (leftover.leftoverG > before.servedG) {
+        if (!leftoverFits(leftover.leftoverG, before.servedG)) {
           return "invalid_leftover" as const;
         }
         editFeed(tx, id, { ...before, ...leftover });
