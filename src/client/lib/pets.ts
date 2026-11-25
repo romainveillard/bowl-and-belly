@@ -143,8 +143,21 @@ export function useFoodCount() {
   });
 }
 
+/** What the target formula reads from a pet. */
+type FormulaPet = Pick<
+  PetDetail,
+  | "type"
+  | "birthDate"
+  | "today"
+  | "neutered"
+  | "activityLevel"
+  | "goal"
+  | "targetWeightG"
+  | "weights"
+>;
+
 /** What the formula gives for the pet as it is today, and how; null for custom types. */
-export function suggestionFor(pet: PetDetail) {
+export function suggestionFor(pet: FormulaPet) {
   if (!pet.type.systemKey) {
     return null;
   }
@@ -158,4 +171,32 @@ export function suggestionFor(pet: PetDetail) {
     targetWeightG: pet.targetWeightG,
     weightG: pet.weights[0]?.weightG ?? null,
   });
+}
+
+/** The target in force on `day`. */
+export function targetOn(pet: Pick<PetDetail, "targets">, day: string) {
+  return pet.targets.find((target) => target.effectiveFrom <= day);
+}
+
+/**
+ * How a target came about: the user's own, a calculation the pet's profile
+ * no longer gives (it has changed since), or what the formula gives today,
+ * with the row of the factor table behind it.
+ */
+export function targetBasis(
+  pet: FormulaPet,
+  target: { kcalPerDay: number; source: "calculated" | "manual" },
+) {
+  if (target.source === "manual") {
+    return { kind: "manual" as const };
+  }
+  const suggestion = suggestionFor(pet);
+  if (!suggestion || suggestion.kcalPerDay !== target.kcalPerDay) {
+    return { kind: "calculated" as const };
+  }
+  const neutered = pet.neutered ? "Neutered" : "Intact";
+  const activity = pet.activityLevel === "active" ? "Active" : "Normal";
+  const row =
+    suggestion.basis === "adult" ? (`adult${neutered}${activity}` as const) : suggestion.basis;
+  return { kind: "formula" as const, suggestion, row };
 }

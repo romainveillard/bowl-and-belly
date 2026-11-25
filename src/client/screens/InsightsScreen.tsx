@@ -15,7 +15,7 @@ import { formatDateInput, formatTime, useDay, useDaySettings } from "../lib/feed
 import { foodTypeLabel } from "../lib/foods.js";
 import { formatDay, formatKg } from "../lib/format.js";
 import { useInsights } from "../lib/insights.js";
-import { suggestionFor, usePet, usePets, type PetDetail } from "../lib/pets.js";
+import { targetBasis, targetOn, usePet, usePets, type PetDetail } from "../lib/pets.js";
 import { useSelectedPet } from "../lib/selectedPet.js";
 import { useIsDesktop } from "../lib/useIsDesktop.js";
 import { weightTrend } from "../lib/weightTrend.js";
@@ -53,20 +53,9 @@ function Stat({
 }
 
 /** "Neutered adult, normal" for a target the formula set, "Set by you" for the user's own. */
-function targetBasis(pet: PetDetail, kcal: number, source: "calculated" | "manual", t: TFunction) {
-  if (source === "manual") {
-    return t("insights.basis.manual");
-  }
-  const suggestion = suggestionFor(pet);
-  if (!suggestion || suggestion.kcalPerDay !== kcal) {
-    return t("insights.basis.calculated");
-  }
-  if (suggestion.basis !== "adult") {
-    return t(`insights.basis.${suggestion.basis}`);
-  }
-  const neutered = pet.neutered ? "Neutered" : "Intact";
-  const activity = pet.activityLevel === "active" ? "Active" : "Normal";
-  return t(`insights.basis.adult${neutered}${activity}`);
+function basisLabel(pet: PetDetail, kcal: number, source: "calculated" | "manual", t: TFunction) {
+  const basis = targetBasis(pet, { kcalPerDay: kcal, source });
+  return t(`insights.basis.${basis.kind === "formula" ? basis.row : basis.kind}`);
 }
 
 type Period = "day" | "week" | "month";
@@ -172,7 +161,7 @@ function DayInsights({ petId, today, onPeriod }: ViewProps) {
   }
 
   // A past day without feeds has no summary, but still had a target.
-  const targetRow = pet.targets.find((row) => row.effectiveFrom <= day);
+  const targetRow = targetOn(pet, day);
   const targetKcal = summary ? summary.targetKcal : (targetRow?.kcalPerDay ?? null);
   const eatenKcal = summary?.eatenKcal ?? 0;
   const entries = (summary?.entries ?? []).toReversed();
@@ -207,7 +196,7 @@ function DayInsights({ petId, today, onPeriod }: ViewProps) {
           label={t("insights.target")}
           value={targetKcal ?? "–"}
           unit={t("feed.kcal")}
-          note={targetRow && targetBasis(pet, targetRow.kcalPerDay, targetRow.source, t)}
+          note={targetRow && basisLabel(pet, targetRow.kcalPerDay, targetRow.source, t)}
         />
         <Stat
           label={t("insights.feeds")}
@@ -333,7 +322,7 @@ function MonthInsights({ petId, today, onPeriod }: ViewProps) {
   );
   const onTarget = counted.filter((day) => dayStatus(day, data.today) === "onTarget");
   const lastDay = isCurrentMonth ? data.today : end;
-  const targetRow = pet.targets.find((row) => row.effectiveFrom <= lastDay);
+  const targetRow = targetOn(pet, lastDay);
   const inMonth = rollingAverage(data.weights).filter((reading) => {
     const day = formatDateInput(new Date(reading.at), settings.timeZone);
     return day >= start && day <= end;
@@ -364,7 +353,7 @@ function MonthInsights({ petId, today, onPeriod }: ViewProps) {
           label={t("insights.target")}
           value={targetRow?.kcalPerDay ?? "–"}
           unit={t("feed.kcal")}
-          note={targetRow && targetBasis(pet, targetRow.kcalPerDay, targetRow.source, t)}
+          note={targetRow && basisLabel(pet, targetRow.kcalPerDay, targetRow.source, t)}
         />
         <Stat
           label={t("insights.onTarget")}
@@ -488,7 +477,7 @@ function WeekInsights({ petId, today, onPeriod }: ViewProps) {
 
   // The target that applied at the end of the week shown, or today for this week.
   const lastDay = isCurrentWeek ? data.today : end;
-  const targetRow = pet.targets.find((row) => row.effectiveFrom <= lastDay);
+  const targetRow = targetOn(pet, lastDay);
   const latest = pet.weights[0];
   const weightNote = latest && formatDay(new Date(latest.measuredAt), pet.today, i18n.language);
 
@@ -517,7 +506,7 @@ function WeekInsights({ petId, today, onPeriod }: ViewProps) {
           label={t("insights.target")}
           value={targetRow?.kcalPerDay ?? "–"}
           unit={t("feed.kcal")}
-          note={targetRow && targetBasis(pet, targetRow.kcalPerDay, targetRow.source, t)}
+          note={targetRow && basisLabel(pet, targetRow.kcalPerDay, targetRow.source, t)}
         />
         <Stat
           className="hidden desktop:flex"

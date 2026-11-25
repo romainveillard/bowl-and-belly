@@ -16,7 +16,7 @@ import {
   formatSince,
   petTypeLabel,
 } from "../lib/format.js";
-import { suggestionFor, usePet, useSetArchived } from "../lib/pets.js";
+import { suggestionFor, targetBasis, usePet, useSetArchived } from "../lib/pets.js";
 import { AgePrompt } from "./AgePrompt.js";
 import { ManualTargetSheet } from "./ManualTargetSheet.js";
 import type { useWeightSheets } from "./WeightSheets.js";
@@ -78,25 +78,18 @@ export function PetProfile({
   const lifestyle = [t(`pets.activity.${pet.activityLevel}`), t(`pets.goal.${pet.goal}`)];
 
   let targetNote = t("target.none");
-  if (target?.source === "manual") {
+  const basis = target && targetBasis(pet, target);
+  if (target && basis?.kind === "manual") {
     targetNote = t("target.manualSince", { since: since(target.effectiveFrom) });
-  } else if (target && pet.type.systemKey && suggestion?.kcalPerDay === target.kcalPerDay) {
-    const species = pet.type.systemKey;
-    let profile: string;
-    if (suggestion.basis === "adult") {
-      const neutered = pet.neutered ? "Neutered" : "Intact";
-      const activity = pet.activityLevel === "active" ? "Active" : "Normal";
-      profile = t(`target.profile.${species}.adult${neutered}${activity}`);
-    } else {
-      profile = t(`target.profile.${species}.${suggestion.basis}`);
-    }
-    if (pet.goal !== "maintain" && suggestion.basis !== "growth") {
+  } else if (target && basis?.kind === "formula" && pet.type.systemKey) {
+    let profile = t(`target.profile.${pet.type.systemKey}.${basis.row}`);
+    if (pet.goal !== "maintain" && basis.suggestion.basis !== "growth") {
       profile = t("target.profile.atTargetWeight", { profile });
     }
     targetNote = t("target.calculatedSinceHow", {
       since: since(target.effectiveFrom),
-      resting: suggestion.restingKcal,
-      factor: new Intl.NumberFormat(locale).format(suggestion.factor),
+      resting: basis.suggestion.restingKcal,
+      factor: new Intl.NumberFormat(locale).format(basis.suggestion.factor),
       profile,
     });
   } else if (target) {
