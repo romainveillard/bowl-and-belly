@@ -285,6 +285,7 @@
     "archive": "Archive food",
     "archiveTitle": "Archive {name}?",
     "archiveBody": "Its past feeds are kept. It will disappear from the food picker and Stock, and you can restore it from Archived foods.",
+    "archiveConfirm": "Archive",
     "errors": {
       "name": "Enter a name",
       "kcal": "Enter the calories, above 0",

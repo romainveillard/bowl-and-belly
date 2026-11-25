@@ -285,6 +285,7 @@
     "archive": "Archiver l’aliment",
     "archiveTitle": "Archiver {name} ?",
     "archiveBody": "Ses repas passés sont conservés. Il disparaîtra du choix des aliments et du stock, et vous pourrez le restaurer depuis Aliments archivés.",
+    "archiveConfirm": "Archiver",
     "errors": {
       "name": "Saisissez un nom",
       "kcal": "Saisissez les calories, supérieures à 0",

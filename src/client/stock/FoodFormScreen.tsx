@@ -314,7 +314,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
           onOpenChange={setArchiving}
           title={t("foodForm.archiveTitle", { name: food.name })}
           description={t("foodForm.archiveBody")}
-          confirmLabel={t("pets.archiveConfirm")}
+          confirmLabel={t("foodForm.archiveConfirm")}
           onConfirm={() => archive.mutate(food.id, { onSuccess: () => void navigate("/stock") })}
         />
       )}
