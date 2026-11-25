@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { ActionRow } from "../components/ui/overlays/ActionRow.js";
 import { useTranslation } from "react-i18next";
 import { BowlIcon, EditIcon, RepeatIcon, TrashIcon } from "../components/icons.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
@@ -16,38 +16,6 @@ interface FeedActionsSheetProps {
   onLogAgain: () => void;
   onDelete: () => void;
   onClose: () => void;
-}
-
-function Action({
-  icon,
-  label,
-  hint,
-  danger = false,
-  onClick,
-}: {
-  icon: ReactNode;
-  label: string;
-  hint: string;
-  danger?: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex min-h-14 w-full cursor-pointer items-center gap-3.5 border-t border-border px-5 py-2 text-left first:border-t-0 desktop:px-6 ${danger ? "text-danger" : ""}`}
-    >
-      <span
-        className={`flex size-9 flex-none items-center justify-center rounded-full ${danger ? "bg-danger-soft" : "bg-muted"}`}
-      >
-        {icon}
-      </span>
-      <span className="flex flex-col gap-0.5">
-        <span className="text-base font-semibold">{label}</span>
-        <span className="text-[13px] text-muted-foreground">{hint}</span>
-      </span>
-    </button>
-  );
 }
 
 /** What can be done with one feed, opened by tapping its row. */
@@ -81,25 +49,25 @@ export function FeedActionsSheet({
         kcal: entry.kcal,
       })}
     >
-      <Action
+      <ActionRow
         icon={<EditIcon size={18} />}
         label={t("feed.edit")}
         hint={t("feed.editHint")}
         onClick={onEdit}
       />
-      <Action
+      <ActionRow
         icon={<BowlIcon size={18} />}
         label={t("feed.addLeftover")}
         hint={t("feed.addLeftoverHint")}
         onClick={onAddLeftover}
       />
-      <Action
+      <ActionRow
         icon={<RepeatIcon size={18} />}
         label={t("feed.logAgain")}
         hint={t("feed.logAgainHint")}
         onClick={act(onLogAgain)}
       />
-      <Action
+      <ActionRow
         icon={<TrashIcon size={18} />}
         label={t("feed.delete")}
         hint={t("feed.deleteHint")}

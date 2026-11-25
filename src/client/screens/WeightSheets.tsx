@@ -1,7 +1,5 @@
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { EditIcon, TrashIcon } from "../components/icons.js";
-import { Sheet } from "../components/ui/overlays/Sheet.js";
 import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
 import { useDaySettings } from "../lib/feeds.js";
 import { formatDay, formatReadingKg } from "../lib/format.js";
@@ -9,42 +7,11 @@ import { usePet, type PetDetail } from "../lib/pets.js";
 import { useDeleteWeight, useRestoreWeight, type TargetPrompt } from "../lib/weights.js";
 import { LogWeightSheet } from "./LogWeightSheet.js";
 import { TargetPromptDialog } from "./TargetPromptDialog.js";
+import { WeighInActionsSheet } from "./WeighInActionsSheet.js";
 
 type Reading = PetDetail["weights"][number];
 
 type Opened = { sheet: "log" } | { sheet: "edit" | "actions"; reading: Reading };
-
-function Action({
-  icon,
-  label,
-  hint,
-  danger = false,
-  onClick,
-}: {
-  icon: ReactNode;
-  label: string;
-  hint: string;
-  danger?: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex min-h-14 w-full cursor-pointer items-center gap-3.5 border-t border-border px-5 py-2 text-left first:border-t-0 desktop:px-6 ${danger ? "text-danger" : ""}`}
-    >
-      <span
-        className={`flex size-9 flex-none items-center justify-center rounded-full ${danger ? "bg-danger-soft" : "bg-muted"}`}
-      >
-        {icon}
-      </span>
-      <span className="flex flex-col gap-0.5">
-        <span className="text-base font-semibold">{label}</span>
-        <span className="text-[13px] text-muted-foreground">{hint}</span>
-      </span>
-    </button>
-  );
-}
 
 /**
  * Logging, correcting and deleting a pet's weigh-ins, and the target
@@ -94,34 +61,17 @@ export function useWeightSheets(petId: number | undefined) {
   } else if (pet && opened?.sheet === "actions") {
     const { reading } = opened;
     ui = (
-      <Sheet
-        open
-        flush
-        onOpenChange={(open) => !open && close()}
-        title={t("weighIn.title")}
-        subtitle={t("weighIn.subtitle", {
-          name: pet.name,
-          date: day(reading),
-          weight: kg(reading),
-        })}
-      >
-        <Action
-          icon={<EditIcon size={18} />}
-          label={t("weighIn.edit")}
-          hint={t("weighIn.editHint")}
-          onClick={() => setOpened({ sheet: "edit", reading })}
-        />
-        <Action
-          icon={<TrashIcon size={18} />}
-          label={t("weighIn.delete")}
-          hint={t("weighIn.deleteHint")}
-          danger
-          onClick={() => {
-            close();
-            remove(reading);
-          }}
-        />
-      </Sheet>
+      <WeighInActionsSheet
+        petName={pet.name}
+        day={day(reading)}
+        weight={kg(reading)}
+        onEdit={() => setOpened({ sheet: "edit", reading })}
+        onDelete={() => {
+          close();
+          remove(reading);
+        }}
+        onClose={close}
+      />
     );
   }
 
