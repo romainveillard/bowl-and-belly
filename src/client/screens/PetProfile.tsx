@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { listRow } from "../components/ui/layout/List.js";
+import { listRow, RowHoverActions } from "../components/ui/layout/List.js";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 import { addDays } from "../../shared/app-day.js";
@@ -199,24 +199,22 @@ export function PetProfile({
                             })}
                           </span>
                         </button>
-                        <span className="absolute top-1/2 right-20 hidden -translate-y-1/2 gap-1 desktop:group-focus-within:flex desktop:group-hover:flex">
-                          <button
-                            type="button"
-                            aria-label={t("weighIn.editNamed", { date })}
-                            onClick={() => weightSheets.edit(reading)}
-                            className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-muted"
-                          >
-                            <EditIcon size={18} />
-                          </button>
-                          <button
-                            type="button"
-                            aria-label={t("weighIn.deleteNamed", { date })}
-                            onClick={() => weightSheets.remove(reading)}
-                            className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-muted text-danger"
-                          >
-                            <TrashIcon size={18} />
-                          </button>
-                        </span>
+                        <RowHoverActions
+                          className="right-20"
+                          actions={[
+                            {
+                              icon: <EditIcon size={18} />,
+                              label: t("weighIn.editNamed", { date }),
+                              onClick: () => weightSheets.edit(reading),
+                            },
+                            {
+                              icon: <TrashIcon size={18} />,
+                              label: t("weighIn.deleteNamed", { date }),
+                              onClick: () => weightSheets.remove(reading),
+                              danger: true,
+                            },
+                          ]}
+                        />
                       </div>
                     );
                   })}

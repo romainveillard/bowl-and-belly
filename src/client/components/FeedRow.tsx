@@ -1,5 +1,5 @@
 import { useRef, useState, type PointerEvent } from "react";
-import { listRow } from "./ui/layout/List.js";
+import { listRow, RowHoverActions } from "./ui/layout/List.js";
 import { useTranslation } from "react-i18next";
 import type { FeedEntry } from "../lib/feeds.js";
 import { formatTime } from "../lib/format.js";
@@ -123,24 +123,22 @@ export function FeedRow({
           <span className="text-[13px] text-muted-foreground">{t("feed.kcal")}</span>
         </span>
       </button>
-      <span className="absolute top-1/2 right-[106px] hidden -translate-y-1/2 gap-1 desktop:group-focus-within:flex desktop:group-hover:flex">
-        <button
-          type="button"
-          aria-label={t("feed.logAgainNamed", { name: entry.food.name })}
-          onClick={onLogAgain}
-          className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-muted"
-        >
-          <RepeatIcon size={18} />
-        </button>
-        <button
-          type="button"
-          aria-label={t("feed.deleteNamed", { name: entry.food.name })}
-          onClick={onDelete}
-          className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-muted text-danger"
-        >
-          <TrashIcon size={18} />
-        </button>
-      </span>
+      <RowHoverActions
+        className="right-[106px]"
+        actions={[
+          {
+            icon: <RepeatIcon size={18} />,
+            label: t("feed.logAgainNamed", { name: entry.food.name }),
+            onClick: onLogAgain,
+          },
+          {
+            icon: <TrashIcon size={18} />,
+            label: t("feed.deleteNamed", { name: entry.food.name }),
+            onClick: onDelete,
+            danger: true,
+          },
+        ]}
+      />
     </div>
   );
 }
