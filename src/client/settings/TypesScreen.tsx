@@ -7,7 +7,6 @@ import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
 import { Switch } from "../components/ui/forms/Switch.js";
 import { foodTypeLabel, useFoodTypes } from "../stock/foods.js";
-
 import { petTypeLabel, usePetTypes } from "../pets/pets.js";
 import { useSetTypeArchived, type TypeKind } from "./types.js";
 import { TypeFormSheet, type CustomType } from "./TypeFormSheet.js";
@@ -21,28 +20,31 @@ interface Row {
   custom?: CustomType;
 }
 
-function useRows(kind: TypeKind): Row[] | undefined {
+function useFoodRows(): Row[] | undefined {
   const { t } = useTranslation();
   const { data: foodTypes } = useFoodTypes();
+
+  return foodTypes?.map((type) => ({
+    id: type.id,
+    archived: type.archived,
+    label: foodTypeLabel(type, t),
+    note: t(type.leftoverReturnsToStock ? "types.food.returns" : "types.food.binned"),
+    ...(type.name !== null && type.systemKey === null
+      ? {
+          custom: {
+            id: type.id,
+            name: type.name,
+            leftoverReturnsToStock: type.leftoverReturnsToStock,
+          },
+        }
+      : {}),
+  }));
+}
+
+function usePetRows(): Row[] | undefined {
+  const { t } = useTranslation();
   const { data: petTypes } = usePetTypes();
 
-  if (kind === "food") {
-    return foodTypes?.map((type) => ({
-      id: type.id,
-      archived: type.archived,
-      label: foodTypeLabel(type, t),
-      note: t(type.leftoverReturnsToStock ? "types.food.returns" : "types.food.binned"),
-      ...(type.name !== null && type.systemKey === null
-        ? {
-            custom: {
-              id: type.id,
-              name: type.name,
-              leftoverReturnsToStock: type.leftoverReturnsToStock,
-            },
-          }
-        : {}),
-    }));
-  }
   return petTypes?.map((type) => ({
     id: type.id,
     archived: type.archived,
@@ -65,9 +67,16 @@ function RowLabel({ row }: { row: Row }) {
 
 const rowClass = `flex min-h-[60px] w-full items-center justify-between gap-3 px-4 py-2 text-left desktop:px-[22px] ${listRow}`;
 
-export function TypesScreen({ kind }: { kind: TypeKind }) {
+export function PetTypesScreen() {
+  return <TypesScreen kind="pet" allRows={usePetRows()} />;
+}
+
+export function FoodTypesScreen() {
+  return <TypesScreen kind="food" allRows={useFoodRows()} />;
+}
+
+function TypesScreen({ kind, allRows }: { kind: TypeKind; allRows: Row[] | undefined }) {
   const { t } = useTranslation();
-  const allRows = useRows(kind);
   // Undefined: closed; null: adding.
   const [editing, setEditing] = useState<CustomType | null | undefined>();
   const [showArchived, setShowArchived] = useState(false);

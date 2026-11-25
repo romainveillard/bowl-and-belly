@@ -21,7 +21,7 @@ import { PetsScreen } from "./pets/PetsScreen.js";
 import { SettingsScreen } from "./settings/SettingsScreen.js";
 import { StockScreen } from "./stock/StockScreen.js";
 import { TodayScreen } from "./feeds/TodayScreen.js";
-import { TypesScreen } from "./settings/TypesScreen.js";
+import { FoodTypesScreen, PetTypesScreen } from "./settings/TypesScreen.js";
 
 // The charting library only loads with the screen that needs it.
 const InsightsScreen = lazy(() =>
@@ -118,8 +118,8 @@ export function App() {
             <Route path="stock/new" element={<FoodFormScreen />} />
             <Route path="stock/:foodId/edit" element={<FoodFormScreen />} />
             <Route path="settings" element={<SettingsScreen />} />
-            <Route path="settings/pet-types" element={<TypesScreen kind="pet" />} />
-            <Route path="settings/food-types" element={<TypesScreen kind="food" />} />
+            <Route path="settings/pet-types" element={<PetTypesScreen />} />
+            <Route path="settings/food-types" element={<FoodTypesScreen />} />
           </Route>
         </Routes>
       </AccessGate>
