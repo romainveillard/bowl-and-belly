@@ -1,8 +1,8 @@
 import i18next from "i18next";
 import ICU from "i18next-icu";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import enGB from "../i18n/locales/en-GB.json" with { type: "json" };
-import { formatWhen } from "./format.js";
+import { formatAppDay, formatAppDayRange, formatWhen } from "./format.js";
 
 const i18n = i18next.createInstance();
 await i18n.use(ICU).init({ lng: "en-GB", resources: { "en-GB": { translation: enGB } } });
@@ -10,6 +10,26 @@ await i18n.use(ICU).init({ lng: "en-GB", resources: { "en-GB": { translation: en
 // Wednesday 25 November, 23:30 in London.
 const now = new Date("2026-11-25T23:30:00Z");
 const london = (future: boolean) => ({ now, timeZone: "Europe/London", future, locale: "en-GB" });
+
+describe("formatAppDay", () => {
+  it("shows the same day on a device west of UTC", () => {
+    vi.stubEnv("TZ", "America/Los_Angeles");
+    try {
+      // Midnight UTC is the previous evening in Los Angeles, so a formatter
+      // without the UTC time zone would show the 24th.
+      expect(new Date("2026-11-25T00:00:00Z").getDate()).toBe(24);
+
+      expect(formatAppDay("2026-11-25", "en-GB", { day: "numeric", month: "short" })).toBe(
+        "25 Nov",
+      );
+      expect(
+        formatAppDayRange("2026-11-23", "2026-11-29", "en-GB", { day: "numeric", month: "short" }),
+      ).toMatch(/^23\D+29 Nov$/);
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+});
 
 describe("formatWhen", () => {
   it("names today, tomorrow and yesterday by the app's clock", () => {
