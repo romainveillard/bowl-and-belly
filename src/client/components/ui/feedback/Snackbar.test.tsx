@@ -71,13 +71,30 @@ it("lets an error replace a confirmation, never the other way round", () => {
   expect(screen.getByRole("alert").textContent).toContain("Couldn’t save the feed");
 });
 
-it("keeps a snackbar with Undo until it is used, dismissed or replaced", () => {
+it("gives Undo about 10 s, then makes the delete final", () => {
   renderButtons();
   // Focus stays out of the snackbar, which would otherwise hold it for that reason alone.
   const deleteButton = screen.getByRole("button", { name: "Delete" });
   deleteButton.focus();
 
   fireEvent.click(deleteButton);
+  act(() => {
+    vi.advanceTimersByTime(9000);
+  });
+  expect(screen.getByRole("status").textContent).toContain("Feed deleted");
+
+  act(() => {
+    vi.advanceTimersByTime(1000);
+  });
+  expect(screen.getByRole("status").textContent).toBe("");
+});
+
+it("holds Undo for as long as it has focus", () => {
+  renderButtons();
+
+  // A delete takes the focused row with it, so focus moves to Undo.
+  fireEvent.click(screen.getByRole("button", { name: "Delete" }));
+  expect(document.activeElement).toBe(screen.getByRole("button", { name: "Undo" }));
   act(() => {
     vi.advanceTimersByTime(60_000);
   });

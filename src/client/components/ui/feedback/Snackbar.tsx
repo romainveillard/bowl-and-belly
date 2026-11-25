@@ -12,6 +12,8 @@ import { useTranslation } from "react-i18next";
 import { AlertIcon, CloseIcon } from "../../icons.js";
 
 const SHOWN_FOR_MS = 5000;
+/** Long enough to reach Undo with a pointer; it then makes the delete final. */
+const WITH_ACTION_SHOWN_FOR_MS = 10_000;
 
 interface Snack {
   message: string;
@@ -44,13 +46,16 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
     setSnack((current) => (current?.tone === "error" && shown.tone !== "error" ? current : shown));
   }, []);
 
-  // Only a plain confirmation times out, and not while it is hovered or focused: one with an
-  // action, such as Undo, stays until it is used, dismissed or replaced.
+  // Never while hovered or focused: focus moves to Undo after a delete, so keyboard and
+  // screen-reader users get all the time they need.
   useEffect(() => {
-    if (!snack || snack.tone === "error" || snack.action || paused) {
+    if (!snack || snack.tone === "error" || paused) {
       return undefined;
     }
-    const timer = setTimeout(() => setSnack(null), SHOWN_FOR_MS);
+    const timer = setTimeout(
+      () => setSnack(null),
+      snack.action ? WITH_ACTION_SHOWN_FOR_MS : SHOWN_FOR_MS,
+    );
     return () => clearTimeout(timer);
   }, [snack, paused]);
 
