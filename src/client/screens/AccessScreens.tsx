@@ -39,7 +39,7 @@ export function LoginScreen() {
         <div className="flex flex-col items-center gap-2.5">
           <LogoMark width={120} />
           <h1 className="font-display text-[32px] font-semibold tracking-[-0.5px]">
-            Bowl <span className="text-[#BB6B3A]">&amp;</span> Belly
+            Bowl <span className="text-wordmark-accent">&amp;</span> Belly
           </h1>
         </div>
         <div className="flex flex-col gap-3.5">

@@ -39,7 +39,7 @@ export function Sheet({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-10 bg-[rgba(31,42,68,0.45)]" />
+        <Dialog.Overlay className="fixed inset-0 z-10 bg-overlay" />
         <Dialog.Content
           aria-describedby={undefined}
           className={`fixed inset-x-0 bottom-0 z-20 flex flex-col rounded-t-3xl bg-card pb-[env(safe-area-inset-bottom)] desktop:inset-x-auto desktop:top-24 desktop:bottom-auto desktop:left-1/2 desktop:-translate-x-1/2 desktop:overflow-hidden desktop:rounded-2xl desktop:pb-0 desktop:shadow-[0_20px_48px_rgba(31,42,68,0.3)] ${tall ? "top-9 desktop:max-h-[calc(100dvh-128px)] desktop:w-[min(560px,calc(100%-32px))]" : "desktop:w-[min(460px,calc(100%-32px))]"}`}

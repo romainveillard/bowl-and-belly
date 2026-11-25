@@ -110,7 +110,7 @@ export function FeedRow({
         onPointerUp={onPointerEnd}
         onPointerCancel={onPointerEnd}
         style={{ transform: offset === 0 ? undefined : `translateX(${offset}px)` }}
-        className={`relative flex min-h-16 w-full cursor-pointer touch-pan-y items-center gap-3 bg-card px-4 py-2.5 text-left desktop:min-h-[60px] desktop:gap-3.5 desktop:group-hover:bg-[#FAFBFC] ${offset === 0 ? "transition-transform" : ""} ${peek ? "swipe-peek" : ""}`}
+        className={`relative flex min-h-16 w-full cursor-pointer touch-pan-y items-center gap-3 bg-card px-4 py-2.5 text-left desktop:min-h-[60px] desktop:gap-3.5 desktop:group-hover:bg-row-hover ${offset === 0 ? "transition-transform" : ""} ${peek ? "swipe-peek" : ""}`}
       >
         <FoodTypeTile type={entry.type} />
         <span className="flex min-w-0 flex-1 flex-col gap-[3px]">

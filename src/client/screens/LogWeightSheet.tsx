@@ -111,7 +111,7 @@ export function LogWeightSheet({
               ? {
                   "aria-describedby": "weight-warning",
                   className:
-                    "h-11 w-full rounded-lg border-[1.5px] border-warning bg-card px-3 pr-14 text-base tabular-nums ring-[3px] ring-[#FBEBD2] focus:outline-none",
+                    "h-11 w-full rounded-lg border-[1.5px] border-warning bg-card px-3 pr-14 text-base tabular-nums ring-[3px] ring-warning-soft focus:outline-none",
                 }
               : {})}
           />
@@ -131,7 +131,7 @@ export function LogWeightSheet({
           <div
             id="weight-warning"
             role="status"
-            className="flex items-start gap-2 rounded-[10px] bg-[#FBEBD2] px-3 py-2.5 text-[13px] leading-[19px] text-[#6E4A0E]"
+            className="flex items-start gap-2 rounded-[10px] bg-warning-soft px-3 py-2.5 text-[13px] leading-[19px] text-warning-strong"
           >
             <span className="flex-none">
               <AlertIcon size={18} />

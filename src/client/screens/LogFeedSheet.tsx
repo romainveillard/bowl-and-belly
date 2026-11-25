@@ -135,7 +135,7 @@ function LogFeedForm({
                   time: formatTime(previous.fedAt, timeZone, i18n.language),
                 })}
               </span>
-              <span className="truncate text-[13px] text-[#6A4A33]">
+              <span className="truncate text-[13px] text-accent-foreground">
                 {t("logFeed.leftoverFood", {
                   name: previous.foodName ?? "",
                   served: previous.servedG,

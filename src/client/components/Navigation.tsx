@@ -55,7 +55,7 @@ export function Sidebar() {
       <div className="flex items-center gap-2.5 px-2 pb-5">
         <LogoMark />
         <span className="font-display text-[20px] font-semibold tracking-[-0.3px]">
-          Bowl <span className="text-[#BB6B3A]">&amp;</span> Belly
+          Bowl <span className="text-wordmark-accent">&amp;</span> Belly
         </span>
       </div>
       <nav aria-label={t("nav.label")} className="flex flex-1 flex-col gap-1">

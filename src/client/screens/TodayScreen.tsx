@@ -51,7 +51,7 @@ function GettingStarted({ petAdded }: { petAdded: boolean }) {
           ) : (
             <span
               aria-hidden="true"
-              className={`flex size-7 flex-none items-center justify-center rounded-full text-sm font-semibold ${step.state === "current" ? "bg-primary" : "text-muted-foreground inset-ring-[1.5px] inset-ring-[#B9BFCB]"}`}
+              className={`flex size-7 flex-none items-center justify-center rounded-full text-sm font-semibold ${step.state === "current" ? "bg-primary" : "text-muted-foreground inset-ring-[1.5px] inset-ring-outline"}`}
             >
               {index + 1}
             </span>

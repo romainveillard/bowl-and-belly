@@ -99,7 +99,7 @@ export function TargetPromptDialog({
           </span>
         </div>
         <div className="flex flex-1 flex-col gap-0.5 rounded-[10px] bg-accent-soft p-3">
-          <span className="text-caption text-[#6A4A33]">{t("targetPrompt.suggested")}</span>
+          <span className="text-caption text-accent-foreground">{t("targetPrompt.suggested")}</span>
           <span className="flex items-baseline gap-1">
             <span className="font-display text-2xl font-semibold tabular-nums">
               {prompt.suggestedKcal}

@@ -130,7 +130,9 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span className="truncate text-[15px] font-semibold">{shownFood.name}</span>
                 {shownFood.brand && (
-                  <span className="truncate text-[13px] text-[#6A4A33]">{shownFood.brand}</span>
+                  <span className="truncate text-[13px] text-accent-foreground">
+                    {shownFood.brand}
+                  </span>
                 )}
               </span>
               <button

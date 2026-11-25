@@ -43,7 +43,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
             <span className="flex min-w-0 flex-col gap-px">
               <span>{snack.message}</span>
               {snack.detail && (
-                <span className="truncate text-[13px] text-[#C9CDD6] tabular-nums">
+                <span className="truncate text-[13px] text-inverse-muted tabular-nums">
                   {snack.detail}
                 </span>
               )}

@@ -25,6 +25,18 @@
   --color-wet-foreground: #1e4e8c;
   --color-dry: #fce4cc;
   --color-dry-foreground: #7a3f12;
+  --color-wet-soft: #f2f7ff;
+  --color-dry-soft: #fff6ee;
+  --color-accent-foreground: #6a4a33;
+  --color-warning-soft: #fbebd2;
+  --color-warning-strong: #6e4a0e;
+  --color-outline: #b9bfcb;
+  --color-row-hover: #fafbfc;
+  --color-switch-off: #8a92a3;
+  --color-overlay: rgb(31 42 68 / 0.45);
+  /* Secondary text on the navy snackbar. */
+  --color-inverse-muted: #c9cdd6;
+  --color-wordmark-accent: #bb6b3a;
 
   /* From this width the sidebar replaces the bottom bar. */
   --breakpoint-desktop: 860px;

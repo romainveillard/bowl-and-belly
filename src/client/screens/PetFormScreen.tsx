@@ -158,7 +158,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
                 <button
                   type="button"
                   onClick={() => fileInput.current?.click()}
-                  className="flex size-[88px] flex-none cursor-pointer flex-col items-center justify-center gap-1.5 overflow-hidden rounded-full border-[1.5px] border-dashed border-[#B9BFCB] bg-background text-[13px] font-medium text-muted-foreground desktop:size-24"
+                  className="flex size-[88px] flex-none cursor-pointer flex-col items-center justify-center gap-1.5 overflow-hidden rounded-full border-[1.5px] border-dashed border-outline bg-background text-[13px] font-medium text-muted-foreground desktop:size-24"
                 >
                   {form.photoId === null ? (
                     <>

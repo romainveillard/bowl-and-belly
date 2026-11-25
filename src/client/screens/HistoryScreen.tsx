@@ -18,7 +18,7 @@ import { useFeedSheets } from "./FeedSheets.js";
 import { LogFeedSheet } from "./LogFeedSheet.js";
 import { useWeightSheets } from "./WeightSheets.js";
 
-const typeBackground = { wet: "bg-[#F2F7FF]", dry: "bg-[#FFF6EE]", custom: "bg-background" };
+const typeBackground = { wet: "bg-wet-soft", dry: "bg-dry-soft", custom: "bg-background" };
 
 interface DayCardProps {
   summary: DaySummary;

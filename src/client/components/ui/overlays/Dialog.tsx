@@ -27,7 +27,7 @@ export function Dialog({ open, onOpenChange, title, description, children, actio
   return (
     <AlertDialog.Root open={open} {...(onOpenChange ? { onOpenChange } : {})}>
       <AlertDialog.Portal>
-        <AlertDialog.Overlay className="fixed inset-0 z-10 bg-[rgba(31,42,68,0.45)]" />
+        <AlertDialog.Overlay className="fixed inset-0 z-10 bg-overlay" />
         <AlertDialog.Content className="fixed inset-x-5 top-1/2 z-20 flex -translate-y-1/2 flex-col gap-4 rounded-2xl bg-card p-[22px] shadow-[0_12px_32px_rgba(31,42,68,0.25)] desktop:inset-x-auto desktop:top-[140px] desktop:left-1/2 desktop:w-[min(460px,calc(100%-32px))] desktop:-translate-x-1/2 desktop:translate-y-0 desktop:gap-[18px] desktop:p-6 desktop:shadow-[0_20px_48px_rgba(31,42,68,0.3)]">
           <div className="flex flex-col gap-1.5 desktop:gap-2">
             <AlertDialog.Title className="font-display text-title font-semibold desktop:text-2xl">
