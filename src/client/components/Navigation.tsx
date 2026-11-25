@@ -44,7 +44,7 @@ export function BottomNav() {
 
 // The current tab's bar sits on the white beside its pill, where it keeps 3:1.
 const sideLink =
-  "relative flex h-11 items-center gap-3 rounded-[10px] px-3 text-[15px] font-medium text-muted-foreground before:absolute before:top-2.5 before:bottom-2.5 before:-left-2.5 before:w-[3px] before:rounded-full aria-[current=page]:bg-accent-soft aria-[current=page]:font-semibold aria-[current=page]:text-foreground aria-[current=page]:before:bg-primary-strong";
+  "relative flex h-11 items-center gap-3 rounded-[10px] px-3 text-[15px] font-medium text-muted-foreground before:absolute before:top-2.5 before:bottom-2.5 before:-left-2.5 before:w-[3px] before:rounded-full hover:not-aria-[current=page]:bg-muted hover:not-aria-[current=page]:text-foreground aria-[current=page]:bg-accent-soft aria-[current=page]:font-semibold aria-[current=page]:text-foreground aria-[current=page]:before:bg-primary-strong";
 
 export function Sidebar() {
   const { t } = useTranslation();
