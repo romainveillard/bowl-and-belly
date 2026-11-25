@@ -1,0 +1,1 @@
+ALTER TABLE `pet` ADD `goal_set_on` text;

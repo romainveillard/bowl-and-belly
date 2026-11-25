@@ -116,6 +116,10 @@ export const pet = sqliteTable(
     activityLevel: text({ enum: ACTIVITY_LEVELS }).notNull(),
     goal: text({ enum: GOALS }).notNull(),
     targetWeightG: integer(),
+    // "YYYY-MM-DD", the app day the goal or its target weight last changed;
+    // null for maintain, and for goals set before this was recorded, which
+    // count from the first weigh-in.
+    goalSetOn: text(),
     // The last age step (in months) whose "update target?" question was answered.
     agePromptMonths: integer(),
     archivedAt: archivedAt(),
@@ -126,6 +130,7 @@ export const pet = sqliteTable(
     check("pet_activity_level", oneOf(t.activityLevel, ACTIVITY_LEVELS)),
     check("pet_goal", oneOf(t.goal, GOALS)),
     check("pet_target_weight_g", sql`${t.targetWeightG} > 0`),
+    check("pet_goal_set_on", sql`${t.goalSetOn} GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]'`),
     check(
       "pet_goal_has_target_weight",
       sql`${t.goal} = 'maintain' OR ${t.targetWeightG} IS NOT NULL`,

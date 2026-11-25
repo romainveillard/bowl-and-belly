@@ -36,6 +36,20 @@
       "when": 1795472394950,
       "tag": "0004_backup_error_check",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1795644908888,
+      "tag": "0005_goal_set_on",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1795644914204,
+      "tag": "0006_goal_set_on_check",
+      "breakpoints": true
     }
   ]
 }
