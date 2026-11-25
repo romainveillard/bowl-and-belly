@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate, useParams } from "react-router";
-import { kcalPerKg } from "../../shared/stock.js";
+import { useNavigate, useParams } from "react-router";
 import { button } from "../components/ui/forms/button.js";
 import { Select } from "../components/ui/forms/Select.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
+import { FormActions } from "../components/ui/layout/FormActions.js";
 import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { PhotoPicker } from "../components/PhotoPicker.js";
 import { ConfirmDialog } from "../components/ui/overlays/ConfirmDialog.js";
@@ -25,30 +25,25 @@ import {
   type FoodDetail,
   type KcalBackfill,
 } from "./foods.js";
-import { parseAmount, stockGramsOf, stockText } from "./foodForm.js";
-import { formatInputNumber, parsePositive } from "../lib/format.js";
+import {
+  FOOD_FIELD_ORDER,
+  foodBodyOf,
+  foodFormProblems,
+  readFoodForm,
+  stockText,
+  type FoodFieldName,
+  type FoodFormState,
+  type StockValues,
+} from "./foodForm.js";
+import { formatInputNumber } from "../lib/format.js";
 import { petTypeLabel, usePets, usePetTypes } from "../pets/pets.js";
 import { useDemo } from "../lib/instance.js";
 import { useSelectedPet } from "../pets/selectedPet.js";
 import { offeredTypes, optionLabel } from "../settings/types.js";
 import { useFormErrors, type CheckedField } from "../lib/useFormErrors.js";
 import { KcalUpdateDialog } from "./KcalUpdateDialog.js";
-import { PortionCard, type PortionValues } from "./PortionCard.js";
-import { StockCard, type StockValues } from "./StockCard.js";
-
-interface FormState extends PortionValues, StockValues {
-  name: string;
-  brand: string;
-  photoId: number | null;
-  foodTypeId: number | null;
-  /** Null suits any pet; undefined is "not chosen yet", which takes the default. */
-  petTypeId: number | null | undefined;
-  kcal: string;
-  per: "100g" | "kg";
-}
-
-type FieldName = "name" | "kcal" | "portionName" | "portionG" | "stock";
-const FIELD_ORDER: FieldName[] = ["name", "kcal", "portionName", "portionG", "stock"];
+import { PortionCard } from "./PortionCard.js";
+import { StockCard } from "./StockCard.js";
 
 function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string }) {
   const { t, i18n } = useTranslation();
@@ -63,7 +58,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
   const [askingBackfill, setAskingBackfill] = useState<FoodBody | null>(null);
 
   const suggestedName = (key: (typeof SUGGESTED_PORTIONS)[number]) => t(`portionName.${key}`);
-  const [form, setForm] = useState<FormState>(() => {
+  const [form, setForm] = useState<FoodFormState>(() => {
     const known = food?.portionName ? suggestedPortion(food.portionName, i18n) : undefined;
     return {
       name: food?.name ?? "",
@@ -82,8 +77,9 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
     };
   });
   const [stockTouched, setStockTouched] = useState(false);
-  const update = (patch: Partial<FormState>) => setForm((current) => ({ ...current, ...patch }));
-  const set = <Key extends keyof FormState>(key: Key, value: FormState[Key]) =>
+  const update = (patch: Partial<FoodFormState>) =>
+    setForm((current) => ({ ...current, ...patch }));
+  const set = <Key extends keyof FoodFormState>(key: Key, value: FoodFormState[Key]) =>
     setForm((current) => ({ ...current, [key]: value }));
   const updateStock = (patch: Partial<StockValues>) => {
     setStockTouched(true);
@@ -96,37 +92,17 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
   const petTypeId =
     form.petTypeId === undefined ? (selectedPet?.petTypeId ?? null) : form.petTypeId;
 
-  const kcal = parsePositive(form.kcal);
-  const kcalStored = kcal === null ? null : kcalPerKg(kcal, form.per);
-  const usePortion = form.usePortion && !isDry;
+  const values = readFoodForm(form, isDry);
+  const { kcal, kcalStored, usePortion, counted } = values;
   const portionName =
     form.portion === "other" ? form.otherPortion.trim() : suggestedName(form.portion);
-  const portionG = parsePositive(form.portionG);
-  const counted = usePortion && form.countIn === "portion";
-  const stockAmount = parseAmount(form.stock);
-
-  const problems = new Map<FieldName, FieldName>();
-  if (form.name.trim() === "") {
-    problems.set("name", "name");
-  }
-  if (kcalStored === null || kcalStored === 0) {
-    problems.set("kcal", "kcal");
-  }
-  if (usePortion && portionName === "") {
-    problems.set("portionName", "portionName");
-  }
-  if (usePortion && (portionG === null || Math.round(portionG) === 0)) {
-    problems.set("portionG", "portionG");
-  }
-  if (stockAmount === null) {
-    problems.set("stock", "stock");
-  }
-  const errors = useFormErrors(problems, FIELD_ORDER, "food");
-  const errorFor = (field: FieldName) => {
+  const problems = foodFormProblems(form, values, portionName);
+  const errors = useFormErrors(problems, FOOD_FIELD_ORDER, "food");
+  const errorFor = (field: FoodFieldName) => {
     const problem = errors.problemOf(field);
     return problem && t(`foodForm.errors.${problem}`);
   };
-  const field = (name: FieldName): CheckedField => ({
+  const field = (name: FoodFieldName): CheckedField => ({
     id: errors.idOf(name),
     error: errorFor(name),
     onBlur: errors.recheck(name),
@@ -143,35 +119,17 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
     );
 
   const submit = () => {
-    if (errors.reject() || foodTypeId === null || kcalStored === null || stockAmount === null) {
+    const body = foodBodyOf(form, values, { foodTypeId, petTypeId, portionName });
+    if (errors.reject() || body === null) {
       return;
     }
-    const grams = usePortion && portionG !== null ? Math.round(portionG) : null;
-    const stockG = stockGramsOf(stockAmount, form.stockIn, counted ? grams : null);
-    const body: FoodBody = {
-      name: form.name,
-      brand: form.brand.trim() || null,
-      photoId: form.photoId,
-      foodTypeId,
-      petTypeId,
-      kcalPerKg: kcalStored,
-      portionName: usePortion ? portionName : null,
-      portionG: grams,
-      stockUnit: counted ? "portion" : "g",
-      stockG,
-    };
-    if (food?.hasFeeds && food.kcalPerKg !== kcalStored) {
+    if (food?.hasFeeds && food.kcalPerKg !== body.kcalPerKg) {
       setAskingBackfill(body);
     } else {
       send(body, { scope: "none" });
     }
   };
 
-  const saveButton = (className: string) => (
-    <button type="button" className={className} disabled={save.isPending} onClick={submit}>
-      {food ? t("foodForm.saveChanges") : t("foodForm.save")}
-    </button>
-  );
   const archiveButton = food && (
     <button
       type="button"
@@ -298,16 +256,13 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
         </div>
       </div>
 
-      <div className="sticky bottom-0 border-t border-border bg-card px-5 pt-3 pb-[calc(24px+env(safe-area-inset-bottom))] desktop:hidden">
-        {saveButton(button.primaryLarge)}
-      </div>
-      <div className="hidden items-center justify-end gap-2.5 desktop:flex">
-        <span className="mr-auto">{archiveButton}</span>
-        <Link to="/stock" className={button.outline}>
-          {t("action.cancel")}
-        </Link>
-        {saveButton(button.primary)}
-      </div>
+      <FormActions
+        saveLabel={food ? t("foodForm.saveChanges") : t("foodForm.save")}
+        pending={save.isPending}
+        onSave={submit}
+        cancelTo="/stock"
+        start={archiveButton}
+      />
 
       {food && (
         <ConfirmDialog

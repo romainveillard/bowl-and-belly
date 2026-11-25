@@ -6,6 +6,7 @@ import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field, FieldError } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
+import { SummaryRow } from "../components/ui/feedback/SummaryRow.js";
 import {
   isOutOfStock,
   portionUnit,
@@ -131,12 +132,9 @@ export function RestockSheet({ food, onClose }: { food: FoodSummary; onClose: ()
             {amountError && <FieldError id={`${amountId}-error`}>{amountError}</FieldError>}
           </>
         )}
-        <div className="flex justify-between rounded-[10px] bg-muted px-3.5 py-3 text-sm tabular-nums">
-          <span className="text-muted-foreground">{t("stock.newTotal")}</span>
-          <span className={`font-semibold ${isOutOfStock(newTotal) ? "text-warning" : ""}`}>
-            {stockLabel(newTotal, i18n)}
-          </span>
-        </div>
+        <SummaryRow label={t("stock.newTotal")} warning={isOutOfStock(newTotal)}>
+          {stockLabel(newTotal, i18n)}
+        </SummaryRow>
       </div>
     </Sheet>
   );

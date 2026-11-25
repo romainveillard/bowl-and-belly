@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { InfoIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
+import { Notice } from "../components/ui/feedback/Notice.js";
+import { SheetActions } from "../components/ui/overlays/SheetActions.js";
 import { ConfirmDialog } from "../components/ui/overlays/ConfirmDialog.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field } from "../components/ui/forms/Field.js";
@@ -76,13 +77,12 @@ export function TypeFormSheet({ kind, type, otherLabels, onClose }: TypeFormShee
       onOpenChange={(open) => !open && onClose()}
       title={t(`types.${kind}.${type ? "editTitle" : "addTitle"}`)}
       footer={
-        <>
-          <button type="button" className={button.sheetPrimary} disabled={pending} onClick={submit}>
-            {t(`types.${kind}.save`)}
-          </button>
-          <button type="button" className={button.sheetCancel} onClick={onClose}>
-            {t("action.cancel")}
-          </button>
+        <SheetActions
+          saveLabel={t(`types.${kind}.save`)}
+          pending={pending}
+          onSave={submit}
+          onCancel={onClose}
+        >
           {type && (
             <button
               type="button"
@@ -92,7 +92,7 @@ export function TypeFormSheet({ kind, type, otherLabels, onClose }: TypeFormShee
               {t("types.archive")}
             </button>
           )}
-        </>
+        </SheetActions>
       }
     >
       <div className="flex flex-col gap-4 pt-2 desktop:gap-[18px] desktop:pt-0">
@@ -120,12 +120,7 @@ export function TypeFormSheet({ kind, type, otherLabels, onClose }: TypeFormShee
             <span className="text-[13px] text-muted-foreground">{t("types.leftoversHint")}</span>
           </div>
         ) : (
-          <div className="flex items-start gap-2.5 rounded-[10px] bg-muted px-3.5 py-3 text-sm leading-5">
-            <span className="flex-none">
-              <InfoIcon size={18} />
-            </span>
-            <span>{t("types.pet.noFormula")}</span>
-          </div>
+          <Notice tone="info">{t("types.pet.noFormula")}</Notice>
         )}
       </div>
       {type && (

@@ -41,12 +41,11 @@ function PetOptions({ onChosen }: { onChosen: () => void }) {
               }}
               className="flex min-h-16 w-full cursor-pointer items-center gap-3 rounded-xl px-3.5 py-2.5 text-left aria-[current]:bg-accent-soft desktop:min-h-14 desktop:rounded-[10px] desktop:px-3 desktop:py-2"
             >
-              <span className="desktop:hidden">
-                <PetAvatar photoId={pet.photoId} size={44} onAccent={isSelected} />
-              </span>
-              <span className="hidden desktop:block">
-                <PetAvatar photoId={pet.photoId} size={40} onAccent={isSelected} />
-              </span>
+              <PetAvatar
+                photoId={pet.photoId}
+                size="size-11 desktop:size-10"
+                onAccent={isSelected}
+              />
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span className="truncate text-base font-semibold desktop:text-[15px]">
                   {pet.name}
@@ -92,7 +91,7 @@ export function PetChip() {
   }
   const face = (
     <>
-      <PetAvatar photoId={pet.photoId} size={32} />
+      <PetAvatar photoId={pet.photoId} size="size-8" />
       <span className="max-w-[110px] truncate desktop:max-w-none">{pet.name}</span>
     </>
   );

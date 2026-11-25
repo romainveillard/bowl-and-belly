@@ -86,12 +86,11 @@ export function PetsScreen() {
                   className="flex flex-col gap-3.5 rounded-xl bg-card p-4 inset-ring inset-ring-border desktop:gap-3 desktop:rounded-[14px] desktop:aria-[current]:bg-accent-soft desktop:aria-[current]:inset-ring-2 desktop:aria-[current]:inset-ring-primary-strong"
                 >
                   <span className="flex items-center gap-3">
-                    <span className="desktop:hidden">
-                      <PetAvatar photoId={pet.photoId} size={52} />
-                    </span>
-                    <span className="hidden desktop:block">
-                      <PetAvatar photoId={pet.photoId} size={48} onAccent={selected} />
-                    </span>
+                    <PetAvatar
+                      photoId={pet.photoId}
+                      size="size-13 desktop:size-12"
+                      onAccent={selected && "desktop"}
+                    />
                     <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                       <span className="truncate text-heading font-semibold desktop:text-base">
                         {pet.name}

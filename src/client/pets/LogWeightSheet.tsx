@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertIcon } from "../components/icons.js";
-import { button } from "../components/ui/forms/button.js";
+import { Notice } from "../components/ui/feedback/Notice.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field } from "../components/ui/forms/Field.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
+import { SheetActions } from "../components/ui/overlays/SheetActions.js";
 import { appDayOf, type DaySettings } from "../../shared/app-day.js";
 import {
   formatInputNumber,
@@ -83,19 +83,12 @@ export function LogWeightSheet({
           : pet.name
       }
       footer={
-        <>
-          <button
-            type="button"
-            className={button.sheetPrimary}
-            disabled={save.isPending}
-            onClick={submit}
-          >
-            {t("logWeight.save")}
-          </button>
-          <button type="button" className={button.sheetCancel} onClick={onClose}>
-            {t("action.cancel")}
-          </button>
-        </>
+        <SheetActions
+          saveLabel={t("logWeight.save")}
+          pending={save.isPending}
+          onSave={submit}
+          onCancel={onClose}
+        />
       }
     >
       <div className="flex flex-col gap-3.5 pt-2">
@@ -135,24 +128,13 @@ export function LogWeightSheet({
           />
         </div>
         {changedFrom && kg !== null && (
-          <div
-            id="weight-warning"
-            role="status"
-            className="flex items-start gap-2 rounded-[10px] bg-warning-soft px-3 py-2.5 text-[13px] leading-[19px] text-warning-strong"
-          >
-            <span className="flex-none">
-              <AlertIcon size={18} />
-            </span>
-            <span>
-              {t("logWeight.bigChange", {
-                previous: formatReadingKg(changedFrom.weightG, i18n.language),
-                // As typed, so "45" reads back as 45 kg rather than 45.0.
-                weight: new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 3 }).format(
-                  kg,
-                ),
-              })}
-            </span>
-          </div>
+          <Notice tone="warning" role="status" id="weight-warning">
+            {t("logWeight.bigChange", {
+              previous: formatReadingKg(changedFrom.weightG, i18n.language),
+              // As typed, so "45" reads back as 45 kg rather than 45.0.
+              weight: new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 3 }).format(kg),
+            })}
+          </Notice>
         )}
       </div>
     </Sheet>

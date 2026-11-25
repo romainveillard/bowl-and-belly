@@ -1,46 +1,31 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { ACTIVITY_LEVELS, GOALS } from "../../shared/enums.js";
 import { explainTarget } from "../../shared/target.js";
-import { button } from "../components/ui/forms/button.js";
 import { Select } from "../components/ui/forms/Select.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
+import { FormActions } from "../components/ui/layout/FormActions.js";
 import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { PhotoPicker } from "../components/PhotoPicker.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
-import { parsePositive } from "../lib/format.js";
 import { useDemo } from "../lib/instance.js";
 import { offeredTypes, optionLabel } from "../settings/types.js";
-import { birthDateOf, initialPetForm, type PetFormState } from "./petForm.js";
+import {
+  initialPetForm,
+  PET_FIELD_ORDER,
+  petBodyOf,
+  petFormProblems,
+  readPetForm,
+  type PetFieldName,
+  type PetFormState,
+} from "./petForm.js";
 import { useFormErrors, type CheckedField } from "../lib/useFormErrors.js";
 import { PetTargetCard } from "./PetTargetCard.js";
-import {
-  petTypeLabel,
-  usePet,
-  usePets,
-  usePetTypes,
-  useSavePet,
-  type PetBody,
-  type PetDetail,
-} from "./pets.js";
-
-type FieldName = "name" | "birth" | "targetWeight" | "weight" | "ownTarget";
-type ErrorKey =
-  | "name"
-  | "birthDate"
-  | "birthYear"
-  | "age"
-  | "targetWeight"
-  | "weight"
-  | "ownTarget";
-
-/** Top to bottom on the form: the first invalid one takes focus. */
-const FIELD_ORDER: FieldName[] = ["name", "birth", "targetWeight", "weight", "ownTarget"];
-const BIRTH_ERROR = { exact: "birthDate", year: "birthYear", estimated: "age" } as const;
+import { petTypeLabel, usePet, usePets, usePetTypes, useSavePet, type PetDetail } from "./pets.js";
 
 function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) {
   const { t, i18n } = useTranslation();
@@ -55,78 +40,43 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
 
   const petTypeId = form.petTypeId ?? petTypes?.[0]?.id ?? null;
   const systemKey = petTypes?.find((type) => type.id === petTypeId)?.systemKey ?? null;
-  const birthDate = birthDateOf(form, today, pet);
-  const weightKg = parsePositive(form.weight);
-  const targetWeightKg = parsePositive(form.targetWeight);
-  const ownKcal = parsePositive(form.ownTargetKcal);
+  const values = readPetForm(form, systemKey, today, pet);
   const hasWeightGoal = form.goal !== "maintain";
 
   const suggestion =
-    systemKey && birthDate
+    systemKey && values.birthDate
       ? explainTarget({
           petType: systemKey,
-          birthDate,
+          birthDate: values.birthDate,
           today,
           neutered: form.neutered,
           activityLevel: form.activityLevel,
           goal: form.goal,
-          targetWeightG: targetWeightKg === null ? null : Math.round(targetWeightKg * 1000),
-          weightG: weightKg === null ? null : Math.round(weightKg * 1000),
+          targetWeightG: values.targetWeightG,
+          weightG: values.weightG,
         })
       : null;
 
-  // Custom pet types have no formula, so their target is always the user's own.
-  const ownTarget = systemKey === null || form.ownTarget;
   const closeLink = pet ? `/pets/${pet.id}` : "/pets";
   const title = pet ? t("pets.edit") : t("pets.add");
 
-  const problems = new Map<FieldName, ErrorKey>();
-  if (form.name.trim() === "") {
-    problems.set("name", "name");
-  }
-  if (birthDate === null) {
-    problems.set("birth", BIRTH_ERROR[form.ageMode]);
-  }
-  if (hasWeightGoal && targetWeightKg === null) {
-    problems.set("targetWeight", "targetWeight");
-  }
-  if (form.weight.trim() !== "" && weightKg === null) {
-    problems.set("weight", "weight");
-  }
-  // A custom type may be left without a target; an own target switched on may not.
-  if (ownTarget && ownKcal === null && (systemKey !== null || form.ownTargetKcal.trim() !== "")) {
-    problems.set("ownTarget", "ownTarget");
-  }
-
-  const errors = useFormErrors(problems, FIELD_ORDER, "pet");
-  const errorFor = (field: FieldName) => {
+  const problems = petFormProblems(form, values, systemKey);
+  const errors = useFormErrors(problems, PET_FIELD_ORDER, "pet");
+  const errorFor = (field: PetFieldName) => {
     const problem = errors.problemOf(field);
     return problem && t(`petForm.errors.${problem}`);
   };
-  const field = (name: FieldName): CheckedField => ({
+  const field = (name: PetFieldName): CheckedField => ({
     id: errors.idOf(name),
     error: errorFor(name),
     onBlur: errors.recheck(name),
   });
 
   const submit = () => {
-    if (errors.reject() || petTypeId === null || birthDate === null) {
+    const body = petBodyOf(form, values, petTypeId);
+    if (errors.reject() || body === null) {
       return;
     }
-    const body: PetBody = {
-      name: form.name,
-      petTypeId,
-      photoId: form.photoId,
-      birthDate,
-      birthDatePrecision: form.ageMode,
-      neutered: form.neutered,
-      activityLevel: form.activityLevel,
-      goal: form.goal,
-      targetWeightG:
-        hasWeightGoal && targetWeightKg !== null ? Math.round(targetWeightKg * 1000) : null,
-      weightG: weightKg === null ? null : Math.round(weightKg * 1000),
-      manualTargetKcal: ownTarget && ownKcal !== null ? Math.round(ownKcal) : null,
-    };
     save.mutate(body, {
       onSuccess: (saved) => {
         void navigate(`/pets/${saved.id}`);
@@ -136,12 +86,6 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
       },
     });
   };
-
-  const saveButton = (className: string) => (
-    <button type="button" className={className} disabled={save.isPending} onClick={submit}>
-      {t("petForm.save")}
-    </button>
-  );
 
   return (
     <div className="flex min-h-dvh flex-col desktop:min-h-0 desktop:gap-6">
@@ -288,21 +232,18 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             goal={form.goal}
             value={form}
             onChange={(patch) => setForm((current) => ({ ...current, ...patch }))}
-            showOwn={ownTarget}
+            showOwn={values.ownTarget}
             field={field("ownTarget")}
           />
         </div>
       </div>
 
-      <div className="sticky bottom-0 border-t border-border bg-card px-5 pt-3 pb-[calc(24px+env(safe-area-inset-bottom))] desktop:hidden">
-        {saveButton(button.primaryLarge)}
-      </div>
-      <div className="hidden justify-end gap-2.5 desktop:flex">
-        <Link to={closeLink} className={button.outline}>
-          {t("action.cancel")}
-        </Link>
-        {saveButton(button.primary)}
-      </div>
+      <FormActions
+        saveLabel={t("petForm.save")}
+        pending={save.isPending}
+        onSave={submit}
+        cancelTo={closeLink}
+      />
     </div>
   );
 }

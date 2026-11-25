@@ -49,6 +49,102 @@ export function initialPetForm(pet: PetDetail | undefined, locale: string): PetF
   };
 }
 
+export type PetFieldName = "name" | "birth" | "targetWeight" | "weight" | "ownTarget";
+type PetErrorKey =
+  | "name"
+  | "birthDate"
+  | "birthYear"
+  | "age"
+  | "targetWeight"
+  | "weight"
+  | "ownTarget";
+
+/** Top to bottom on the form: the first invalid one takes focus. */
+export const PET_FIELD_ORDER: PetFieldName[] = [
+  "name",
+  "birth",
+  "targetWeight",
+  "weight",
+  "ownTarget",
+];
+const BIRTH_ERROR = { exact: "birthDate", year: "birthYear", estimated: "age" } as const;
+
+const gramsOf = (kg: number | null) => (kg === null ? null : Math.round(kg * 1000));
+
+/** The form's fields as the API's values: null where one is empty or doesn't parse. */
+export function readPetForm(
+  form: PetFormState,
+  systemKey: string | null,
+  today: string,
+  original: Born | undefined,
+) {
+  const ownKcal = parsePositive(form.ownTargetKcal);
+  return {
+    birthDate: birthDateOf(form, today, original),
+    weightG: gramsOf(parsePositive(form.weight)),
+    targetWeightG: gramsOf(parsePositive(form.targetWeight)),
+    // Custom pet types have no formula, so their target is always the user's own.
+    ownTarget: systemKey === null || form.ownTarget,
+    ownKcal: ownKcal === null ? null : Math.round(ownKcal),
+  };
+}
+
+type PetFormValues = ReturnType<typeof readPetForm>;
+
+/** What keeps the form from saving, by field. */
+export function petFormProblems(
+  form: PetFormState,
+  values: PetFormValues,
+  systemKey: string | null,
+): Map<PetFieldName, PetErrorKey> {
+  const problems = new Map<PetFieldName, PetErrorKey>();
+  if (form.name.trim() === "") {
+    problems.set("name", "name");
+  }
+  if (values.birthDate === null) {
+    problems.set("birth", BIRTH_ERROR[form.ageMode]);
+  }
+  if (form.goal !== "maintain" && values.targetWeightG === null) {
+    problems.set("targetWeight", "targetWeight");
+  }
+  if (form.weight.trim() !== "" && values.weightG === null) {
+    problems.set("weight", "weight");
+  }
+  // A custom type may be left without a target; an own target switched on may not.
+  if (
+    values.ownTarget &&
+    values.ownKcal === null &&
+    (systemKey !== null || form.ownTargetKcal.trim() !== "")
+  ) {
+    problems.set("ownTarget", "ownTarget");
+  }
+  return problems;
+}
+
+/** The pet to save, or null while the type or birth date is missing. */
+export function petBodyOf(
+  form: PetFormState,
+  values: PetFormValues,
+  petTypeId: number | null,
+): PetBody | null {
+  if (petTypeId === null || values.birthDate === null) {
+    return null;
+  }
+  return {
+    name: form.name,
+    petTypeId,
+    photoId: form.photoId,
+    birthDate: values.birthDate,
+    birthDatePrecision: form.ageMode,
+    neutered: form.neutered,
+    activityLevel: form.activityLevel,
+    goal: form.goal,
+    targetWeightG: form.goal === "maintain" ? null : values.targetWeightG,
+    weightG: values.weightG,
+    manualTargetKcal: values.ownTarget ? values.ownKcal : null,
+  };
+}
+
 /** The birth date the age section stands for, or null while it is incomplete. */
 export function birthDateOf(form: PetFormState, today: string, original: Born | undefined) {
   if (form.ageMode === "exact") {

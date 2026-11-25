@@ -46,7 +46,7 @@ export function PetProfile({ petId }: { petId: number }) {
 
       <div className="flex flex-col gap-3.5 px-5 pb-5 desktop:gap-6 desktop:p-0">
         <div className="flex flex-col items-center gap-2 pt-1 pb-2 text-center desktop:hidden">
-          <PetAvatar photoId={pet.photoId} size={88} />
+          <PetAvatar photoId={pet.photoId} size="size-22" />
           <h1 className="mt-1 font-display text-[26px] leading-8 font-semibold">{pet.name}</h1>
           <span className="text-sm text-muted-foreground">{identity.join(" · ")}</span>
           <span className="text-sm text-muted-foreground">
@@ -55,7 +55,7 @@ export function PetProfile({ petId }: { petId: number }) {
         </div>
 
         <Card className="hidden desktop:flex desktop:flex-row desktop:flex-wrap desktop:items-center desktop:gap-[18px]">
-          <PetAvatar photoId={pet.photoId} size={80} />
+          <PetAvatar photoId={pet.photoId} size="size-20" />
           <div className="flex min-w-[200px] flex-1 flex-col gap-1">
             <h2 className="font-display text-[28px] font-semibold">{pet.name}</h2>
             <span className="text-sm text-muted-foreground">

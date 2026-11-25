@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { AlertIcon } from "../../icons.js";
+import { Notice } from "../feedback/Notice.js";
 
 /** "2 things to fix before saving: name and current weight." Nothing when the list is empty. */
 export function ErrorSummary({ names, inSheet = false }: { names: string[]; inSheet?: boolean }) {
@@ -9,17 +9,9 @@ export function ErrorSummary({ names, inSheet = false }: { names: string[]; inSh
     return null;
   }
   return (
-    <div
-      role="alert"
-      className={`${inSheet ? "" : "mx-5 mb-3.5 desktop:m-0"} flex items-start gap-2.5 rounded-xl bg-danger-soft px-3.5 py-3 text-sm leading-5 text-danger-strong desktop:px-4 desktop:py-3.5 desktop:text-[15px] desktop:leading-[22px]`}
-    >
-      <span className="flex-none">
-        <AlertIcon size={20} />
-      </span>
-      <span>
-        <strong>{t("form.thingsToFix", { count: names.length })}</strong>{" "}
-        {new Intl.ListFormat(i18n.language, { type: "conjunction" }).format(names)}.
-      </span>
-    </div>
+    <Notice tone="danger" role="alert" className={inSheet ? "" : "mx-5 mb-3.5 desktop:m-0"}>
+      <strong>{t("form.thingsToFix", { count: names.length })}</strong>{" "}
+      {new Intl.ListFormat(i18n.language, { type: "conjunction" }).format(names)}.
+    </Notice>
   );
 }

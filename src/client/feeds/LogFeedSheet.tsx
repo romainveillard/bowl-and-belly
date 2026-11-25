@@ -4,11 +4,11 @@ import { kcalIn, leftoverFits } from "../../shared/feeds.js";
 import { FoodPicker } from "./FoodPicker.js";
 import { LeftoverPrompt } from "./LeftoverPrompt.js";
 import { PetChip } from "../pets/PetChip.js";
-import { button } from "../components/ui/forms/button.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field, inputClass } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
+import { SheetActions } from "../components/ui/overlays/SheetActions.js";
 import { useLogFeed, useLogForm, type LogForm, type PickerFood } from "./feeds.js";
 import { formatTime } from "../lib/format.js";
 import { portionPlural, portionUnit } from "../stock/foods.js";
@@ -102,19 +102,12 @@ function LogFeedForm({
       title={t("logFeed.title")}
       headerExtra={<PetChip />}
       footer={
-        <>
-          <button
-            type="button"
-            className={button.sheetPrimary}
-            disabled={logFeed.isPending}
-            onClick={submit}
-          >
-            {t("logFeed.save")}
-          </button>
-          <button type="button" className={button.sheetCancel} onClick={onDone}>
-            {t("action.cancel")}
-          </button>
-        </>
+        <SheetActions
+          saveLabel={t("logFeed.save")}
+          pending={logFeed.isPending}
+          onSave={submit}
+          onCancel={onDone}
+        />
       }
     >
       <ErrorSummary

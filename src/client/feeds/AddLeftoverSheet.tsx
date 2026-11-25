@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { kcalIn, leftoverFits } from "../../shared/feeds.js";
-import { button } from "../components/ui/forms/button.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
+import { SummaryRow } from "../components/ui/feedback/SummaryRow.js";
+import { SheetActions } from "../components/ui/overlays/SheetActions.js";
 import { useAddLeftover, type FeedEntry } from "./feeds.js";
 import { formatTime } from "../lib/format.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
@@ -56,19 +57,12 @@ export function AddLeftoverSheet({
         served: entry.servedG,
       })}
       footer={
-        <>
-          <button
-            type="button"
-            className={button.sheetPrimary}
-            disabled={save.isPending}
-            onClick={submit}
-          >
-            {t("addLeftover.save")}
-          </button>
-          <button type="button" className={button.sheetCancel} onClick={onClose}>
-            {t("action.cancel")}
-          </button>
-        </>
+        <SheetActions
+          saveLabel={t("addLeftover.save")}
+          pending={save.isPending}
+          onSave={submit}
+          onCancel={onClose}
+        />
       }
     >
       <div className="flex flex-col gap-4 pt-2">
@@ -98,15 +92,12 @@ export function AddLeftoverSheet({
             { value: "binned", label: t("addLeftover.binned") },
           ]}
         />
-        <div className="flex justify-between rounded-[10px] bg-muted px-3.5 py-3 text-sm tabular-nums">
-          <span className="text-muted-foreground">{t("addLeftover.eaten")}</span>
-          <span className="font-semibold">
-            {t("addLeftover.eatenValue", {
-              grams: eatenG,
-              kcal: Math.round(kcalIn(eatenG, entry.kcalPerKg)),
-            })}
-          </span>
-        </div>
+        <SummaryRow label={t("addLeftover.eaten")}>
+          {t("addLeftover.eatenValue", {
+            grams: eatenG,
+            kcal: Math.round(kcalIn(eatenG, entry.kcalPerKg)),
+          })}
+        </SummaryRow>
       </div>
     </Sheet>
   );

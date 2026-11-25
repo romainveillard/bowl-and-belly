@@ -3,12 +3,7 @@ import { Field } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import type { CheckedField } from "../lib/useFormErrors.js";
-
-export interface StockValues {
-  stock: string;
-  stockIn: "g" | "kg";
-  countIn: "g" | "portion";
-}
+import type { StockValues } from "./foodForm.js";
 
 /** How much of a food is in stock, in grams, kilograms or its portions. */
 export function StockCard({

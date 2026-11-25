@@ -4,16 +4,8 @@ import { Field, FieldError, Input } from "../components/ui/forms/Field.js";
 import { Switch } from "../components/ui/forms/Switch.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import type { CheckedField } from "../lib/useFormErrors.js";
+import type { PortionValues } from "./foodForm.js";
 import { SUGGESTED_PORTIONS } from "./foods.js";
-
-export type PortionChoice = (typeof SUGGESTED_PORTIONS)[number] | "other";
-
-export interface PortionValues {
-  usePortion: boolean;
-  portion: PortionChoice;
-  otherPortion: string;
-  portionG: string;
-}
 
 /** Whether a food comes in portions, such as pouches, and what one weighs. */
 export function PortionCard({

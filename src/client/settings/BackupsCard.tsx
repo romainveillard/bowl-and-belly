@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertIcon, DownloadIcon } from "../components/icons.js";
+import { DownloadIcon } from "../components/icons.js";
+import { Notice } from "../components/ui/feedback/Notice.js";
 import { button } from "../components/ui/forms/button.js";
 import { Field } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
@@ -85,27 +86,19 @@ export function BackupsCard({
     <Card>
       <CardHeading title={t("settings.backups.title")} hint={note} />
       {settings.backupError !== null && failedAt && (
-        <div
-          role="alert"
-          className="flex items-start gap-2.5 rounded-[10px] bg-danger-soft px-3.5 py-3 text-sm leading-5 text-danger-strong"
-        >
-          <span className="flex-none">
-            <AlertIcon size={18} />
-          </span>
-          <span>
-            <strong>{t("settings.backups.failed")}</strong>{" "}
-            {t("settings.backups.failedDetail", {
-              date: new Intl.DateTimeFormat(i18n.language, {
-                day: "numeric",
-                month: "short",
-                timeZone: settings.timeZone,
-              }).format(failedAt),
-              time: formatTime(failedAt, settings.timeZone, i18n.language),
-              reason: t(`settings.backups.errors.${settings.backupError}`),
-            })}
-            {settings.backupEnabled && ` ${t("settings.backups.retry")}`}
-          </span>
-        </div>
+        <Notice tone="danger" role="alert">
+          <strong>{t("settings.backups.failed")}</strong>{" "}
+          {t("settings.backups.failedDetail", {
+            date: new Intl.DateTimeFormat(i18n.language, {
+              day: "numeric",
+              month: "short",
+              timeZone: settings.timeZone,
+            }).format(failedAt),
+            time: formatTime(failedAt, settings.timeZone, i18n.language),
+            reason: t(`settings.backups.errors.${settings.backupError}`),
+          })}
+          {settings.backupEnabled && ` ${t("settings.backups.retry")}`}
+        </Notice>
       )}
       <SwitchRow
         label={t("settings.backups.scheduled")}

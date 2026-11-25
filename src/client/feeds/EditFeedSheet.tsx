@@ -7,6 +7,7 @@ import { button } from "../components/ui/forms/button.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field } from "../components/ui/forms/Field.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
+import { SheetActions } from "../components/ui/overlays/SheetActions.js";
 import { useEditFeed, useLogForm, type FeedEntry, type PickerFood } from "./feeds.js";
 import { formatDateInput, formatDay, formatTime, parsePositive } from "../lib/format.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
@@ -92,19 +93,12 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
         kcal: entry.kcal,
       })}
       footer={
-        <>
-          <button
-            type="button"
-            className={button.sheetPrimary}
-            disabled={edit.isPending}
-            onClick={submit}
-          >
-            {t("editFeed.save")}
-          </button>
-          <button type="button" className={button.sheetCancel} onClick={onClose}>
-            {t("action.cancel")}
-          </button>
-        </>
+        <SheetActions
+          saveLabel={t("editFeed.save")}
+          pending={edit.isPending}
+          onSave={submit}
+          onCancel={onClose}
+        />
       }
     >
       <div className="flex flex-col gap-4 pt-2">

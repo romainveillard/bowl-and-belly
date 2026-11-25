@@ -33,16 +33,7 @@ export function ArchivedPetsScreen() {
         items={archived.map((pet) => ({
           id: pet.id,
           name: pet.name,
-          leading: (
-            <>
-              <span className="desktop:hidden">
-                <PetAvatar photoId={pet.photoId} size={44} archived />
-              </span>
-              <span className="hidden desktop:block">
-                <PetAvatar photoId={pet.photoId} size={48} archived />
-              </span>
-            </>
-          ),
+          leading: <PetAvatar photoId={pet.photoId} size="size-11 desktop:size-12" archived />,
           detail: t("pets.archivedRow", {
             type: petTypeLabel(pet.type, t),
             date: pet.archivedAt
