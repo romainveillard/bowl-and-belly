@@ -13,6 +13,11 @@ export type DbOrTx = Db | Parameters<Parameters<Db["transaction"]>[0]>[0];
 export function openDatabase(filename: string): Db {
   const sqlite = new Database(filename);
   sqlite.pragma("journal_mode = WAL");
+  // An operator's sqlite3 session or a file copy can hold a lock for a moment:
+  // writes wait for it rather than failing at once with SQLITE_BUSY.
+  sqlite.pragma("busy_timeout = 5000");
+  // Safe with WAL: a power cut can lose the last commits, never corrupt the file.
+  sqlite.pragma("synchronous = NORMAL");
 
   const db = drizzle(sqlite, { schema, casing: "snake_case" });
 
