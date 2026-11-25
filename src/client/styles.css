@@ -92,6 +92,9 @@
   /* The phone's bottom bar takes its height from its content; this must match
      it, without the safe area below it. */
   --bottom-bar-height: 68px;
+  /* Desktop: the sidebar, then the content column, centred in the space left. */
+  --sidebar-width: 248px;
+  --content-max-width: 1120px;
 }
 
 body {
@@ -146,7 +149,8 @@ body {
   .snackbar {
     right: auto;
     bottom: 32px;
-    left: calc(248px + min(1120px, 100% - 248px) / 2);
+    /* The content column is centred beside the sidebar, so this is its centre too. */
+    left: calc(var(--sidebar-width) + (100% - var(--sidebar-width)) / 2);
     transform: translateX(-50%);
   }
 }
