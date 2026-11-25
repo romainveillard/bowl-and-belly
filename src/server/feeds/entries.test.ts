@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { openDatabase } from "../db/open.js";
 import { feedEntry, food, pet } from "../db/schema.js";
-import { deleteFeed, editFeed, logFeed, restoreFeed } from "./entries.js";
+import { deleteFeed, editFeed, logFeed, logFeedWithLeftover, restoreFeed } from "./entries.js";
 
 // Two foods with 1,000 g in stock each: kibbles at 3,700 kcal/kg, pouches at 800.
 function pantry() {
@@ -66,6 +66,49 @@ describe("logFeed", () => {
     logFeed(db, { ...kibbles, servedG: 1200 });
 
     expect(stock()[0]).toBe(-200);
+  });
+});
+
+describe("logFeedWithLeftover", () => {
+  const next = { petId: 1, foodId: 1, fedAt: new Date("2026-11-23T13:00:00Z"), servedG: 20 };
+
+  it("records the previous feed's leftover, putting dry food back in stock", () => {
+    const { db, stock } = pantry();
+    const previous = logFeed(db, kibbles) ?? 0;
+
+    logFeedWithLeftover(db, next, { entryId: previous, leftoverG: 5 });
+
+    expect(db.select().from(feedEntry).where(eq(feedEntry.id, previous)).get()).toMatchObject({
+      leftoverG: 5,
+      leftoverReturnedToStock: true,
+    });
+    expect(stock()[0]).toBe(1000 - 20 + 5 - 20);
+  });
+
+  it("bins a wet food's leftover", () => {
+    const { db, stock } = pantry();
+    const previous = logFeed(db, { ...kibbles, foodId: 2, servedG: 85 }) ?? 0;
+
+    logFeedWithLeftover(db, next, { entryId: previous, leftoverG: 10 });
+
+    expect(db.select().from(feedEntry).where(eq(feedEntry.id, previous)).get()).toMatchObject({
+      leftoverG: 10,
+      leftoverReturnedToStock: false,
+    });
+    expect(stock()[1]).toBe(1000 - 85);
+  });
+
+  it("refuses a leftover on another pet's feed or above what was served, logging nothing", () => {
+    const { db } = pantry();
+    const previous = logFeed(db, kibbles) ?? 0;
+
+    expect(
+      logFeedWithLeftover(db, { ...next, petId: 2 }, { entryId: previous, leftoverG: 5 }),
+    ).toBe("invalid_leftover");
+    expect(logFeedWithLeftover(db, next, { entryId: previous, leftoverG: 21 })).toBe(
+      "invalid_leftover",
+    );
+    expect(db.select().from(feedEntry).all()).toHaveLength(1);
   });
 });
 

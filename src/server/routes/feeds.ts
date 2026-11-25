@@ -5,7 +5,13 @@ import { instantAt, latestAt } from "../../shared/app-day.js";
 import { db } from "../db/client.js";
 import { feedEntry, food, foodType, pet } from "../db/schema.js";
 import { hasFeedsBefore, daySummaries } from "../feeds/days.js";
-import { deleteFeed, editFeed, logFeed, restoreFeed } from "../feeds/entries.js";
+import {
+  deleteFeed,
+  editFeed,
+  logFeedWithLeftover,
+  restoreFeed,
+  returnsLeftovers,
+} from "../feeds/entries.js";
 import { daySettings, today } from "../settings.js";
 import { grams, kcalPerKg, leftoverGrams, validate } from "../validate.js";
 
@@ -25,16 +31,6 @@ const foodTypeLabel = {
   name: foodType.name,
   leftoverReturnsToStock: foodType.leftoverReturnsToStock,
 };
-
-function returnsLeftovers(foodId: number): boolean {
-  const row = db
-    .select({ returns: foodType.leftoverReturnsToStock })
-    .from(food)
-    .innerJoin(foodType, eq(food.foodTypeId, foodType.id))
-    .where(eq(food.id, foodId))
-    .get();
-  return row?.returns ?? false;
-}
 
 export const feedsRoutes = new Hono()
   .get("/", validate("query", petQuery.extend({ from: z.iso.date(), to: z.iso.date() })), (c) => {
@@ -109,7 +105,7 @@ export const feedsRoutes = new Hono()
       previous !== undefined &&
       previous.leftoverG === null &&
       now.getTime() - previous.fedAt.getTime() < LEFTOVER_PROMPT_MS &&
-      returnsLeftovers(previous.foodId);
+      returnsLeftovers(db, previous.foodId);
 
     return c.json({
       foods: [...recent, ...others].map((row) => ({
@@ -148,34 +144,13 @@ export const feedsRoutes = new Hono()
       const body = c.req.valid("json");
       const now = new Date();
       const fedAt = body.time === null ? now : latestAt(body.time, now, daySettings(db).timeZone);
-      const result = db.transaction((tx) => {
-        if (body.previousLeftover) {
-          const previous = tx
-            .select()
-            .from(feedEntry)
-            .where(eq(feedEntry.id, body.previousLeftover.entryId))
-            .get();
-          if (
-            previous?.petId !== body.petId ||
-            body.previousLeftover.leftoverG > previous.servedG
-          ) {
-            return "invalid_leftover" as const;
-          }
-          editFeed(tx, previous.id, {
-            ...previous,
-            leftoverG: body.previousLeftover.leftoverG,
-            leftoverReturnedToStock: returnsLeftovers(previous.foodId),
-          });
-        }
-        return logFeed(tx, {
-          petId: body.petId,
-          foodId: body.foodId,
-          fedAt,
-          servedG: body.servedG,
-          leftoverG: null,
-          leftoverReturnedToStock: returnsLeftovers(body.foodId),
-        });
-      });
+      const result = db.transaction((tx) =>
+        logFeedWithLeftover(
+          tx,
+          { petId: body.petId, foodId: body.foodId, fedAt, servedG: body.servedG },
+          body.previousLeftover,
+        ),
+      );
       if (result === "invalid_leftover") {
         return c.json({ code: "invalid_leftover" as const }, 400);
       }

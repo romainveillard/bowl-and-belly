@@ -1,6 +1,6 @@
 import { eq, sql } from "drizzle-orm";
 import type { DbOrTx } from "../db/open.js";
-import { feedEntry, food } from "../db/schema.js";
+import { feedEntry, food, foodType } from "../db/schema.js";
 
 export interface FeedValues {
   petId: number;
@@ -29,6 +29,49 @@ function changeStock(db: DbOrTx, foodId: number, deltaG: number): void {
 function kcalOf(db: DbOrTx, foodId: number): number | undefined {
   return db.select({ kcalPerKg: food.kcalPerKg }).from(food).where(eq(food.id, foodId)).get()
     ?.kcalPerKg;
+}
+
+/** Whether a food's leftovers go back into stock by default, from its food type. */
+export function returnsLeftovers(db: DbOrTx, foodId: number): boolean {
+  const row = db
+    .select({ returns: foodType.leftoverReturnsToStock })
+    .from(food)
+    .innerJoin(foodType, eq(food.foodTypeId, foodType.id))
+    .where(eq(food.id, foodId))
+    .get();
+  return row?.returns ?? false;
+}
+
+/**
+ * Logs a feed from the log form. The leftover found from the pet's previous
+ * feed, if any, is recorded on that feed first, going back into stock or the
+ * bin as its food type says. Undefined if the food is gone.
+ */
+export function logFeedWithLeftover(
+  db: DbOrTx,
+  values: Pick<FeedValues, "petId" | "foodId" | "fedAt" | "servedG">,
+  previousLeftover: { entryId: number; leftoverG: number } | null,
+): number | "invalid_leftover" | undefined {
+  if (previousLeftover) {
+    const previous = db
+      .select()
+      .from(feedEntry)
+      .where(eq(feedEntry.id, previousLeftover.entryId))
+      .get();
+    if (previous?.petId !== values.petId || previousLeftover.leftoverG > previous.servedG) {
+      return "invalid_leftover";
+    }
+    editFeed(db, previous.id, {
+      ...previous,
+      leftoverG: previousLeftover.leftoverG,
+      leftoverReturnedToStock: returnsLeftovers(db, previous.foodId),
+    });
+  }
+  return logFeed(db, {
+    ...values,
+    leftoverG: null,
+    leftoverReturnedToStock: returnsLeftovers(db, values.foodId),
+  });
 }
 
 /** Logs a feed at the food's current kcal and takes it out of stock. Undefined if the food is gone. */
