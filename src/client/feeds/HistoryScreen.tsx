@@ -17,9 +17,9 @@ import { formatAppDay } from "../lib/format.js";
 import { usePets } from "../pets/pets.js";
 import { useFoodCount } from "../stock/foods.js";
 import { useSelectedPet } from "../pets/selectedPet.js";
-import { useFeedSheets } from "./FeedSheets.js";
+import { FeedSheetsProvider, useFeedSheets } from "./FeedSheetsProvider.js";
 import { LogFeedSheet } from "./LogFeedSheet.js";
-import { useWeightSheets } from "../pets/WeightSheets.js";
+import { LogWeightButton, WeightSheetsProvider } from "../pets/WeightSheetsProvider.js";
 
 const typeBackground = { wet: "bg-wet-soft", dry: "bg-dry-soft", custom: "bg-background" };
 
@@ -149,10 +149,8 @@ export function HistoryScreen() {
   const { data: settings } = useDaySettings();
   const { pet } = useSelectedPet();
   const history = useHistory(pet?.id, pets?.today);
-  const sheets = useFeedSheets(pet?.id ?? 0, pets?.today ?? "", settings?.timeZone ?? "UTC");
   const [toggled, setToggled] = useState<Record<string, boolean>>({});
   const [logging, setLogging] = useState(false);
-  const weightSheets = useWeightSheets(pet?.id);
   const end = useRef<HTMLDivElement>(null);
   const { fetchNextPage, hasNextPage, isFetchingNextPage } = history;
 
@@ -200,43 +198,65 @@ export function HistoryScreen() {
   const isExpanded = (day: string) => toggled[day] ?? day === openByDefault;
 
   return (
-    <div className="flex flex-col desktop:gap-6">
-      <PageHeader title={t("nav.history")} extra={<PetChip />} />
-      <div className="flex flex-col gap-2.5 px-5 pt-1 pb-6 desktop:max-w-[720px] desktop:gap-3 desktop:p-0 desktop:pb-24">
-        {days.map((summary) => (
-          <DayCard
-            key={summary.day}
-            summary={summary}
-            today={pets.today}
-            timeZone={settings.timeZone}
-            expanded={isExpanded(summary.day)}
-            onToggle={() =>
-              setToggled((current) => ({ ...current, [summary.day]: !isExpanded(summary.day) }))
-            }
-            onOpen={(entry) => sheets.open(entry, summary.day)}
-            onLogAgain={sheets.logAgain}
-            onDelete={sheets.remove}
-          />
-        ))}
-        <div ref={end} />
-      </div>
+    <FeedSheetsProvider petId={pet.id} today={pets.today}>
+      <WeightSheetsProvider petId={pet.id}>
+        <div className="flex flex-col desktop:gap-6">
+          <PageHeader title={t("nav.history")} extra={<PetChip />} />
+          <div className="flex flex-col gap-2.5 px-5 pt-1 pb-6 desktop:max-w-[720px] desktop:gap-3 desktop:p-0 desktop:pb-24">
+            <HistoryDays
+              days={days}
+              today={pets.today}
+              timeZone={settings.timeZone}
+              isExpanded={isExpanded}
+              onToggle={(day) => setToggled((current) => ({ ...current, [day]: !isExpanded(day) }))}
+            />
+            <div ref={end} />
+          </div>
 
-      {/* On a phone, History has no floating buttons: logging happens on Today. */}
-      <FloatingActions className="hidden desktop:flex">
-        <button type="button" className={button.floatingSecondary} onClick={weightSheets.openLog}>
-          <PlusIcon size={18} />
-          {t("logWeight.button")}
-        </button>
-        {(foodCount ?? 0) > 0 && (
-          <button type="button" className={button.floating} onClick={() => setLogging(true)}>
-            <PlusIcon size={20} />
-            {t("feed.logFeed")}
-          </button>
-        )}
-      </FloatingActions>
-      {weightSheets.ui}
-      {logFeedSheet}
-      {sheets.sheet}
-    </div>
+          {/* On a phone, History has no floating buttons: logging happens on Today. */}
+          <FloatingActions className="hidden desktop:flex">
+            <LogWeightButton />
+            {(foodCount ?? 0) > 0 && (
+              <button type="button" className={button.floating} onClick={() => setLogging(true)}>
+                <PlusIcon size={20} />
+                {t("feed.logFeed")}
+              </button>
+            )}
+          </FloatingActions>
+          {logFeedSheet}
+        </div>
+      </WeightSheetsProvider>
+    </FeedSheetsProvider>
   );
+}
+
+/** The day cards, whose feed rows open the feed sheets. */
+function HistoryDays({
+  days,
+  today,
+  timeZone,
+  isExpanded,
+  onToggle,
+}: {
+  days: DaySummary[];
+  today: string;
+  timeZone: string;
+  isExpanded: (day: string) => boolean;
+  onToggle: (day: string) => void;
+}) {
+  const sheets = useFeedSheets();
+
+  return days.map((summary) => (
+    <DayCard
+      key={summary.day}
+      summary={summary}
+      today={today}
+      timeZone={timeZone}
+      expanded={isExpanded(summary.day)}
+      onToggle={() => onToggle(summary.day)}
+      onOpen={(entry) => sheets.open(entry, summary.day)}
+      onLogAgain={sheets.logAgain}
+      onDelete={sheets.remove}
+    />
+  ));
 }

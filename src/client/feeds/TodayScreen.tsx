@@ -17,13 +17,13 @@ import { usePets, type PetSummary } from "../pets/pets.js";
 import { useFoodCount } from "../stock/foods.js";
 import { useSelectedPet } from "../pets/selectedPet.js";
 import { useIsDesktop } from "../lib/useIsDesktop.js";
-import { useFeedSheets } from "./FeedSheets.js";
+import { FeedSheetsProvider, useFeedSheets } from "./FeedSheetsProvider.js";
 import { AgePrompt } from "../pets/AgePrompt.js";
 import { LogFeedSheet } from "./LogFeedSheet.js";
 
 // The charting library only loads where a chart is shown.
 const ThisWeekCard = lazy(() => import("../insights/ThisWeekCard.js"));
-import { useWeightSheets } from "../pets/WeightSheets.js";
+import { LogWeightButton, WeightSheetsProvider } from "../pets/WeightSheetsProvider.js";
 
 const card = "bg-card inset-ring inset-ring-border";
 
@@ -175,7 +175,7 @@ function TodayFeeds({ pet, today }: { pet: PetSummary; today: string }) {
   const { t } = useTranslation();
   const { data: summary } = useDay(pet.id, today);
   const { data: settings } = useDaySettings();
-  const sheets = useFeedSheets(pet.id, today, settings?.timeZone ?? "UTC");
+  const sheets = useFeedSheets();
   const isDesktop = useIsDesktop();
   const [peek] = useState(() => !swipeHintShown());
   const entries = summary?.entries ?? [];
@@ -230,7 +230,6 @@ function TodayFeeds({ pet, today }: { pet: PetSummary; today: string }) {
         )}
         <WeightCard petId={pet.id} />
       </div>
-      {sheets.sheet}
     </div>
   );
 }
@@ -277,7 +276,6 @@ export function TodayScreen() {
   const { data: foodCount } = useFoodCount();
   const { pet } = useSelectedPet();
   const [logging, setLogging] = useState(false);
-  const weightSheets = useWeightSheets(pet?.id);
 
   if (!pets || foodCount === undefined) {
     return null;
@@ -292,56 +290,54 @@ export function TodayScreen() {
   } else if (foodCount === 0) {
     content = <NoFoods pet={pet} />;
   } else {
-    content = <TodayFeeds pet={pet} today={pets.today} />;
+    content = (
+      <FeedSheetsProvider petId={pet.id} today={pets.today}>
+        <TodayFeeds pet={pet} today={pets.today} />
+      </FeedSheetsProvider>
+    );
   }
   // Logging needs something to log, so it waits for a pet and a food.
   const canLog = pet !== undefined && foodCount > 0;
 
   return (
-    <div className="flex flex-col desktop:gap-6">
-      <PageHeader
-        title={t("nav.today")}
-        subtitle={
-          <>
-            <span className="text-sm text-muted-foreground desktop:hidden">{date("short")}</span>
-            <span className="hidden text-[15px] text-muted-foreground desktop:inline">
-              {date("long")}
-            </span>
-          </>
-        }
-        extra={
-          <div className="flex items-center gap-2 desktop:gap-3">
-            <PetChip />
-            <Link
-              to="/settings"
-              aria-label={t("today.settings")}
-              className={`${button.icon} ${card} desktop:hidden`}
-            >
-              <SettingsIcon />
-            </Link>
-          </div>
-        }
-      />
-      <div className={`px-5 pt-1 desktop:p-0 ${canLog ? "pb-24" : "pb-5"}`}>{content}</div>
-      {canLog && (
-        <FloatingActions>
-          <button
-            type="button"
-            className={`${button.floatingSecondary} hidden desktop:inline-flex`}
-            onClick={weightSheets.openLog}
-          >
-            <PlusIcon size={18} />
-            {t("logWeight.button")}
-          </button>
-          <button type="button" className={button.floating} onClick={() => setLogging(true)}>
-            <PlusIcon size={20} />
-            {t("feed.logFeed")}
-          </button>
-        </FloatingActions>
-      )}
-      {weightSheets.ui}
-      {pet && <AgePrompt petId={pet.id} petName={pet.name} />}
-      {logging && <LogFeedSheet onClose={() => setLogging(false)} />}
-    </div>
+    <WeightSheetsProvider petId={pet?.id}>
+      <div className="flex flex-col desktop:gap-6">
+        <PageHeader
+          title={t("nav.today")}
+          subtitle={
+            <>
+              <span className="text-sm text-muted-foreground desktop:hidden">{date("short")}</span>
+              <span className="hidden text-[15px] text-muted-foreground desktop:inline">
+                {date("long")}
+              </span>
+            </>
+          }
+          extra={
+            <div className="flex items-center gap-2 desktop:gap-3">
+              <PetChip />
+              <Link
+                to="/settings"
+                aria-label={t("today.settings")}
+                className={`${button.icon} ${card} desktop:hidden`}
+              >
+                <SettingsIcon />
+              </Link>
+            </div>
+          }
+        />
+        <div className={`px-5 pt-1 desktop:p-0 ${canLog ? "pb-24" : "pb-5"}`}>{content}</div>
+        {canLog && (
+          <FloatingActions>
+            <LogWeightButton className="hidden desktop:inline-flex" />
+            <button type="button" className={button.floating} onClick={() => setLogging(true)}>
+              <PlusIcon size={20} />
+              {t("feed.logFeed")}
+            </button>
+          </FloatingActions>
+        )}
+        {pet && <AgePrompt petId={pet.id} petName={pet.name} />}
+        {logging && <LogFeedSheet onClose={() => setLogging(false)} />}
+      </div>
+    </WeightSheetsProvider>
   );
 }

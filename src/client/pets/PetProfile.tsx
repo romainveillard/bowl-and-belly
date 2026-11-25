@@ -13,7 +13,7 @@ import { formatAge, formatDay, formatKg, formatReadingKg, formatSince } from "..
 import { petTypeLabel, suggestionFor, targetBasis, usePet, useSetArchived } from "./pets.js";
 import { AgePrompt } from "./AgePrompt.js";
 import { ManualTargetSheet } from "./ManualTargetSheet.js";
-import type { useWeightSheets } from "./WeightSheets.js";
+import { useWeightSheets } from "./WeightSheetsProvider.js";
 
 function Rows({ rows }: { rows: { key: string; title: string; note?: string; value: string }[] }) {
   return (
@@ -37,14 +37,9 @@ function Rows({ rows }: { rows: { key: string; title: string; note?: string; val
 /** Weigh-ins listed before "Show all", which reveals the rest in place. */
 const LATEST_READINGS = 3;
 
-export function PetProfile({
-  petId,
-  weightSheets,
-}: {
-  petId: number;
-  /** Owned by the Pets screen, which also offers Log weight on desktop. */
-  weightSheets: ReturnType<typeof useWeightSheets>;
-}) {
+/** A pet's profile, inside the Pets screen's WeightSheetsProvider. */
+export function PetProfile({ petId }: { petId: number }) {
+  const weightSheets = useWeightSheets();
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
   const { data: pet } = usePet(petId);

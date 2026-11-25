@@ -1,9 +1,18 @@
-import { useState } from "react";
-import { useFeedActions } from "./feedActions.js";
-import type { FeedEntry } from "./feeds.js";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import { AddLeftoverSheet } from "./AddLeftoverSheet.js";
 import { EditFeedSheet } from "./EditFeedSheet.js";
 import { FeedActionsSheet } from "./FeedActionsSheet.js";
+import { useFeedActions } from "./feedActions.js";
+import { useDaySettings, type FeedEntry } from "./feeds.js";
+
+interface FeedSheets {
+  /** Opens a feed row's actions, for a feed on the app day `day`. */
+  open: (entry: FeedEntry, day: string) => void;
+  logAgain: (entry: FeedEntry) => void;
+  remove: (entry: FeedEntry) => void;
+}
+
+const FeedSheetsContext = createContext<FeedSheets | null>(null);
 
 interface Opened {
   sheet: "actions" | "edit" | "leftover";
@@ -11,8 +20,18 @@ interface Opened {
   day: string;
 }
 
-/** The sheets a feed row opens, shared by Today and History. */
-export function useFeedSheets(petId: number, today: string, timeZone: string) {
+/** The sheets a feed row opens, for the rows inside: on Today, History and Insights. */
+export function FeedSheetsProvider({
+  petId,
+  today,
+  children,
+}: {
+  petId: number;
+  today: string;
+  children: ReactNode;
+}) {
+  const { data: settings } = useDaySettings();
+  const timeZone = settings?.timeZone ?? "UTC";
   const actions = useFeedActions(petId);
   const [opened, setOpened] = useState<Opened | null>(null);
   const close = () => setOpened(null);
@@ -48,10 +67,24 @@ export function useFeedSheets(petId: number, today: string, timeZone: string) {
     sheet = <AddLeftoverSheet entry={opened.entry} timeZone={timeZone} onClose={close} />;
   }
 
-  return {
-    open: (entry: FeedEntry, day: string) => setOpened({ sheet: "actions", entry, day }),
-    logAgain: actions.logAgain,
-    remove: actions.remove,
-    sheet,
-  };
+  return (
+    <FeedSheetsContext
+      value={{
+        open: (entry, day) => setOpened({ sheet: "actions", entry, day }),
+        logAgain: actions.logAgain,
+        remove: actions.remove,
+      }}
+    >
+      {children}
+      {sheet}
+    </FeedSheetsContext>
+  );
+}
+
+export function useFeedSheets(): FeedSheets {
+  const sheets = useContext(FeedSheetsContext);
+  if (!sheets) {
+    throw new Error("useFeedSheets is only for components inside a FeedSheetsProvider");
+  }
+  return sheets;
 }

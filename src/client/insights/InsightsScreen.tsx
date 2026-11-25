@@ -28,7 +28,7 @@ import { targetBasis, targetOn, usePet, usePets, type PetDetail } from "../pets/
 import { useSelectedPet } from "../pets/selectedPet.js";
 import { useIsDesktop } from "../lib/useIsDesktop.js";
 import { weightTrend } from "../pets/weightTrend.js";
-import { useFeedSheets } from "../feeds/FeedSheets.js";
+import { FeedSheetsProvider, useFeedSheets } from "../feeds/FeedSheetsProvider.js";
 
 const card = "rounded-xl bg-card inset-ring inset-ring-border desktop:rounded-[14px]";
 
@@ -144,7 +144,7 @@ function DayInsights({ petId, today, onPeriod }: ViewProps) {
   const { data: summary, isPending } = useDay(petId, day);
   const { data: pet } = usePet(petId);
   const { data: settings } = useDaySettings();
-  const sheets = useFeedSheets(petId, today, settings?.timeZone ?? "UTC");
+  const sheets = useFeedSheets();
   const format = (weekday: "short" | "long") =>
     formatAppDay(day, i18n.language, { weekday, day: "numeric", month: weekday });
 
@@ -269,7 +269,6 @@ function DayInsights({ petId, today, onPeriod }: ViewProps) {
           </div>
         )}
       </section>
-      {sheets.sheet}
     </>
   );
 }
@@ -586,7 +585,11 @@ export function InsightsScreen() {
     <div className="flex flex-col gap-3.5 desktop:gap-6">
       <PageHeader title={t("nav.insights")} extra={<PetChip />} spaceBelow={false} />
       <div className="flex flex-col gap-3.5 px-5 pb-6 desktop:gap-6 desktop:p-0 desktop:pb-10">
-        {period === "day" && <DayInsights key={pet.id} {...view} />}
+        {period === "day" && (
+          <FeedSheetsProvider key={pet.id} petId={pet.id} today={view.today}>
+            <DayInsights {...view} />
+          </FeedSheetsProvider>
+        )}
         {period === "week" && <WeekInsights key={pet.id} {...view} />}
         {period === "month" && <MonthInsights key={pet.id} {...view} />}
       </div>
