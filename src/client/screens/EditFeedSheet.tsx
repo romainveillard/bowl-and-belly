@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { kcalIn, leftoverFits } from "../../shared/feeds.js";
 import { FoodImage, FoodPicker } from "../components/FoodPicker.js";
 import { button } from "../components/ui/button.js";
 import { ErrorSummary } from "../components/ui/ErrorSummary.js";
@@ -54,10 +55,7 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
   if (servedG === null || servedG === 0) {
     problems.set("served", "served");
   }
-  if (
-    leftoverG !== null &&
-    !(Number.isInteger(leftoverG) && leftoverG >= 0 && servedG !== null && leftoverG <= servedG)
-  ) {
+  if (leftoverG !== null && (servedG === null || !leftoverFits(leftoverG, servedG))) {
     problems.set("leftover", "leftover");
   }
   if (date === "" || time === "" || `${date}T${time}` > now) {
@@ -169,7 +167,7 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
             hint={
               servedG === null
                 ? undefined
-                : t("logFeed.approx", { kcal: Math.round((servedG * kcalPerKg) / 1000) })
+                : t("logFeed.approx", { kcal: Math.round(kcalIn(servedG, kcalPerKg)) })
             }
           />
           <Field

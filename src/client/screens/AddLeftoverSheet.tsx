@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { kcalIn, leftoverFits } from "../../shared/feeds.js";
 import { button } from "../components/ui/button.js";
 import { ErrorSummary } from "../components/ui/ErrorSummary.js";
 import { Field } from "../components/ui/Field.js";
@@ -31,11 +32,7 @@ export function AddLeftoverSheet({
   );
 
   const leftoverG = Number(leftover.trim());
-  const valid =
-    leftover.trim() !== "" &&
-    Number.isInteger(leftoverG) &&
-    leftoverG >= 0 &&
-    leftoverG <= entry.servedG;
+  const valid = leftover.trim() !== "" && leftoverFits(leftoverG, entry.servedG);
   const problems = new Map(valid ? [] : [["leftover", "leftover"] as const]);
   const errors = useFormErrors(problems, ORDER, "leftover");
   const eatenG = entry.servedG - (valid ? leftoverG : 0);
@@ -109,7 +106,7 @@ export function AddLeftoverSheet({
           <span className="font-semibold">
             {t("addLeftover.eatenValue", {
               grams: eatenG,
-              kcal: Math.round((eatenG * entry.kcalPerKg) / 1000),
+              kcal: Math.round(kcalIn(eatenG, entry.kcalPerKg)),
             })}
           </span>
         </div>

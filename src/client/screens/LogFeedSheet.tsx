@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { kcalIn, leftoverFits } from "../../shared/feeds.js";
 import { FoodPicker } from "../components/FoodPicker.js";
 import { PetChip } from "../components/PetChip.js";
 import { button } from "../components/ui/button.js";
@@ -83,11 +84,7 @@ function LogFeedForm({
   if (servedG === null || servedG === 0) {
     problems.set("amount", "amount");
   }
-  if (
-    previous &&
-    leftoverG !== null &&
-    !(Number.isInteger(leftoverG) && leftoverG >= 0 && leftoverG <= previous.servedG)
-  ) {
+  if (previous && leftoverG !== null && !leftoverFits(leftoverG, previous.servedG)) {
     problems.set("leftover", "leftover");
   }
   const errors = useFormErrors(problems, FIELD_ORDER, "log");
@@ -218,7 +215,7 @@ function LogFeedForm({
             onChange={(amount) => setAmounts((current) => ({ ...current, amount }))}
             hint={
               servedG !== null && food
-                ? t("logFeed.approx", { kcal: Math.round((servedG * food.kcalPerKg) / 1000) })
+                ? t("logFeed.approx", { kcal: Math.round(kcalIn(servedG, food.kcalPerKg)) })
                 : undefined
             }
           />
