@@ -56,7 +56,9 @@ export function PeriodBar({
         >
           <BackIcon />
         </button>
-        <span className="min-w-[120px] text-center text-[15px] font-semibold">{label}</span>
+        <span aria-live="polite" className="min-w-[120px] text-center text-[15px] font-semibold">
+          {label}
+        </span>
         <button
           type="button"
           aria-label={nextLabel}
