@@ -50,7 +50,7 @@ export function useDay(petId: number | undefined, day: string | undefined) {
 
 export function useHistory(petId: number | undefined, today: string | undefined) {
   return useInfiniteQuery({
-    queryKey: ["feeds", petId, "history"],
+    queryKey: ["feeds", petId, "history", today],
     enabled: petId !== undefined && today !== undefined,
     initialPageParam: today ?? "",
     queryFn: ({ pageParam }) =>
