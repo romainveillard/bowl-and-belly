@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { ComposedChart, Line, ResponsiveContainer, Scatter, XAxis, YAxis } from "recharts";
 import { addDays, appDayOf, type DaySettings } from "../../../shared/app-day.js";
@@ -12,7 +12,7 @@ import { LegendItem } from "./Legend.js";
 const DAY_MS = 86_400_000;
 
 /**
- * A reading's dot, ringed when chosen, inside a hit area wider than the dot.
+ * A reading's dot, ringed when chosen, inside a tap area wider than the dot.
  * Recharts fills in where it goes and which reading it is.
  */
 function ReadingDot({
@@ -20,23 +20,21 @@ function ReadingDot({
   cy,
   index = 0,
   chosen,
+  onPlace,
   onChoose,
-  onLeave,
 }: {
   cx?: number | undefined;
   cy?: number | undefined;
   index?: number;
   chosen: number | null;
-  onChoose: (index: number, cx: number | undefined, cy: number | undefined) => void;
-  onLeave: () => void;
+  /** Where the dot was drawn, for the details of the reading nearest the pointer. */
+  onPlace: (index: number, cx: number | undefined, cy: number | undefined) => void;
+  onChoose: (index: number) => void;
 }) {
+  useEffect(() => onPlace(index, cx, cy));
   return (
-    <g
-      className="cursor-pointer"
-      onMouseEnter={() => onChoose(index, cx, cy)}
-      onMouseLeave={onLeave}
-      onClick={() => onChoose(index, cx, cy)}
-    >
+    // A tap may not move the pointer first, so the dot answers it directly.
+    <g onClick={() => onChoose(index)}>
       <circle cx={cx} cy={cy} r={14} fill="transparent" />
       <circle cx={cx} cy={cy} r={4} fill="var(--color-foreground)" />
       {chosen === index && (
@@ -77,6 +75,7 @@ export function WeightChart({
   const { t, i18n } = useTranslation();
   const box = useRef<HTMLDivElement>(null);
   const [chosen, setChosen] = useChosenMark();
+  const placed = useRef(new Map<number, { x: number; y: number }>());
   const start = Date.parse(`${from}T00:00:00Z`);
   const end = Date.parse(`${addDays(to, 1)}T00:00:00Z`);
   const shown = rollingAverage(readings).filter((reading) => {
@@ -96,10 +95,19 @@ export function WeightChart({
   const weight = (grams: number) =>
     t("insights.kgValue", { weight: formatKg(grams, i18n.language) });
   const kg = data.flatMap((point) => [point.kg, point.averageKg]);
-  const choose = (index: number, cx: number | undefined, cy: number | undefined) => {
+  const place = (index: number, cx: number | undefined, cy: number | undefined) => {
     if (cx !== undefined && cy !== undefined) {
+      placed.current.set(index, { x: cx, y: cy });
+    }
+  };
+  // Hovering anywhere picks the reading nearest the pointer, the one Recharts
+  // tracks, rather than only a dot under it.
+  const choose = (active: unknown) => {
+    const index = Number(active);
+    const point = placed.current.get(index);
+    if (point && chosen?.key !== String(index)) {
       const chartWidth = box.current?.clientWidth ?? 0;
-      setChosen({ key: String(index), x: cx, y: cy, width: 0, chartWidth });
+      setChosen({ key: String(index), ...point, width: 0, chartWidth });
     }
   };
   const chosenReading = chosen && shown[Number(chosen.key)];
@@ -128,6 +136,10 @@ export function WeightChart({
             accessibilityLayer={false}
             data={data}
             margin={{ top: 8, right: 12, bottom: 0, left: 12 }}
+            className="cursor-pointer"
+            onMouseMove={(state) => choose(state.activeIndex)}
+            onMouseLeave={() => setChosen(null)}
+            onClick={(state) => choose(state.activeIndex)}
           >
             <XAxis
               dataKey="at"
@@ -152,6 +164,8 @@ export function WeightChart({
               strokeWidth={1.5}
               strokeOpacity={0.3}
               dot={false}
+              // Our ring marks the chosen reading; Recharts' own active dot would double it.
+              activeDot={false}
               isAnimationActive={false}
             />
             <Scatter
@@ -160,8 +174,8 @@ export function WeightChart({
               shape={
                 <ReadingDot
                   chosen={chosen === null ? null : Number(chosen.key)}
+                  onPlace={place}
                   onChoose={choose}
-                  onLeave={() => setChosen(null)}
                 />
               }
             />
@@ -171,6 +185,8 @@ export function WeightChart({
               strokeWidth={3}
               strokeLinecap="round"
               dot={false}
+              // Our ring marks the chosen reading; Recharts' own active dot would double it.
+              activeDot={false}
               isAnimationActive={false}
             />
           </ComposedChart>
