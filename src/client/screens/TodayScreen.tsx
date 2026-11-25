@@ -8,6 +8,7 @@ import { WeightCard } from "../components/WeightCard.js";
 import { button } from "../components/ui/button.js";
 import { useDay, useDaySettings, type DaySummary } from "../lib/feeds.js";
 import { foodTypeLabel } from "../lib/foods.js";
+import { formatAppDay } from "../lib/format.js";
 import { useFoodCount, usePets, type PetSummary } from "../lib/pets.js";
 import { useSelectedPet } from "../lib/selectedPet.js";
 import { useIsDesktop } from "../lib/useIsDesktop.js";
@@ -295,11 +296,7 @@ export function TodayScreen() {
   }
 
   const date = (style: "short" | "long") =>
-    new Intl.DateTimeFormat(i18n.language, {
-      weekday: style,
-      day: "numeric",
-      month: style,
-    }).format(new Date(`${pets.today}T00:00:00`));
+    formatAppDay(pets.today, i18n.language, { weekday: style, day: "numeric", month: style });
 
   let content: ReactNode;
   if (!pet) {

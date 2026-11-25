@@ -14,7 +14,7 @@ import { Field, inputClass } from "../components/ui/Field.js";
 import { Segmented } from "../components/ui/Segmented.js";
 import { Switch } from "../components/ui/Switch.js";
 import { useAuth, useLogOut } from "../lib/auth.js";
-import { formatWhen } from "../lib/format.js";
+import { formatTime, formatWhen } from "../lib/format.js";
 import { useDemo } from "../lib/instance.js";
 import {
   useBackUpNow,
@@ -283,12 +283,7 @@ function SettingsForm({ settings }: { settings: Settings }) {
                 month: "short",
                 timeZone: settings.timeZone,
               }).format(failedAt),
-              time: new Intl.DateTimeFormat(i18n.language, {
-                hour: "2-digit",
-                minute: "2-digit",
-                hourCycle: "h23",
-                timeZone: settings.timeZone,
-              }).format(failedAt),
+              time: formatTime(failedAt, settings.timeZone, i18n.language),
               reason: t(`settings.backups.errors.${settings.backupError}`),
             })}
             {saved.backupEnabled && ` ${t("settings.backups.retry")}`}

@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import type { DayIntake } from "../../../shared/insights.js";
 import { isOverTarget } from "../../lib/dayStatus.js";
+import { formatAppDay } from "../../lib/format.js";
 
 const colours = {
   primary: "var(--color-primary)",
@@ -66,7 +67,6 @@ export function IntakeChart({
   axis?: "weekday" | "monthDay";
 }) {
   const { t, i18n } = useTranslation();
-  const weekday = new Intl.DateTimeFormat(i18n.language, { weekday: "short", timeZone: "UTC" });
   const top = Math.max(...days.map((day) => Math.max(day.eatenKcal, day.targetKcal ?? 0)), 1);
   // Days still to come show as short grey stubs, so the month keeps its shape.
   const stub = top * 0.02;
@@ -76,7 +76,7 @@ export function IntakeChart({
       ...day,
       label:
         axis === "weekday"
-          ? weekday.format(new Date(`${day.day}T00:00:00Z`))
+          ? formatAppDay(day.day, i18n.language, { weekday: "short" })
           : (dayOfMonth - 1) % 7 === 0
             ? String(dayOfMonth)
             : "",

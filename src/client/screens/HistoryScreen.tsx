@@ -9,6 +9,7 @@ import { button } from "../components/ui/button.js";
 import { dayStatus } from "../lib/dayStatus.js";
 import { useDaySettings, useHistory, type DaySummary, type FeedEntry } from "../lib/feeds.js";
 import { foodTypeLabel } from "../lib/foods.js";
+import { formatAppDay } from "../lib/format.js";
 import { useFoodCount, usePets } from "../lib/pets.js";
 import { useSelectedPet } from "../lib/selectedPet.js";
 import { useFeedSheets } from "./FeedSheets.js";
@@ -44,11 +45,11 @@ function DayCard({
     ? Math.round((summary.eatenKcal / summary.targetKcal) * 100)
     : 0;
   const isToday = summary.day === today;
-  const date = new Intl.DateTimeFormat(i18n.language, {
+  const date = formatAppDay(summary.day, i18n.language, {
     weekday: "short",
     day: "numeric",
     month: "short",
-  }).format(new Date(`${summary.day}T00:00:00`));
+  });
 
   return (
     <div className="overflow-hidden rounded-xl bg-card inset-ring inset-ring-border desktop:rounded-[14px]">

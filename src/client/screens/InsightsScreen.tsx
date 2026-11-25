@@ -13,7 +13,14 @@ import { FeedRow } from "../components/FeedRow.js";
 import { dayStatus, isOnTarget, isOverTarget } from "../lib/dayStatus.js";
 import { useDay, useDaySettings } from "../lib/feeds.js";
 import { foodTypeLabel } from "../lib/foods.js";
-import { formatDateInput, formatDay, formatKg, formatTime } from "../lib/format.js";
+import {
+  formatAppDay,
+  formatAppDayRange,
+  formatDateInput,
+  formatDay,
+  formatKg,
+  formatTime,
+} from "../lib/format.js";
 import { useInsights } from "../lib/insights.js";
 import { targetBasis, targetOn, usePet, usePets, type PetDetail } from "../lib/pets.js";
 import { useSelectedPet } from "../lib/selectedPet.js";
@@ -137,12 +144,7 @@ function DayInsights({ petId, today, onPeriod }: ViewProps) {
   const { data: settings } = useDaySettings();
   const sheets = useFeedSheets(petId, today, settings?.timeZone ?? "UTC");
   const format = (weekday: "short" | "long") =>
-    new Intl.DateTimeFormat(i18n.language, {
-      weekday,
-      day: "numeric",
-      month: weekday,
-      timeZone: "UTC",
-    }).format(new Date(`${day}T00:00:00Z`));
+    formatAppDay(day, i18n.language, { weekday, day: "numeric", month: weekday });
 
   const bar = (
     <PeriodBar
@@ -294,11 +296,7 @@ function MonthInsights({ petId, today, onPeriod }: ViewProps) {
   const { data: pet } = usePet(petId);
   const { data: settings } = useDaySettings();
   const isCurrentMonth = start === `${today.slice(0, 7)}-01`;
-  const month = new Intl.DateTimeFormat(i18n.language, {
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(`${start}T00:00:00Z`));
+  const month = formatAppDay(start, i18n.language, { month: "long", year: "numeric" });
 
   const bar = (
     <PeriodBar
@@ -442,11 +440,7 @@ function WeekInsights({ petId, today, onPeriod }: ViewProps) {
   const timeZone = settings?.timeZone ?? "UTC";
   const isCurrentWeek = start === weekStart(today);
 
-  const range = new Intl.DateTimeFormat(i18n.language, {
-    day: "numeric",
-    month: "short",
-    timeZone: "UTC",
-  }).formatRange(new Date(`${start}T00:00:00Z`), new Date(`${end}T00:00:00Z`));
+  const range = formatAppDayRange(start, end, i18n.language, { day: "numeric", month: "short" });
 
   const bar = (
     <PeriodBar
@@ -470,9 +464,8 @@ function WeekInsights({ petId, today, onPeriod }: ViewProps) {
     (day) => day.fed && day.day !== data.today && day.targetKcal !== null,
   );
   const over = counted.filter((day) => isOverTarget(day.eatenKcal, day.targetKcal));
-  const weekday = new Intl.DateTimeFormat(i18n.language, { weekday: "long", timeZone: "UTC" });
   const overNames = new Intl.ListFormat(i18n.language, { type: "conjunction" }).format(
-    over.map((day) => weekday.format(new Date(`${day.day}T00:00:00Z`))),
+    over.map((day) => formatAppDay(day.day, i18n.language, { weekday: "long" })),
   );
 
   // The target that applied at the end of the week shown, or today for this week.

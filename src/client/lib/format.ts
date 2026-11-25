@@ -56,6 +56,30 @@ export function formatWhen(
   return t("settings.when.on", { date, time });
 }
 
+const calendarDate = (day: string) => new Date(`${day}T00:00:00Z`);
+
+/** An app day ("YYYY-MM-DD") in words, read as a calendar date so no time zone moves it. */
+export function formatAppDay(
+  day: string,
+  locale: string,
+  options: Intl.DateTimeFormatOptions,
+): string {
+  return new Intl.DateTimeFormat(locale, { ...options, timeZone: "UTC" }).format(calendarDate(day));
+}
+
+/** A span of app days in words, such as "17–23 Nov". */
+export function formatAppDayRange(
+  start: string,
+  end: string,
+  locale: string,
+  options: Intl.DateTimeFormatOptions,
+): string {
+  return new Intl.DateTimeFormat(locale, { ...options, timeZone: "UTC" }).formatRange(
+    calendarDate(start),
+    calendarDate(end),
+  );
+}
+
 /** "2026-11-21", the calendar date on the app's clock, as a date input wants it. */
 export function formatDateInput(instant: string | Date, timeZone: string): string {
   return new Intl.DateTimeFormat("en-CA", {
