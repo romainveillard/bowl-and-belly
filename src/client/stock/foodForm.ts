@@ -131,6 +131,40 @@ export function stockText(
   return { stock: formatInputNumber(stockIn === "kg" ? stockG / 1000 : stockG, locale), stockIn };
 }
 
+/**
+ * The stock fields after a change, still standing for the same quantity when
+ * only the unit changed: 8 pouches of 85 g become 680 g, 680 g become 0.68 kg.
+ * `portionG` is null when the food isn't in portions.
+ */
+export function restateStock(
+  stock: StockValues,
+  patch: Partial<StockValues>,
+  portionG: number | null,
+  locale: string,
+): StockValues {
+  const next = { ...stock, ...patch };
+  const amount = parseAmount(stock.stock);
+  if (
+    patch.stock !== undefined ||
+    stock.stock.trim() === "" ||
+    amount === null ||
+    (next.countIn === stock.countIn && next.stockIn === stock.stockIn)
+  ) {
+    return next;
+  }
+  const portionsIn = (values: StockValues) => (values.countIn === "portion" ? portionG : null);
+  const grams = stockGramsOf(amount, stock.stockIn, portionsIn(stock));
+  if (next.countIn === stock.countIn) {
+    // The user picked g or kg, so only the number follows.
+    const inUnit = next.stockIn === "kg" ? grams / 1000 : grams;
+    return { ...next, stock: formatInputNumber(inUnit, locale, 3) };
+  }
+  return {
+    ...next,
+    ...stockText({ stockG: grams, stockUnit: next.countIn, portionG: portionsIn(next) }, locale),
+  };
+}
+
 /** The whole grams a stock figure stands for: in portions when `portionG` is set, else g or kg. */
 export function stockGramsOf(amount: number, stockIn: "g" | "kg", portionG: number | null): number {
   return Math.round(amount * (portionG ?? (stockIn === "kg" ? 1000 : 1)));

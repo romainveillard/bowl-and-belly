@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { addDays } from "../../shared/app-day.js";
-import { periodIntake, weekStart } from "../../shared/insights.js";
+import { addDays, appDayOf } from "../../shared/app-day.js";
+import { periodIntake, WEIGHT_CHART_DAYS, weekStart } from "../../shared/insights.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { isOverTarget } from "../lib/dayStatus.js";
 import { formatAppDay, formatAppDayRange, formatInstantDay, formatKg } from "../lib/format.js";
@@ -16,7 +16,9 @@ export function WeekInsights({ petId, today, from, onPeriod, onFrom }: PeriodVie
   const { t, i18n } = useTranslation();
   const start = weekStart(from);
   const end = addDays(start, 6);
-  const { data } = useInsights(petId, start, end);
+  const weightsFrom = addDays(today, 1 - WEIGHT_CHART_DAYS);
+  // A week more, so the rolling average is whole from the first day shown.
+  const { data } = useInsights(petId, start, end, addDays(weightsFrom, -7));
   const { data: pet } = usePet(petId);
   const { data: settings } = useSettings();
   const isCurrentWeek = start === weekStart(today);
@@ -102,12 +104,12 @@ export function WeekInsights({ petId, today, from, onPeriod, onFrom }: PeriodVie
         />
       </Card>
 
-      {data.weights.length > 0 && (
+      {data.weights.some((reading) => appDayOf(new Date(reading.at), settings) >= weightsFrom) && (
         <Card>
           <CardHeading title={t("insights.weightChart")} hint={t("insights.lastWeeks")} />
           <WeightChart
             readings={data.weights}
-            from={addDays(data.today, -55)}
+            from={weightsFrom}
             to={data.today}
             tickEvery={14}
             daySettings={settings}

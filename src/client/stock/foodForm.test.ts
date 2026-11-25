@@ -4,6 +4,7 @@ import {
   foodFormProblems,
   parseAmount,
   readFoodForm,
+  restateStock,
   stockGramsOf,
   stockText,
   type FoodFormState,
@@ -44,6 +45,34 @@ describe("stockGramsOf", () => {
     expect(stockGramsOf(8.5, "g", 85)).toBe(723);
     expect(stockGramsOf(1.45, "kg", null)).toBe(1450);
     expect(stockGramsOf(999, "g", null)).toBe(999);
+  });
+});
+
+describe("restateStock", () => {
+  const eightPouches = { stock: "8", stockIn: "g", countIn: "portion" } as const;
+
+  it("keeps the quantity when Count in changes", () => {
+    expect(restateStock(eightPouches, { countIn: "g" }, 85, "en-GB")).toEqual({
+      stock: "680",
+      stockIn: "g",
+      countIn: "g",
+    });
+    expect(
+      restateStock({ stock: "1,4", stockIn: "kg", countIn: "g" }, { countIn: "portion" }, 85, "fr"),
+    ).toMatchObject({ stock: "16,5", countIn: "portion" });
+  });
+
+  it("keeps the quantity when g and kg swap, in the unit the user picked", () => {
+    expect(
+      restateStock({ stock: "680", stockIn: "g", countIn: "g" }, { stockIn: "kg" }, null, "en-GB"),
+    ).toMatchObject({ stock: "0.68", stockIn: "kg" });
+  });
+
+  it("leaves a typed number, or no number, as it is", () => {
+    expect(restateStock(eightPouches, { stock: "9" }, 85, "en-GB").stock).toBe("9");
+    expect(restateStock({ ...eightPouches, stock: "" }, { countIn: "g" }, 85, "en-GB").stock).toBe(
+      "",
+    );
   });
 });
 

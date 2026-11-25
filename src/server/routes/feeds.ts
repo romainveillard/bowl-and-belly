@@ -73,20 +73,31 @@ export const feedsRoutes = new Hono()
     validate("param", idParam),
     validate(
       "json",
-      z.object({
-        foodId: z.number().int(),
-        servedG: grams,
-        leftoverG: leftoverGrams.nullable(),
-        leftoverReturnedToStock: z.boolean(),
-        /** The calendar date and clock time in the app time zone. */
-        date: z.iso.date(),
-        time,
-      }),
+      z
+        .object({
+          foodId: z.number().int(),
+          servedG: grams,
+          leftoverG: leftoverGrams.nullable(),
+          leftoverReturnedToStock: z.boolean(),
+          /**
+           * The calendar date and clock time in the app time zone, sent only
+           * when changed: they hold no seconds, and a repeated autumn hour
+           * would be read as its first pass.
+           */
+          date: z.iso.date().optional(),
+          time: time.optional(),
+        })
+        .refine((body) => (body.date === undefined) === (body.time === undefined), {
+          path: ["time"],
+        }),
     ),
     (c) => {
       const { id } = c.req.valid("param");
       const { date, time: clock, ...values } = c.req.valid("json");
-      const fedAt = instantAt(date, clock, daySettings(db).timeZone);
+      const fedAt =
+        date === undefined || clock === undefined
+          ? null
+          : instantAt(date, clock, daySettings(db).timeZone);
       const refused = db.transaction((tx) =>
         editFromForm(tx, id, { ...values, fedAt }, new Date()),
       );

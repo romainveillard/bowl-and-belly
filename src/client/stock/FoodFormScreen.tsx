@@ -30,6 +30,7 @@ import {
   foodBodyOf,
   foodFormProblems,
   readFoodForm,
+  restateStock,
   stockText,
   type FoodFieldName,
   type FoodFormState,
@@ -81,13 +82,19 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
     setForm((current) => ({ ...current, ...patch }));
   const set = <Key extends keyof FoodFormState>(key: Key, value: FoodFormState[Key]) =>
     setForm((current) => ({ ...current, [key]: value }));
-  const updateStock = (patch: Partial<StockValues>) => {
-    setStockTouched(true);
-    update(patch);
-  };
-
   const foodTypeId = form.foodTypeId ?? foodTypes?.[0]?.id ?? null;
   const isDry = foodTypes?.find((type) => type.id === foodTypeId)?.systemKey === "dry";
+  // A new unit alone keeps the quantity, so it doesn't count as correcting the stock.
+  const updateStock = (patch: Partial<StockValues>) => {
+    if (patch.stock !== undefined) {
+      setStockTouched(true);
+    }
+    setForm((current) => {
+      const { usePortion, portionG } = readFoodForm(current, isDry);
+      const grams = usePortion && portionG !== null ? Math.round(portionG) : null;
+      return { ...current, ...restateStock(current, patch, grams, i18n.language) };
+    });
+  };
   // A new food is for the selected pet's kind unless the user says otherwise.
   const petTypeId =
     form.petTypeId === undefined ? (selectedPet?.petTypeId ?? null) : form.petTypeId;
@@ -277,6 +284,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
       {food && askingBackfill && kcal !== null && (
         <KcalUpdateDialog
           today={today}
+          pending={save.isPending}
           description={t("kcalUpdate.body", {
             name: food.name,
             from: number.format(form.per === "100g" ? food.kcalPerKg / 10 : food.kcalPerKg),

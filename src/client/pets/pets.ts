@@ -4,6 +4,7 @@ import type { TFunction } from "i18next";
 import { explainTarget } from "../../shared/target.js";
 import { api } from "../api.js";
 import { apiError } from "../lib/apiError.js";
+import { AFFECTED, refresh } from "../lib/refresh.js";
 
 const pets = api.api.pets;
 
@@ -74,7 +75,7 @@ export function useSavePet(id: number | undefined) {
       }
       return { id, targetKcal: (await response.json()).targetKcal };
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["pets"] }),
+    onSuccess: () => refresh(queryClient, AFFECTED.pet),
   });
 }
 
@@ -103,7 +104,7 @@ export function useSetArchived(action: "archive" | "restore") {
         throw await apiError(response);
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["pets"] }),
+    onSuccess: () => refresh(queryClient, AFFECTED.pet),
   });
 }
 
@@ -122,7 +123,7 @@ export function useSetTarget(id: number) {
         throw await apiError(response);
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["pets"] }),
+    onSuccess: () => refresh(queryClient, AFFECTED.pet),
   });
 }
 

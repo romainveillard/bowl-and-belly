@@ -34,9 +34,13 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
   const [changing, setChanging] = useState(false);
   const [served, setServed] = useState(String(entry.servedG));
   const [leftover, setLeftover] = useState(entry.leftoverG === null ? "" : String(entry.leftoverG));
-  // The entry keeps its own date unless the user changes it.
-  const [date, setDate] = useState(formatDateInput(entry.fedAt, timeZone));
-  const [time, setTime] = useState(formatTime(entry.fedAt, timeZone, "en-GB"));
+  // The entry keeps its own instant unless the user changes the date or time.
+  const [shownWhen] = useState(() => ({
+    date: formatDateInput(entry.fedAt, timeZone),
+    time: formatTime(entry.fedAt, timeZone, "en-GB"),
+  }));
+  const [date, setDate] = useState(shownWhen.date);
+  const [time, setTime] = useState(shownWhen.time);
 
   const shownFood = newFood ?? { ...entry.food, type: entry.type };
   // The snapshot stays with the food it was taken from.
@@ -74,8 +78,7 @@ export function EditFeedSheet({ entry, petId, day, today, timeZone, onClose }: E
         servedG,
         leftoverG,
         leftoverReturnedToStock: returned,
-        date,
-        time,
+        ...(date === shownWhen.date && time === shownWhen.time ? {} : { date, time }),
       },
       { onSuccess: onClose },
     );

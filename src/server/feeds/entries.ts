@@ -110,26 +110,28 @@ export function editFeed(db: DbOrTx, id: number, values: FeedValues): boolean {
 }
 
 /**
- * Edits a feed from Edit feed, which keeps it on its pet. Refused when the
- * leftover is more than was served or the time is still to come.
+ * Edits a feed from Edit feed, which keeps it on its pet, and at its own
+ * instant when `fedAt` is null. Refused when the leftover is more than was
+ * served or the time is still to come.
  */
 export function editFromForm(
   db: DbOrTx,
   id: number,
-  values: Omit<FeedValues, "petId">,
+  values: Omit<FeedValues, "petId" | "fedAt"> & { fedAt: Date | null },
   now: Date,
 ): "invalid_leftover" | "in_future" | "not_found" | "invalid_reference" | undefined {
   if (values.leftoverG !== null && !leftoverFits(values.leftoverG, values.servedG)) {
     return "invalid_leftover";
   }
-  if (values.fedAt > now) {
+  if (values.fedAt !== null && values.fedAt > now) {
     return "in_future";
   }
   const before = db.select().from(feedEntry).where(eq(feedEntry.id, id)).get();
   if (!before) {
     return "not_found";
   }
-  return editFeed(db, id, { ...values, petId: before.petId }) ? undefined : "invalid_reference";
+  const edited = { ...values, petId: before.petId, fedAt: values.fedAt ?? before.fedAt };
+  return editFeed(db, id, edited) ? undefined : "invalid_reference";
 }
 
 /** Records a leftover found after the feed was logged, no more than was served. */

@@ -3,14 +3,16 @@ import { usePets, type PetSummary } from "./pets.js";
 
 const KEY = "selectedPetId";
 const listeners = new Set<() => void>();
+/** The last choice on this page, for when storage is blocked. */
+let chosenHere: number | null = null;
 
 // Per device, like the language: household members may each follow a different pet.
 function readStored(): number | null {
   try {
     const value = localStorage.getItem(KEY);
-    return value === null ? null : Number(value);
+    return value === null ? chosenHere : Number(value);
   } catch {
-    return null;
+    return chosenHere;
   }
 }
 
@@ -30,6 +32,7 @@ export function useSelectedPet(): {
   const { data } = usePets();
   const storedId = useSyncExternalStore(subscribe, readStored, () => null);
   const select = useCallback((petId: number) => {
+    chosenHere = petId;
     try {
       localStorage.setItem(KEY, String(petId));
     } catch {

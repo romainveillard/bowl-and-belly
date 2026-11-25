@@ -1,7 +1,8 @@
-import { useMutation, useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { InferRequestType, InferResponseType } from "hono/client";
 import { api } from "../api.js";
 import { apiError } from "../lib/apiError.js";
+import { AFFECTED, refresh } from "../lib/refresh.js";
 
 const weights = api.api.weights;
 
@@ -34,10 +35,6 @@ export function bigChangeFrom<Reading extends { weightG: number }>(
     : undefined;
 }
 
-// Weigh-ins show on the pet and on the Insights weight chart, kept under "feeds".
-const refresh = (queryClient: QueryClient) =>
-  Promise.all(["pets", "feeds"].map((key) => queryClient.invalidateQueries({ queryKey: [key] })));
-
 /** Logs a weigh-in, or edits one when `id` is given. Resolves to the target suggestion, if any. */
 export function useSaveWeight(petId: number, id: number | undefined) {
   const queryClient = useQueryClient();
@@ -58,7 +55,7 @@ export function useSaveWeight(petId: number, id: number | undefined) {
       }
       return (await response.json()).prompt;
     },
-    onSuccess: () => refresh(queryClient),
+    onSuccess: () => refresh(queryClient, AFFECTED.weighIn),
   });
 }
 
@@ -74,7 +71,7 @@ export function useDeleteWeight() {
       }
       return response.json();
     },
-    onSuccess: () => refresh(queryClient),
+    onSuccess: () => refresh(queryClient, AFFECTED.weighIn),
   });
 }
 
@@ -89,7 +86,7 @@ export function useRestoreWeight() {
         throw await apiError(response);
       }
     },
-    onSuccess: () => refresh(queryClient),
+    onSuccess: () => refresh(queryClient, AFFECTED.weighIn),
   });
 }
 
@@ -124,6 +121,6 @@ export function useAnswerAgePrompt(petId: number) {
         throw await apiError(response);
       }
     },
-    onSuccess: () => refresh(queryClient),
+    onSuccess: () => refresh(queryClient, AFFECTED.weighIn),
   });
 }

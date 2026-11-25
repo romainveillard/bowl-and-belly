@@ -2,6 +2,7 @@ import { and, asc, eq, gte } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { addDays, appDayStart } from "../../shared/app-day.js";
+import { WEIGHT_CHART_DAYS } from "../../shared/insights.js";
 import { db } from "../db/client.js";
 import { weightEntry } from "../db/schema.js";
 import { daySummaries } from "../feeds/days.js";
@@ -9,8 +10,6 @@ import { targetHistory, targetIn } from "../pets/targets.js";
 import { daySettings, today } from "../settings.js";
 import { validate } from "../validate.js";
 
-/** Without `weightsFrom`, the weight chart looks back this far. */
-const WEIGHT_DAYS = 56;
 /** Longer ranges would only come from a hand-made request. */
 const MAX_RANGE_DAYS = 400;
 
@@ -57,7 +56,7 @@ export const insightsRoutes = new Hono().get(
           eq(weightEntry.petId, petId),
           gte(
             weightEntry.measuredAt,
-            appDayStart(weightsFrom ?? addDays(day, -WEIGHT_DAYS), daySettings(db)),
+            appDayStart(weightsFrom ?? addDays(day, 1 - WEIGHT_CHART_DAYS), daySettings(db)),
           ),
         ),
       )

@@ -3,6 +3,7 @@ import type { TFunction } from "i18next";
 import type { InferRequestType } from "hono/client";
 import { api } from "../api.js";
 import { apiError } from "../lib/apiError.js";
+import { AFFECTED, refresh } from "../lib/refresh.js";
 
 const foodTypes = api.api["food-types"];
 const petTypes = api.api["pet-types"];
@@ -10,13 +11,9 @@ const petTypes = api.api["pet-types"];
 export type TypeKind = "pet" | "food";
 type FoodTypeBody = InferRequestType<typeof foodTypes.$post>["json"];
 
-// Labels of types appear on foods and pets, so those reload too.
-const affected = { food: ["food-types", "foods"], pet: ["pet-types", "pets", "foods"] };
-
 function useInvalidate(kind: TypeKind) {
   const queryClient = useQueryClient();
-  return () =>
-    Promise.all(affected[kind].map((key) => queryClient.invalidateQueries({ queryKey: [key] })));
+  return () => refresh(queryClient, kind === "food" ? AFFECTED.foodType : AFFECTED.petType);
 }
 
 /** Creates the type, or updates it when `id` is given. Resolves to "name_taken" when refused. */

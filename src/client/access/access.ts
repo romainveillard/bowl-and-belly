@@ -60,7 +60,11 @@ export const accessAwareFetch: typeof fetch = async (input, init) => {
   if (response.type === "opaqueredirect") {
     setAccess("expired");
   } else if (response.status === 403) {
-    const body: unknown = await response.clone().json();
+    // A proxy in front of the app may refuse with an HTML page of its own.
+    const body: unknown = await response
+      .clone()
+      .json()
+      .catch(() => null);
     if (typeof body === "object" && body !== null && "code" in body && body.code === "demo_limit") {
       for (const listener of demoLimitListeners) {
         listener();

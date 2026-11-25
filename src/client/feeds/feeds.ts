@@ -1,14 +1,9 @@
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-  type QueryClient,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { InferRequestType, InferResponseType } from "hono/client";
 import { addDays } from "../../shared/app-day.js";
 import { api } from "../api.js";
 import { apiError } from "../lib/apiError.js";
+import { AFFECTED, refresh } from "../lib/refresh.js";
 
 const feeds = api.api.feeds;
 
@@ -20,15 +15,6 @@ type LogBody = InferRequestType<typeof feeds.$post>["json"];
 
 /** History loads this many days at a time as the user scrolls back. */
 const HISTORY_WINDOW_DAYS = 14;
-
-/** Everything a logged, deleted or restored feed changes: totals, stock and recents. */
-function refreshAfterFeed(queryClient: QueryClient) {
-  return Promise.all(
-    ["feeds", "pets", "foods", "log-form"].map((key) =>
-      queryClient.invalidateQueries({ queryKey: [key] }),
-    ),
-  );
-}
 
 async function loadDays(petId: number, from: string, to: string) {
   const response = await feeds.$get({ query: { petId: String(petId), from, to } });
@@ -88,7 +74,7 @@ export function useLogFeed() {
       }
       return (await response.json()).id;
     },
-    onSuccess: () => refreshAfterFeed(queryClient),
+    onSuccess: () => refresh(queryClient, AFFECTED.feed),
   });
 }
 
@@ -105,7 +91,7 @@ export function useDeleteFeed() {
       }
       return response.json();
     },
-    onSuccess: () => refreshAfterFeed(queryClient),
+    onSuccess: () => refresh(queryClient, AFFECTED.feed),
   });
 }
 
@@ -120,7 +106,7 @@ export function useEditFeed(id: number) {
         throw await apiError(response);
       }
     },
-    onSuccess: () => refreshAfterFeed(queryClient),
+    onSuccess: () => refresh(queryClient, AFFECTED.feed),
   });
 }
 
@@ -137,7 +123,7 @@ export function useAddLeftover(id: number) {
         throw await apiError(response);
       }
     },
-    onSuccess: () => refreshAfterFeed(queryClient),
+    onSuccess: () => refresh(queryClient, AFFECTED.feed),
   });
 }
 
@@ -152,6 +138,6 @@ export function useRestoreFeed() {
         throw await apiError(response);
       }
     },
-    onSuccess: () => refreshAfterFeed(queryClient),
+    onSuccess: () => refresh(queryClient, AFFECTED.feed),
   });
 }

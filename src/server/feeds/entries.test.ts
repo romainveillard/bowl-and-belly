@@ -188,6 +188,16 @@ describe("editFromForm", () => {
     expect(stock()[0]).toBe(980);
   });
 
+  it("keeps the feed's own instant, seconds and all, when no new time is given", () => {
+    const { db } = pantry();
+    const fedAt = new Date("2026-11-23T08:00:42.500Z");
+    const id = logFeed(db, { ...kibbles, fedAt }) ?? 0;
+
+    editFromForm(db, id, { ...form, fedAt: null, leftoverG: 3 }, now);
+
+    expect(db.select({ fedAt: feedEntry.fedAt }).from(feedEntry).get()).toEqual({ fedAt });
+  });
+
   it("keeps the feed on its pet", () => {
     const { db } = pantry();
     const id = logFeed(db, kibbles) ?? 0;

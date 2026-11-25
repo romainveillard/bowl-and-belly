@@ -8,7 +8,13 @@ const today = "2026-11-25";
 function renderDialog() {
   const onSave = vi.fn<(backfill: KcalBackfill) => void>();
   render(
-    <KcalUpdateDialog description="" today={today} onSave={onSave} onCancel={() => undefined} />,
+    <KcalUpdateDialog
+      description=""
+      today={today}
+      pending={false}
+      onSave={onSave}
+      onCancel={() => undefined}
+    />,
   );
   return { onSave, date: screen.getByLabelText("Update feeds since") };
 }

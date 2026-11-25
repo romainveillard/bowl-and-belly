@@ -65,6 +65,9 @@ export function periodIntake(
     });
 }
 
+/** The Week view's weight chart: the last 8 weeks, today included. */
+export const WEIGHT_CHART_DAYS = 56;
+
 export interface Reading {
   /** Milliseconds since the epoch. */
   at: number;

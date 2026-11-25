@@ -4,6 +4,7 @@ import type { InferRequestType, InferResponseType } from "hono/client";
 import { stockParts } from "../../shared/stock.js";
 import { api } from "../api.js";
 import { apiError } from "../lib/apiError.js";
+import { AFFECTED, refresh } from "../lib/refresh.js";
 
 const foods = api.api.foods;
 
@@ -93,7 +94,7 @@ export function useSaveFood(id: number | undefined) {
         throw await apiError(response);
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["foods"] }),
+    onSuccess: () => refresh(queryClient, AFFECTED.food),
   });
 }
 
@@ -111,7 +112,7 @@ export function useRestock(id: number) {
         throw await apiError(response);
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["foods"] }),
+    onSuccess: () => refresh(queryClient, AFFECTED.food),
   });
 }
 
@@ -127,7 +128,7 @@ export function useSetFoodArchived(action: "archive" | "restore") {
         throw await apiError(response);
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["foods"] }),
+    onSuccess: () => refresh(queryClient, AFFECTED.food),
   });
 }
 

@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { InferRequestType, InferResponseType } from "hono/client";
 import { api } from "../api.js";
 import { apiError } from "../lib/apiError.js";
+import { refresh } from "../lib/refresh.js";
 
 const settings = api.api.settings;
 
@@ -58,7 +59,7 @@ export function useSaveSettings() {
       if (context?.previous) {
         queryClient.setQueryData(["settings"], context.previous);
       }
-      return queryClient.invalidateQueries({ queryKey: ["settings"] });
+      return refresh(queryClient, ["settings"]);
     },
     // The time zone and day start regroup every day the app shows.
     onSuccess: () => queryClient.invalidateQueries(),
@@ -71,6 +72,6 @@ export function useBackUpNow() {
   return useMutation({
     // A failed backup is recorded in the settings, which then show it.
     mutationFn: () => api.api.backups.$post(),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ["settings"] }),
+    onSettled: () => refresh(queryClient, ["settings"]),
   });
 }

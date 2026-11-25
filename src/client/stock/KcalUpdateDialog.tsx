@@ -13,12 +13,20 @@ interface KcalUpdateDialogProps {
   /** "Salmon kibbles changed from 370 to 365 kcal per 100 g." */
   description: string;
   today: string;
+  /** While the save is on its way, so a second tap doesn't send it again. */
+  pending: boolean;
   onSave: (backfill: KcalBackfill) => void;
   onCancel: () => void;
 }
 
 /** Asked when a food's kcal changes: which past feeds should take the new value. */
-export function KcalUpdateDialog({ description, today, onSave, onCancel }: KcalUpdateDialogProps) {
+export function KcalUpdateDialog({
+  description,
+  today,
+  pending,
+  onSave,
+  onCancel,
+}: KcalUpdateDialogProps) {
   const { t } = useTranslation();
   const [scope, setScope] = useState<KcalBackfill["scope"]>("since");
   const [day, setDay] = useState(today);
@@ -44,6 +52,7 @@ export function KcalUpdateDialog({ description, today, onSave, onCancel }: KcalU
           <button
             type="button"
             className={dialogButton.primary}
+            disabled={pending}
             onClick={() => {
               if (!errors.reject()) {
                 onSave(scope === "since" ? { scope, day } : { scope });
