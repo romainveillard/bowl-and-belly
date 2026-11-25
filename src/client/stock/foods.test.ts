@@ -16,14 +16,14 @@ const grams = { stockUnit: "g", portionName: null, portionG: null } as const;
 
 describe("stockLabel", () => {
   it("counts portions with the remainder in grams, and plain grams under one portion", () => {
-    expect(stockLabel({ ...pouches, stockG: 725 }, i18n)).toBe("8 pouches + 45 g");
+    expect(stockLabel({ ...pouches, stockG: 725 }, i18n)).toBe("8 pouches + 45 g");
     expect(stockLabel({ ...pouches, stockG: 85 }, i18n)).toBe("1 pouch");
-    expect(stockLabel({ ...pouches, stockG: 45 }, i18n)).toBe("45 g");
+    expect(stockLabel({ ...pouches, stockG: 45 }, i18n)).toBe("45 g");
   });
 
   it("switches to kg from 1,000 g", () => {
-    expect(stockLabel({ ...grams, stockG: 999 }, i18n)).toBe("999 g");
-    expect(stockLabel({ ...grams, stockG: 1450 }, i18n)).toBe("1.5 kg");
+    expect(stockLabel({ ...grams, stockG: 999 }, i18n)).toBe("999 g");
+    expect(stockLabel({ ...grams, stockG: 1450 }, i18n)).toBe("1.5 kg");
   });
 
   it("never shows zero or a negative count, only out of stock", () => {

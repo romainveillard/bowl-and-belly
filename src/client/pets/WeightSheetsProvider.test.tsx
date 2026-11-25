@@ -86,5 +86,5 @@ it("asks about the target when deleting a weigh-in changes the suggestion", asyn
 
   fireEvent.click(screen.getByRole("button", { name: "Delete weigh-in" }));
   const question = await screen.findByRole("alertdialog", { name: "Update daily target?" });
-  expect(question.textContent).toContain("Miso now weighs 4.3 kg (was 4.25 kg)");
+  expect(question.textContent).toContain("Miso now weighs 4.3 kg (was 4.25 kg)");
 });

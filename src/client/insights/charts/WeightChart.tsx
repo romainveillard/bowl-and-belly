@@ -46,7 +46,7 @@ export function WeightChart({
   for (let tick = start; tick < end; tick += tickEvery * DAY_MS) {
     ticks.push(tick);
   }
-  const date = new Intl.DateTimeFormat(i18n.language, { day: "numeric", month: "short" });
+
   const weight = (grams: number) =>
     t("insights.kgValue", { weight: formatKg(grams, i18n.language) });
   const kg = data.flatMap((point) => [point.kg, point.averageKg]);
@@ -80,7 +80,13 @@ export function WeightChart({
               type="number"
               domain={[start, end]}
               ticks={ticks}
-              tickFormatter={(at: number) => date.format(at)}
+              // Ticks are UTC midnights, named as the days they stand for wherever the device is.
+              tickFormatter={(at: number) =>
+                formatAppDay(new Date(at).toISOString().slice(0, 10), i18n.language, {
+                  day: "numeric",
+                  month: "short",
+                })
+              }
               tickLine={false}
               axisLine={{ stroke: "var(--color-border)" }}
               tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}

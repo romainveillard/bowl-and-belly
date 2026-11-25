@@ -50,7 +50,7 @@ it("says why a photo was refused, and lets the same file be picked again", async
   fireEvent.change(input);
   await screen.findByText("Couldn’t upload the photo");
 
-  expect(screen.getByRole("alert").textContent).toContain("It’s larger than 20 MB.");
+  expect(screen.getByRole("alert").textContent).toContain("It’s larger than 20 MB.");
   expect(input.value).toBe("");
   expect(onChange).not.toHaveBeenCalled();
 });

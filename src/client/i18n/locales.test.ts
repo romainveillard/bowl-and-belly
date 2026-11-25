@@ -34,6 +34,14 @@ it("keeps French punctuation on the line of the word before it", () => {
   expect(breakable).toEqual([]);
 });
 
+// "1 500 kcal" must not wrap with "kcal" alone on the next line.
+it("keeps every number on the line of its unit", () => {
+  const breakable = [enGB, fr].flatMap((locale) =>
+    strings(locale).filter(([, text]) => /[}\d#] (kcal|g|kg|Mo|MB)(?![\p{L}\d])/u.test(text)),
+  );
+  expect(breakable).toEqual([]);
+});
+
 // i18next-icu formats an argument only when the message says so.
 it("formats the numbers in messages, which no plain argument would", () => {
   const plain = [enGB, fr].flatMap((locale) =>
@@ -51,7 +59,7 @@ it("groups thousands as each language does", async () => {
     resources: { "en-GB": { translation: enGB }, fr: { translation: fr } },
   });
 
-  expect(i18n.t("target.kcal", { kcal: 1500 })).toBe("1,500 kcal");
+  expect(i18n.t("target.kcal", { kcal: 1500 })).toBe("1,500\u00A0kcal");
   // French groups with a narrow no-break space.
-  expect(i18n.t("target.kcal", { kcal: 1500, lng: "fr" })).toBe("1\u202F500 kcal");
+  expect(i18n.t("target.kcal", { kcal: 1500, lng: "fr" })).toBe("1\u202F500\u00A0kcal");
 });

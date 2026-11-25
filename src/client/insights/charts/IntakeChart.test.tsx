@@ -22,9 +22,9 @@ it("lists each day's intake as text, skipping the days still to come", () => {
     .slice(1)
     .map((row) => row.textContent);
   expect(rows).toEqual([
-    "Monday 23 November248 kcal260 kcal",
-    "Tuesday 24 NovemberNo feeds this day260 kcal",
-    "Wednesday 25 November120 kcal260 kcal",
+    "Monday 23 November248 kcal260 kcal",
+    "Tuesday 24 NovemberNo feeds this day260 kcal",
+    "Wednesday 25 November120 kcal260 kcal",
   ]);
   // The drawing is hidden from screen readers, which get the table instead.
   expect(screen.queryByRole("img")).toBeNull();
