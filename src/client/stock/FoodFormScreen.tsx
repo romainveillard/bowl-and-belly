@@ -3,21 +3,19 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { kcalPerKg } from "../../shared/stock.js";
 import { button } from "../components/ui/forms/button.js";
-import { Chip } from "../components/ui/forms/Chip.js";
 import { Select } from "../components/ui/forms/Select.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { PhotoPicker } from "../components/PhotoPicker.js";
 import { ConfirmDialog } from "../components/ui/overlays/ConfirmDialog.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
-import { Field, FieldError, Input } from "../components/ui/forms/Field.js";
+import { Field } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
-import { Switch } from "../components/ui/forms/Switch.js";
 import {
   foodTypeLabel,
   portionPlural,
-  SUGGESTED_PORTIONS,
   suggestedPortion,
+  type SUGGESTED_PORTIONS,
   useFood,
   useFoodTypes,
   useSaveFood,
@@ -32,12 +30,12 @@ import { petTypeLabel, usePets, usePetTypes } from "../pets/pets.js";
 import { useDemo } from "../lib/instance.js";
 import { useSelectedPet } from "../pets/selectedPet.js";
 import { offeredTypes, optionLabel } from "../settings/types.js";
-import { useFormErrors } from "../lib/useFormErrors.js";
+import { useFormErrors, type CheckedField } from "../lib/useFormErrors.js";
 import { KcalUpdateDialog } from "./KcalUpdateDialog.js";
+import { PortionCard, type PortionValues } from "./PortionCard.js";
+import { StockCard, type StockValues } from "./StockCard.js";
 
-type PortionChoice = (typeof SUGGESTED_PORTIONS)[number] | "other";
-
-interface FormState {
+interface FormState extends PortionValues, StockValues {
   name: string;
   brand: string;
   photoId: number | null;
@@ -46,13 +44,6 @@ interface FormState {
   petTypeId: number | null | undefined;
   kcal: string;
   per: "100g" | "kg";
-  usePortion: boolean;
-  portion: PortionChoice;
-  otherPortion: string;
-  portionG: string;
-  countIn: "g" | "portion";
-  stock: string;
-  stockIn: "g" | "kg";
 }
 
 type FieldName = "name" | "kcal" | "portionName" | "portionG" | "stock";
@@ -90,14 +81,12 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
     };
   });
   const [stockTouched, setStockTouched] = useState(false);
+  const update = (patch: Partial<FormState>) => setForm((current) => ({ ...current, ...patch }));
   const set = <Key extends keyof FormState>(key: Key, value: FormState[Key]) =>
     setForm((current) => ({ ...current, [key]: value }));
-  const setStock = <Key extends "stock" | "stockIn" | "countIn">(
-    key: Key,
-    value: FormState[Key],
-  ) => {
+  const updateStock = (patch: Partial<StockValues>) => {
     setStockTouched(true);
-    set(key, value);
+    update(patch);
   };
 
   const foodTypeId = form.foodTypeId ?? foodTypes?.[0]?.id ?? null;
@@ -136,7 +125,11 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
     const problem = errors.problemOf(field);
     return problem && t(`foodForm.errors.${problem}`);
   };
-  const { recheck } = errors;
+  const field = (name: FieldName): CheckedField => ({
+    id: errors.idOf(name),
+    error: errorFor(name),
+    onBlur: errors.recheck(name),
+  });
 
   const title = food ? t("foodForm.edit") : t("foodForm.add");
   const units = usePortion && portionName ? portionPlural(portionName, i18n) : null;
@@ -222,10 +215,8 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
               onChange={(value) => set("brand", value)}
             />
             <Field
-              id={errors.idOf("name")}
+              {...field("name")}
               label={t("foodForm.name")}
-              error={errorFor("name")}
-              onBlur={recheck("name")}
               value={form.name}
               onChange={(value) => set("name", value)}
             />
@@ -258,12 +249,10 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
             <CardHeading title={t("foodForm.calories")} hint={t("foodForm.caloriesHint")} />
             <div className="flex items-start gap-3">
               <Field
-                id={errors.idOf("kcal")}
+                {...field("kcal")}
                 label={t("foodForm.energy")}
                 inputMode="decimal"
                 suffix="kcal"
-                error={errorFor("kcal")}
-                onBlur={recheck("kcal")}
                 value={form.kcal}
                 onChange={(value) => set("kcal", value)}
               />
@@ -289,124 +278,21 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
 
         <div className="flex min-w-0 flex-col gap-3.5 desktop:gap-6">
           {!isDry && (
-            <Card>
-              <div className="flex items-start gap-3">
-                <div className="flex-1">
-                  <CardHeading title={t("foodForm.portion")} hint={t("foodForm.portionHint")} />
-                </div>
-                <Switch
-                  label={t("foodForm.usePortion")}
-                  checked={form.usePortion}
-                  onCheckedChange={(checked) => set("usePortion", checked)}
-                />
-              </div>
-              {form.usePortion && (
-                <>
-                  <div className="flex flex-col gap-2">
-                    <span id="food-portion-label" className="text-sm font-semibold">
-                      {t("foodForm.portionName")}
-                    </span>
-                    <div
-                      role="group"
-                      aria-labelledby="food-portion-label"
-                      className="flex flex-wrap gap-2"
-                    >
-                      {([...SUGGESTED_PORTIONS, "other"] as const).map((choice) => (
-                        <Chip
-                          key={choice}
-                          pressed={form.portion === choice}
-                          onClick={() => set("portion", choice)}
-                        >
-                          {t(`portionName.${choice}`)}
-                        </Chip>
-                      ))}
-                    </div>
-                    {form.portion === "other" && (
-                      <>
-                        <label htmlFor="food-portionName" className="sr-only">
-                          {t("foodForm.otherName")}
-                        </label>
-                        <Input
-                          id={errors.idOf("portionName")}
-                          placeholder={t("foodForm.otherPlaceholder")}
-                          value={form.otherPortion}
-                          onChange={(event) => set("otherPortion", event.target.value)}
-                          onBlur={recheck("portionName")}
-                          aria-invalid={errorFor("portionName") ? true : undefined}
-                          aria-describedby={
-                            errorFor("portionName")
-                              ? `${errors.idOf("portionName")}-error`
-                              : undefined
-                          }
-                        />
-                        {errorFor("portionName") && (
-                          <FieldError id={`${errors.idOf("portionName")}-error`}>
-                            {errorFor("portionName")}
-                          </FieldError>
-                        )}
-                      </>
-                    )}
-                  </div>
-                  <div className="w-[140px]">
-                    <Field
-                      id={errors.idOf("portionG")}
-                      label={t("foodForm.weight")}
-                      inputMode="numeric"
-                      suffix="g"
-                      error={errorFor("portionG")}
-                      onBlur={recheck("portionG")}
-                      value={form.portionG}
-                      onChange={(value) => set("portionG", value)}
-                    />
-                  </div>
-                </>
-              )}
-            </Card>
-          )}
-
-          <Card>
-            <CardHeading
-              title={t("foodForm.stock")}
-              hint={t(food ? "foodForm.stockHintEdit" : "foodForm.stockHint")}
+            <PortionCard
+              value={form}
+              onChange={update}
+              nameField={field("portionName")}
+              weightField={field("portionG")}
             />
-            {units && (
-              <Segmented
-                label={t("foodForm.countIn")}
-                value={form.countIn}
-                onChange={(value) => setStock("countIn", value)}
-                options={[
-                  { value: "g", label: t("foodForm.grams") },
-                  { value: "portion", label: units },
-                ]}
-              />
-            )}
-            <div className="flex items-end gap-3">
-              <Field
-                id={errors.idOf("stock")}
-                label={t("foodForm.current")}
-                inputMode="decimal"
-                suffix={counted && units ? units.toLowerCase() : undefined}
-                error={errorFor("stock")}
-                onBlur={recheck("stock")}
-                value={form.stock}
-                onChange={(value) => setStock("stock", value)}
-              />
-              {!counted && (
-                <div className="flex-none">
-                  <Segmented
-                    label={t("stock.unit")}
-                    hideLabel
-                    value={form.stockIn}
-                    onChange={(value) => setStock("stockIn", value)}
-                    options={[
-                      { value: "g", label: "g" },
-                      { value: "kg", label: "kg" },
-                    ]}
-                  />
-                </div>
-              )}
-            </div>
-          </Card>
+          )}
+          <StockCard
+            value={form}
+            onChange={updateStock}
+            units={units}
+            counted={counted}
+            editing={food !== undefined}
+            field={field("stock")}
+          />
           <div className="flex justify-center desktop:hidden">{archiveButton}</div>
         </div>
       </div>

@@ -12,12 +12,12 @@ import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { useSnackbar } from "../components/ui/feedback/Snackbar.js";
-import { SwitchRow } from "../components/ui/forms/SwitchRow.js";
 import { parsePositive } from "../lib/format.js";
 import { useDemo } from "../lib/instance.js";
 import { offeredTypes, optionLabel } from "../settings/types.js";
 import { birthDateOf, initialPetForm, type PetFormState } from "./petForm.js";
-import { useFormErrors } from "../lib/useFormErrors.js";
+import { useFormErrors, type CheckedField } from "../lib/useFormErrors.js";
+import { PetTargetCard } from "./PetTargetCard.js";
 import {
   petTypeLabel,
   usePet,
@@ -103,7 +103,11 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
     const problem = errors.problemOf(field);
     return problem && t(`petForm.errors.${problem}`);
   };
-  const { recheck } = errors;
+  const field = (name: FieldName): CheckedField => ({
+    id: errors.idOf(name),
+    error: errorFor(name),
+    onBlur: errors.recheck(name),
+  });
 
   const submit = () => {
     if (errors.reject() || petTypeId === null || birthDate === null) {
@@ -165,10 +169,8 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             )}
             <div className="flex flex-col gap-3.5 desktop:grid desktop:grid-cols-2 desktop:gap-4">
               <Field
-                id={errors.idOf("name")}
+                {...field("name")}
                 label={t("petForm.name")}
-                error={errorFor("name")}
-                onBlur={recheck("name")}
                 value={form.name}
                 onChange={(name) => set("name", name)}
               />
@@ -201,9 +203,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             />
             {form.ageMode === "exact" && (
               <Field
-                id={errors.idOf("birth")}
-                error={errorFor("birth")}
-                onBlur={recheck("birth")}
+                {...field("birth")}
                 label={t("petForm.birthDate")}
                 type="date"
                 max={today}
@@ -213,9 +213,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             )}
             {form.ageMode === "year" && (
               <Field
-                id={errors.idOf("birth")}
-                error={errorFor("birth")}
-                onBlur={recheck("birth")}
+                {...field("birth")}
                 label={t("petForm.birthYear")}
                 inputMode="numeric"
                 value={form.birthYear}
@@ -224,9 +222,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             )}
             {form.ageMode === "estimated" && (
               <Field
-                id={errors.idOf("birth")}
-                error={errorFor("birth")}
-                onBlur={recheck("birth")}
+                {...field("birth")}
                 label={t("petForm.age")}
                 inputMode="decimal"
                 suffix={t("petForm.years")}
@@ -264,9 +260,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             />
             {hasWeightGoal && (
               <Field
-                id={errors.idOf("targetWeight")}
-                error={errorFor("targetWeight")}
-                onBlur={recheck("targetWeight")}
+                {...field("targetWeight")}
                 label={t("weight.target")}
                 inputMode="decimal"
                 suffix={t("weight.kg")}
@@ -279,9 +273,7 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
           <Card>
             <CardHeading title={t("weight.title")} />
             <Field
-              id={errors.idOf("weight")}
-              error={errorFor("weight")}
-              onBlur={recheck("weight")}
+              {...field("weight")}
               label={t("weight.current")}
               inputMode="decimal"
               suffix={t("weight.kg")}
@@ -290,53 +282,15 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
             />
           </Card>
 
-          <Card>
-            <CardHeading title={t("target.title")} />
-            {systemKey !== null &&
-              (suggestion ? (
-                <>
-                  <span className="flex items-baseline gap-1.5">
-                    <span className="font-display text-figure font-semibold tabular-nums desktop:text-[32px]">
-                      {suggestion.kcalPerDay}
-                    </span>
-                    <span className="text-[15px] text-muted-foreground">
-                      {t("target.perDaySuggested")}
-                    </span>
-                  </span>
-                  {suggestion.basis !== "growth" && hasWeightGoal && (
-                    <span className="text-[13px] text-muted-foreground">
-                      {t(
-                        form.goal === "lose"
-                          ? "target.basedOnTargetLose"
-                          : "target.basedOnTargetGain",
-                      )}
-                    </span>
-                  )}
-                </>
-              ) : (
-                <span className="text-[13px] text-muted-foreground">{t("target.needsWeight")}</span>
-              ))}
-            {systemKey !== null && (
-              <SwitchRow
-                label={t("target.setOwn")}
-                hint={t("target.setOwnHint")}
-                checked={form.ownTarget}
-                onCheckedChange={(checked) => set("ownTarget", checked)}
-              />
-            )}
-            {ownTarget && (
-              <Field
-                id={errors.idOf("ownTarget")}
-                error={errorFor("ownTarget")}
-                onBlur={recheck("ownTarget")}
-                label={t("target.field")}
-                inputMode="numeric"
-                suffix="kcal"
-                value={form.ownTargetKcal}
-                onChange={(value) => set("ownTargetKcal", value)}
-              />
-            )}
-          </Card>
+          <PetTargetCard
+            hasFormula={systemKey !== null}
+            suggestion={suggestion}
+            goal={form.goal}
+            value={form}
+            onChange={(patch) => setForm((current) => ({ ...current, ...patch }))}
+            showOwn={ownTarget}
+            field={field("ownTarget")}
+          />
         </div>
       </div>
 

@@ -1,5 +1,12 @@
 import { useState } from "react";
 
+/** What a checked field's input takes from its form, for a card that holds the field. */
+export interface CheckedField {
+  id: string;
+  error: string | undefined;
+  onBlur: () => void;
+}
+
 /**
  * The validation behaviour every form shares: Save stays enabled; a failed
  * save shows all problems and focuses the first field; after that, each field
