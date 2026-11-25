@@ -6,6 +6,7 @@ import { db } from "../db/client.js";
 import { feedEntry, food, foodType, image } from "../db/schema.js";
 import { changeKcal } from "../foods/kcal.js";
 import { portionsFor } from "../foods/portions.js";
+import { restock } from "../foods/restock.js";
 import { grams, kcalPerKg, stockGrams, validate } from "../validate.js";
 
 const idParam = z.object({ id: z.coerce.number().int() });
@@ -172,19 +173,7 @@ export const foodsRoutes = new Hono()
     (c) => {
       const { id } = c.req.valid("param");
       const { addG } = c.req.valid("json");
-      // Read and write in one transaction, so a feed logged meanwhile is not lost.
-      const restocked = db.transaction((tx) => {
-        const row = tx.select({ stockG: food.stockG }).from(food).where(eq(food.id, id)).get();
-        if (!row) {
-          return false;
-        }
-        // Restocking starts from an empty shelf when the figure had run below zero.
-        tx.update(food)
-          .set({ stockG: Math.max(row.stockG, 0) + addG })
-          .where(eq(food.id, id))
-          .run();
-        return true;
-      });
+      const restocked = db.transaction((tx) => restock(tx, id, addG));
       return restocked ? c.body(null, 204) : c.json({ code: "not_found" as const }, 404);
     },
   )
