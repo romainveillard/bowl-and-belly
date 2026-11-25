@@ -137,7 +137,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
   const send = (body: FoodBody, kcalBackfill: KcalBackfill) =>
     save.mutate(
       { body, keepStock: food !== undefined && !stockTouched, kcalBackfill },
-      { onSuccess: () => navigate("/stock") },
+      { onSuccess: () => void navigate("/stock") },
     );
 
   const submit = () => {
@@ -315,7 +315,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
           title={t("foodForm.archiveTitle", { name: food.name })}
           description={t("foodForm.archiveBody")}
           confirmLabel={t("pets.archiveConfirm")}
-          onConfirm={() => archive.mutate(food.id, { onSuccess: () => navigate("/stock") })}
+          onConfirm={() => archive.mutate(food.id, { onSuccess: () => void navigate("/stock") })}
         />
       )}
       {food && askingBackfill && kcal !== null && (

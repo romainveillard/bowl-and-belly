@@ -96,7 +96,7 @@ export function PetProfile({ petId }: { petId: number }) {
           </>
         }
         confirmLabel={t("pets.archiveConfirm")}
-        onConfirm={() => archive.mutate(pet.id, { onSuccess: () => navigate("/pets") })}
+        onConfirm={() => archive.mutate(pet.id, { onSuccess: () => void navigate("/pets") })}
       />
 
       <AgePrompt petId={pet.id} petName={pet.name} />

@@ -1,12 +1,15 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript", "unicorn", "oxc", "import", "react", "vitest"],
+  "plugins": ["typescript", "unicorn", "oxc", "import", "react", "jsx-a11y", "vitest"],
   "categories": {
     "correctness": "error",
     "suspicious": "error"
   },
   "rules": {
     "react/react-in-jsx-scope": "off",
+    "typescript/no-misused-promises": "error",
+    "jsx-a11y/prefer-tag-over-role": "off",
+    "jsx-a11y/label-has-associated-control": ["error", { "depth": 3 }],
     "import/no-unassigned-import": "off",
     "import/no-named-as-default-member": "off"
   },

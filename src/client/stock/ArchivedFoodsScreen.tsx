@@ -43,7 +43,13 @@ export function ArchivedFoodsScreen() {
         }))}
         restoring={restore.isPending}
         onRestore={(id) =>
-          restore.mutate(id, { onSuccess: () => archived.length === 1 && navigate("/stock") })
+          restore.mutate(id, {
+            onSuccess: () => {
+              if (archived.length === 1) {
+                void navigate("/stock");
+              }
+            },
+          })
         }
       />
     </div>

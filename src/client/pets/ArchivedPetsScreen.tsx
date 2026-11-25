@@ -52,7 +52,11 @@ export function ArchivedPetsScreen() {
         onRestore={(id) =>
           restore.mutate(id, {
             // Nothing left to restore: back to the list the pet returned to.
-            onSuccess: () => archived.length === 1 && navigate("/pets"),
+            onSuccess: () => {
+              if (archived.length === 1) {
+                void navigate("/pets");
+              }
+            },
           })
         }
       />
