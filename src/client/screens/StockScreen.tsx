@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+import { ArchivedLink } from "../components/ArchivedLink.js";
 import { FoodTypeBadge, FoodTypeTile } from "../components/FoodTypeMark.js";
 import { EmptyState } from "../components/EmptyState.js";
-import { ChevronRightIcon, PlusIcon, SearchIcon, StockIcon } from "../components/icons.js";
+import { PlusIcon, SearchIcon, StockIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
 import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageTitle } from "../components/ui/layout/PageHeader.js";
@@ -49,13 +50,11 @@ export function StockScreen() {
     return null;
   }
   const archivedLink = data.archivedCount > 0 && (
-    <Link
+    <ArchivedLink
       to="/stock/archived"
-      className="flex min-h-11 items-center justify-between px-1 text-sm text-muted-foreground desktop:inline-flex desktop:justify-start desktop:gap-1.5 desktop:self-start desktop:px-0"
-    >
-      {t("stock.archivedLink", { count: data.archivedCount })}
-      <ChevronRightIcon size={18} />
-    </Link>
+      label={t("stock.archivedLink", { count: data.archivedCount })}
+      compactOnDesktop
+    />
   );
 
   if (data.foods.length === 0) {
