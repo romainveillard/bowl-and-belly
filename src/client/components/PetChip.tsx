@@ -1,4 +1,4 @@
-import { Dialog, Popover } from "radix-ui";
+import { Popover } from "radix-ui";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -8,6 +8,7 @@ import { useSelectedPet } from "../lib/selectedPet.js";
 import { useIsDesktop } from "../lib/useIsDesktop.js";
 import { CheckIcon, ChevronDownIcon, ChevronRightIcon } from "./icons.js";
 import { PetAvatar } from "./PetAvatar.js";
+import { Sheet } from "./ui/overlays/Sheet.js";
 
 const chip =
   "inline-flex h-11 max-w-full flex-none items-center gap-1.5 rounded-full bg-card pr-2.5 pl-1.5 text-sm font-semibold inset-ring inset-ring-border desktop:gap-2 desktop:pr-3 desktop:text-[15px]";
@@ -100,12 +101,13 @@ export function PetChip() {
     return <span className={chip}>{face}</span>;
   }
 
-  const trigger = (
+  const trigger = (onClick?: () => void) => (
     <button
       type="button"
       aria-haspopup="listbox"
       aria-label={t("petChip.label", { name: pet.name })}
       className={`${chip} cursor-pointer`}
+      onClick={onClick}
     >
       {face}
       <span aria-hidden="true" className="flex text-muted-foreground">
@@ -117,7 +119,7 @@ export function PetChip() {
   if (isDesktop) {
     return (
       <Popover.Root open={open} onOpenChange={setOpen}>
-        <Popover.Trigger asChild>{trigger}</Popover.Trigger>
+        <Popover.Trigger asChild>{trigger()}</Popover.Trigger>
         <Popover.Portal>
           <Popover.Content
             align="end"
@@ -132,21 +134,13 @@ export function PetChip() {
   }
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-10 bg-[rgba(31,42,68,0.45)]" />
-        <Dialog.Content
-          aria-describedby={undefined}
-          className="fixed inset-x-0 bottom-0 z-20 flex flex-col gap-2 rounded-t-3xl bg-card px-3 pt-2.5 pb-[calc(24px+env(safe-area-inset-bottom))]"
-        >
-          <div aria-hidden="true" className="mx-auto mb-1.5 h-1 w-10 rounded-full bg-border" />
-          <Dialog.Title className="mx-2 mb-1 font-display text-title font-semibold">
-            {t("petChip.switchTitle")}
-          </Dialog.Title>
+    <>
+      {trigger(() => setOpen(true))}
+      <Sheet open={open} onOpenChange={setOpen} title={t("petChip.switchTitle")} flush>
+        <div className="flex flex-col gap-2 px-3">
           <PetOptions onChosen={() => setOpen(false)} />
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+        </div>
+      </Sheet>
+    </>
   );
 }
