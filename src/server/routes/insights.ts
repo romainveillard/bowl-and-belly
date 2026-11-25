@@ -45,6 +45,11 @@ export const insightsRoutes = new Hono().get(
         eatenKcal: summary?.eatenKcal ?? 0,
         targetKcal: targetIn(targets, date)?.kcalPerDay ?? null,
         fed: summary !== undefined,
+        // For a bar's details: "Wet 70 · Dry 181".
+        byType: (summary?.byType ?? []).map(({ type, kcal }) => ({
+          type: { systemKey: type.systemKey, name: type.name },
+          kcal,
+        })),
       });
     }
 
