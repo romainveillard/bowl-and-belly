@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Outlet, Route, Routes } from "react-router";
 import { DemoBanner } from "./components/DemoBanner.js";
 import { EmptyState } from "./components/EmptyState.js";
+import { RouteAnnouncer } from "./components/RouteAnnouncer.js";
 import { SaveErrorNotice } from "./components/SaveErrorNotice.js";
 import { HistoryIcon, InsightsIcon } from "./components/icons.js";
 import { BottomNav, Sidebar } from "./components/Navigation.js";
@@ -31,14 +32,23 @@ const InsightsScreen = lazy(() =>
 
 // Forms and Settings take the whole phone screen, without the tabs.
 function Shell({ bottomNav = true }: { bottomNav?: boolean }) {
+  const { t } = useTranslation();
   const demo = useDemo();
 
   return (
     <div className="flex min-h-dvh flex-col desktop:grid desktop:grid-cols-[248px_1fr]">
+      <a
+        href="#main"
+        className="sr-only rounded-lg bg-card px-4 py-2.5 font-semibold inset-ring inset-ring-border focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-40"
+      >
+        {t("nav.skipToContent")}
+      </a>
       <Sidebar />
       <div className="flex-1 desktop:w-full desktop:max-w-[1120px] desktop:px-10 desktop:py-8">
         {demo && <DemoBanner />}
-        <Outlet />
+        <main id="main" tabIndex={-1} className="focus:outline-none">
+          <Outlet />
+        </main>
       </div>
       {bottomNav && <BottomNav />}
     </div>
@@ -101,6 +111,7 @@ export function App() {
   return (
     <>
       <ConnectionNotice />
+      <RouteAnnouncer />
       <SaveErrorNotice />
       <AccessGate>
         <Routes>

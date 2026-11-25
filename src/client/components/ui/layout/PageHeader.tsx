@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { BackIcon, CloseIcon } from "../../icons.js";
+import { usePageTitle } from "../../../lib/usePageTitle.js";
 import { button } from "../forms/button.js";
 
-/** A tab's title. */
+/** A tab's title, which also titles the browser tab. */
 export function PageTitle({ children }: { children: ReactNode }) {
+  usePageTitle(typeof children === "string" ? children : null);
   return (
     <h1 className="font-display text-display font-semibold desktop:text-[34px] desktop:leading-10">
       {children}
@@ -49,6 +51,7 @@ interface SubPageHeaderProps {
 
 /** The header of a page reached from a tab, such as a form or an archive. */
 export function SubPageHeader({ title, hint, phoneLink, desktopLink }: SubPageHeaderProps) {
+  usePageTitle(title);
   return (
     <>
       <header className="flex items-center gap-2 px-3 pt-3.5 pb-2.5 desktop:hidden">

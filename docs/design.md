@@ -220,11 +220,12 @@ Used on Today and History. A food-type tile on the left (blue drop for wet, peac
 - **Error snackbar:** for an error that doesn't belong to a field (a refused photo, a lost connection, a save the server turns down). White on the danger colour with an alert icon, it says what failed and why ("Couldn't upload the photo. It's larger than 20 MB. Try a smaller one."), uses `role="alert"`, and stays until dismissed. The reason comes from the API's error code; without one it falls back to the connection or a generic line. An error replaces a confirmation on screen, never the other way round. Field errors stay inline.
 - **Sheets and dialogs:** a sheet rises from the bottom on a phone and is a dialog near the top of the page on desktop. A confirmation is a centred dialog.
 - **Desktop:** from 860 px the tabs move to a sidebar with Settings and the version at its foot, and Pets shows the list and the selected profile side by side.
+- **Navigation:** each screen titles the browser tab ("Today · Bowl & Belly"). Moving to another tab or page puts focus on the content and announces the new title; choosing a pet in the desktop list leaves focus in the list. A "Skip to content" link, shown on focus, leads past the sidebar.
 
 ## UI design
 
 - **Components:** Tailwind CSS with shadcn/ui. Colour tokens use shadcn's names, so they drop straight into its theme.
-- **Colours:** foreground `#1F2A44`, primary `#F08A4B`, primary-strong `#CE7741`, accent `#FFC9A3`, accent-soft `#FFE6D4`, background `#F6F7F9`, card `#FFFFFF`, muted `#EEF0F4`, border `#E3E6EC`, muted-foreground `#5B6478`, success `#2F7D53`, warning `#9A6412`, danger `#B93A32`.
+- **Colours:** foreground `#1F2A44`, primary `#F08A4B`, primary-strong `#CE7741`, accent `#FFC9A3`, accent-soft `#FFE6D4`, background `#F6F7F9`, card `#FFFFFF`, muted `#EEF0F4`, border `#E3E6EC`, input-border `#8A92A3`, muted-foreground `#5B6478`, success `#2A7049`, warning `#9A6412`, danger `#B93A32`.
 - **Primary buttons** use navy text on orange (about 5.3:1). White on the brand orange fails contrast.
 - **Controls:** switches only turn a feature on or off (portions, own target). Facts and choices (neutered, activity, goal, units) use segmented controls or chips.
 - **Type:** Outfit SemiBold for headings and figures (tabular numbers), Inter for everything else. Both fonts are bundled with the app, so nothing is fetched from a font service. 4 px spacing grid, touch targets at least 44 px, radii from 8 px (inputs) to 24 px (sheet tops).
