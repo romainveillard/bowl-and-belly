@@ -1,19 +1,10 @@
-import { serveStatic } from "@hono/node-server/serve-static";
-import { Hono, type Context } from "hono";
+import { Hono } from "hono";
 import { compress } from "hono/compress";
 import { secureHeaders } from "hono/secure-headers";
 import { app } from "./app.js";
+import { staticFiles } from "./staticFiles.js";
 
 const clientDir = "dist/client";
-
-// Vite fingerprints everything under assets/; index.html must be revalidated
-// so a new deploy is picked up.
-const setCacheControl = (path: string, c: Context) => {
-  c.header(
-    "Cache-Control",
-    path.includes("/assets/") ? "public, max-age=31536000, immutable" : "no-cache",
-  );
-};
 
 export const web = new Hono()
   .use(
@@ -36,14 +27,4 @@ export const web = new Hono()
   .use("/api/*", compress())
   .route("/", app)
   .all("/api/*", (c) => c.json({ code: "not_found" }, 404))
-  // The build writes .br and .gz copies, sent to browsers that accept them.
-  .use(serveStatic({ root: clientDir, precompressed: true, onFound: setCacheControl }))
-  .get(
-    "*",
-    serveStatic({
-      root: clientDir,
-      path: "index.html",
-      precompressed: true,
-      onFound: setCacheControl,
-    }),
-  );
+  .route("/", staticFiles(clientDir));
