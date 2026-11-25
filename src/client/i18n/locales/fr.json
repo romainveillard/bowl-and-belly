@@ -13,7 +13,8 @@
     "close": "Fermer",
     "cancel": "Annuler",
     "restore": "Restaurer",
-    "restoreNamed": "Restaurer {name}"
+    "restoreNamed": "Restaurer {name}",
+    "dismiss": "Ignorer"
   },
   "common": {
     "kcal": "kcal",
