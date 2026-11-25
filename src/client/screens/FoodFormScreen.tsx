@@ -23,6 +23,7 @@ import {
   type FoodDetail,
   type KcalBackfill,
 } from "../lib/foods.js";
+import { parseAmount, plain, stockGramsOf, stockText } from "../lib/foodForm.js";
 import { parsePositive, petTypeLabel } from "../lib/format.js";
 import { uploadPhoto, usePets, usePetTypes } from "../lib/pets.js";
 import { useDemo } from "../lib/instance.js";
@@ -54,18 +55,6 @@ interface FormState {
 type FieldName = "name" | "kcal" | "portionName" | "portionG" | "stock";
 const FIELD_ORDER: FieldName[] = ["name", "kcal", "portionName", "portionG", "stock"];
 
-const plain = (value: number, decimals = 2) =>
-  String(Math.round(value * 10 ** decimals) / 10 ** decimals);
-
-/** A non-negative number from "12" or "1,4"; null when it is something else. */
-function parseAmount(text: string): number | null {
-  if (text.trim() === "") {
-    return 0;
-  }
-  const value = Number(text.trim().replace(",", "."));
-  return Number.isFinite(value) && value >= 0 ? value : null;
-}
-
 function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -82,8 +71,6 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
   const suggestedName = (key: (typeof SUGGESTED_PORTIONS)[number]) => t(`portionName.${key}`);
   const [form, setForm] = useState<FormState>(() => {
     const known = food?.portionName ? suggestedPortion(food.portionName, i18n) : undefined;
-    const counted = food?.stockUnit === "portion" && food.portionG !== null;
-    const stockG = Math.max(food?.stockG ?? 0, 0);
     return {
       name: food?.name ?? "",
       brand: food?.brand ?? "",
@@ -97,13 +84,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
       otherPortion: known ? "" : (food?.portionName ?? ""),
       portionG: food?.portionG ? String(food.portionG) : "",
       countIn: food?.stockUnit ?? "portion",
-      stock:
-        food === undefined
-          ? ""
-          : counted && food.portionG
-            ? plain(stockG / food.portionG, 1)
-            : plain(stockG >= 1000 ? stockG / 1000 : stockG),
-      stockIn: stockG >= 1000 ? "kg" : "g",
+      ...(food ? stockText(food) : { stock: "", stockIn: "g" }),
     };
   });
   const [stockTouched, setStockTouched] = useState(false);
@@ -169,10 +150,7 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
       return;
     }
     const grams = usePortion && portionG !== null ? Math.round(portionG) : null;
-    let stockG = Math.round(stockAmount * (form.stockIn === "kg" ? 1000 : 1));
-    if (counted && grams !== null) {
-      stockG = Math.round(stockAmount * grams);
-    }
+    const stockG = stockGramsOf(stockAmount, form.stockIn, counted ? grams : null);
     const body: FoodBody = {
       name: form.name,
       brand: form.brand.trim() || null,
