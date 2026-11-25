@@ -20,7 +20,6 @@ export function WeekInsights({ petId, today, onPeriod }: PeriodViewProps) {
   const { data } = useInsights(petId, start, end);
   const { data: pet } = usePet(petId);
   const { data: settings } = useSettings();
-  const timeZone = settings?.timeZone ?? "UTC";
   const isCurrentWeek = start === weekStart(today);
 
   const range = formatAppDayRange(start, end, i18n.language, { day: "numeric", month: "short" });
@@ -112,7 +111,7 @@ export function WeekInsights({ petId, today, onPeriod }: PeriodViewProps) {
             from={addDays(data.today, -55)}
             to={data.today}
             tickEvery={14}
-            timeZone={timeZone}
+            daySettings={settings}
             label={t("insights.weightLabel")}
           />
         </Card>

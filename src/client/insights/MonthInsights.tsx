@@ -1,11 +1,11 @@
 import type { TFunction } from "i18next";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { addDays, addMonths } from "../../shared/app-day.js";
+import { addDays, addMonths, appDayOf } from "../../shared/app-day.js";
 import { periodIntake, rollingAverage } from "../../shared/insights.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { dayStatus } from "../lib/dayStatus.js";
-import { formatAppDay, formatDateInput, formatInstantDay, formatKg } from "../lib/format.js";
+import { formatAppDay, formatInstantDay, formatKg } from "../lib/format.js";
 import { targetOn, usePet } from "../pets/pets.js";
 import { weightTrend } from "../pets/weightTrend.js";
 import { IntakeChart } from "./charts/IntakeChart.js";
@@ -63,7 +63,7 @@ export function MonthInsights({ petId, today, onPeriod }: PeriodViewProps) {
   const lastDay = isCurrentMonth ? data.today : end;
   const targetRow = targetOn(pet, lastDay);
   const inMonth = rollingAverage(data.weights).filter((reading) => {
-    const day = formatDateInput(new Date(reading.at), settings.timeZone);
+    const day = appDayOf(new Date(reading.at), settings);
     return day >= start && day <= end;
   });
   const latest = inMonth.at(-1);
@@ -121,7 +121,7 @@ export function MonthInsights({ petId, today, onPeriod }: PeriodViewProps) {
             from={start}
             to={end}
             tickEvery={7}
-            timeZone={settings.timeZone}
+            daySettings={settings}
             height={150}
             label={t("insights.monthWeightLabel", { month })}
           />

@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { ComposedChart, Line, ResponsiveContainer, Scatter, XAxis, YAxis } from "recharts";
-import { addDays } from "../../../shared/app-day.js";
+import { addDays, appDayOf, type DaySettings } from "../../../shared/app-day.js";
 import { rollingAverage, type Reading } from "../../../shared/insights.js";
-import { formatDateInput, formatKg } from "../../lib/format.js";
+import { formatAppDay, formatKg } from "../../lib/format.js";
 import { ChartTable } from "./ChartTable.js";
 import { markColour } from "./colours.js";
 import { LegendItem } from "./Legend.js";
@@ -15,7 +15,7 @@ export function WeightChart({
   from,
   to,
   tickEvery,
-  timeZone,
+  daySettings,
   label,
   height = 160,
 }: {
@@ -25,8 +25,8 @@ export function WeightChart({
   from: string;
   to: string;
   tickEvery: number;
-  /** The app's, which decides the day each reading falls on. */
-  timeZone: string;
+  /** The app's time zone and day start, which decide the day each reading falls on. */
+  daySettings: DaySettings;
   label: string;
   height?: number;
 }) {
@@ -34,7 +34,7 @@ export function WeightChart({
   const start = Date.parse(`${from}T00:00:00Z`);
   const end = Date.parse(`${addDays(to, 1)}T00:00:00Z`);
   const shown = rollingAverage(readings).filter((reading) => {
-    const day = formatDateInput(new Date(reading.at), timeZone);
+    const day = appDayOf(new Date(reading.at), daySettings);
     return day >= from && day <= to;
   });
   const data = shown.map((reading) => ({
@@ -47,11 +47,6 @@ export function WeightChart({
     ticks.push(tick);
   }
   const date = new Intl.DateTimeFormat(i18n.language, { day: "numeric", month: "short" });
-  const longDate = new Intl.DateTimeFormat(i18n.language, {
-    day: "numeric",
-    month: "long",
-    timeZone,
-  });
   const weight = (grams: number) =>
     t("insights.kgValue", { weight: formatKg(grams, i18n.language) });
   const kg = data.flatMap((point) => [point.kg, point.averageKg]);
@@ -63,7 +58,14 @@ export function WeightChart({
         columns={[t("insights.date"), t("insights.weight"), t("insights.legendAverage")]}
         rows={shown.map((reading) => ({
           key: String(reading.at),
-          cells: [longDate.format(reading.at), weight(reading.weightG), weight(reading.averageG)],
+          cells: [
+            formatAppDay(appDayOf(new Date(reading.at), daySettings), i18n.language, {
+              day: "numeric",
+              month: "long",
+            }),
+            weight(reading.weightG),
+            weight(reading.averageG),
+          ],
         }))}
       />
       <div aria-hidden="true" style={{ height }}>
