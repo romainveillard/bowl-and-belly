@@ -2,7 +2,8 @@ import { useTranslation } from "react-i18next";
 import { ComposedChart, Line, ResponsiveContainer, Scatter, XAxis, YAxis } from "recharts";
 import { addDays } from "../../../shared/app-day.js";
 import { rollingAverage, type Reading } from "../../../shared/insights.js";
-import { formatDateInput } from "../../lib/format.js";
+import { formatDateInput, formatKg } from "../../lib/format.js";
+import { ChartTable } from "./ChartTable.js";
 import { LegendItem } from "./Legend.js";
 
 const DAY_MS = 86_400_000;
@@ -31,26 +32,40 @@ export function WeightChart({
   const { t, i18n } = useTranslation();
   const start = Date.parse(`${from}T00:00:00Z`);
   const end = Date.parse(`${addDays(to, 1)}T00:00:00Z`);
-  const data = rollingAverage(readings)
-    .filter((reading) => {
-      const day = formatDateInput(new Date(reading.at), timeZone);
-      return day >= from && day <= to;
-    })
-    .map((reading) => ({
-      at: reading.at,
-      kg: reading.weightG / 1000,
-      averageKg: reading.averageG / 1000,
-    }));
+  const shown = rollingAverage(readings).filter((reading) => {
+    const day = formatDateInput(new Date(reading.at), timeZone);
+    return day >= from && day <= to;
+  });
+  const data = shown.map((reading) => ({
+    at: reading.at,
+    kg: reading.weightG / 1000,
+    averageKg: reading.averageG / 1000,
+  }));
   const ticks: number[] = [];
   for (let tick = start; tick < end; tick += tickEvery * DAY_MS) {
     ticks.push(tick);
   }
   const date = new Intl.DateTimeFormat(i18n.language, { day: "numeric", month: "short" });
+  const longDate = new Intl.DateTimeFormat(i18n.language, {
+    day: "numeric",
+    month: "long",
+    timeZone,
+  });
+  const weight = (grams: number) =>
+    t("insights.kgValue", { weight: formatKg(grams, i18n.language) });
   const kg = data.flatMap((point) => [point.kg, point.averageKg]);
 
   return (
     <div className="flex flex-col gap-3">
-      <div role="img" aria-label={label} style={{ height }}>
+      <ChartTable
+        caption={label}
+        columns={[t("insights.date"), t("insights.weight"), t("insights.legendAverage")]}
+        rows={shown.map((reading) => ({
+          key: String(reading.at),
+          cells: [longDate.format(reading.at), weight(reading.weightG), weight(reading.averageG)],
+        }))}
+      />
+      <div aria-hidden="true" style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={data} margin={{ top: 8, right: 12, bottom: 0, left: 12 }}>
             <XAxis

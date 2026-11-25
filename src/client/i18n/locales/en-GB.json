@@ -461,7 +461,10 @@
     "steady": "Steady this month",
     "up": "Up {weight} kg this month",
     "down": "Down {weight} kg this month",
-    "noFeedsDay": "No feeds this day"
+    "noFeedsDay": "No feeds this day",
+    "date": "Date",
+    "kcalValue": "{kcal} kcal",
+    "kgValue": "{weight} kg"
   },
   "petChip": {
     "label": "Pet: {name}. Change pet",

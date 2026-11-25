@@ -12,6 +12,7 @@ import {
 import type { DayIntake } from "../../../shared/insights.js";
 import { isOverTarget } from "../../lib/dayStatus.js";
 import { formatAppDay } from "../../lib/format.js";
+import { ChartTable } from "./ChartTable.js";
 import { LegendItem } from "./Legend.js";
 
 const colours = {
@@ -78,10 +79,30 @@ export function IntakeChart({
   const targets = new Set(days.map((day) => day.targetKcal));
   const [onlyTarget] = targets;
   const steadyTarget = targets.size === 1 && onlyTarget !== null && onlyTarget !== undefined;
+  const kcal = (value: number | null) =>
+    value === null ? "–" : t("insights.kcalValue", { kcal: value });
 
   return (
     <div className="flex flex-col gap-3">
-      <div role="img" aria-label={label} style={{ height }}>
+      <ChartTable
+        caption={label}
+        columns={[t("insights.day"), t("insights.eaten"), t("insights.target")]}
+        rows={days
+          .filter((day) => day.day <= today)
+          .map((day) => ({
+            key: day.day,
+            cells: [
+              formatAppDay(day.day, i18n.language, {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+              }),
+              day.fed ? kcal(day.eatenKcal) : t("insights.noFeedsDay"),
+              kcal(day.targetKcal),
+            ],
+          }))}
+      />
+      <div aria-hidden="true" style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={data} margin={{ top: 22, right: 0, bottom: 0, left: 0 }}>
             <XAxis
@@ -101,6 +122,9 @@ export function IntakeChart({
               {data.map((day) => (
                 <Cell
                   key={day.day}
+                  // An outline lifts pale bars to 3:1 against the card.
+                  stroke={day.day > today ? "none" : colours.over}
+                  strokeWidth={1}
                   fill={
                     day.day > today
                       ? colours.axis

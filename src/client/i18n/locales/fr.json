@@ -461,7 +461,10 @@
     "steady": "Stable ce mois-ci",
     "up": "+{weight} kg ce mois-ci",
     "down": "−{weight} kg ce mois-ci",
-    "noFeedsDay": "Aucun repas ce jour-là"
+    "noFeedsDay": "Aucun repas ce jour-là",
+    "date": "Date",
+    "kcalValue": "{kcal} kcal",
+    "kgValue": "{weight} kg"
   },
   "petChip": {
     "label": "Animal : {name}. Changer d’animal",
