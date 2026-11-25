@@ -344,7 +344,7 @@
     "usePortion": "Use a portion size",
     "portionName": "Name",
     "otherName": "Other portion name",
-    "otherPlaceholder": "Portion name",
+    "otherPlaceholder": "e.g. carton",
     "weight": "Weight",
     "stock": "Stock",
     "stockHint": "Goes down each time you log a feed.",

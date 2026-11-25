@@ -168,10 +168,12 @@ export function suggestedPortion(name: string, i18n: I18n) {
   );
 }
 
-/** A typed name gets a plain "s", which suits most names in English and French. */
+/**
+ * A typed name, as typed, with a plain "s" for more than one, which suits most
+ * names in English and French. Never re-cased: German, for one, capitalises nouns.
+ */
 function typedPlural(name: string, count: number): string {
-  const lower = name.toLowerCase();
-  return count === 1 || /[sxz]$/.test(lower) ? lower : `${lower}s`;
+  return count === 1 || /[sxz]$/i.test(name) ? name : `${name}s`;
 }
 
 /** "8 pouches", "1 tin", "3 cartons". */
@@ -188,14 +190,13 @@ export function portionPlural(name: string, i18n: I18n): string {
   if (suggested) {
     return i18n.t(`portionPlural.${suggested}`);
   }
-  const plural = typedPlural(name, 2);
-  return plural.charAt(0).toUpperCase() + plural.slice(1);
+  return typedPlural(name, 2);
 }
 
 /**
  * The portions as a unit after a number, "pouches" or "sachets": its own key
  * rather than the label lower-cased, which not every language allows. A typed
- * name gets the same plural as the stock count.
+ * name keeps its own casing, as everywhere.
  */
 export function portionUnit(name: string, i18n: I18n): string {
   const suggested = suggestedPortion(name, i18n);

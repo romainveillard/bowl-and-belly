@@ -37,8 +37,9 @@ describe("stockLabel", () => {
     expect(stockLabel({ ...tins, stockG: 600 }, i18n)).toBe("3 tins");
   });
 
-  it("adds a plain s to a typed portion name", () => {
-    expect(stockLabel({ ...pouches, portionName: "Carton", stockG: 255 }, i18n)).toBe("3 cartons");
+  it("adds a plain s to a typed portion name, keeping it as typed", () => {
+    expect(stockLabel({ ...pouches, portionName: "carton", stockG: 255 }, i18n)).toBe("3 cartons");
+    expect(stockLabel({ ...pouches, portionName: "Carton", stockG: 255 }, i18n)).toBe("3 Cartons");
   });
 });
 
@@ -68,7 +69,7 @@ describe("portionUnit", () => {
       portionUnit: { pouch: "Beutel" },
     });
     expect(portionUnit("Pouch", german)).toBe("Beutel");
-    // A typed name matches the stock count: "8 scoops".
-    expect(portionUnit("Scoop", i18n)).toBe("scoops");
+    // A typed name stays as typed, as in the stock count.
+    expect(portionUnit("Scoop", i18n)).toBe("Scoops");
   });
 });

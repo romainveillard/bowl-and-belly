@@ -344,7 +344,7 @@
     "usePortion": "Utiliser une taille de portion",
     "portionName": "Nom",
     "otherName": "Autre nom de portion",
-    "otherPlaceholder": "Nom de la portion",
+    "otherPlaceholder": "p. ex. carton",
     "weight": "Poids",
     "stock": "Stock",
     "stockHint": "Diminue à chaque repas noté.",
