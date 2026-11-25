@@ -6,25 +6,25 @@ import { EmptyState } from "./components/EmptyState.js";
 import { HistoryIcon, InsightsIcon } from "./components/icons.js";
 import { BottomNav, Sidebar } from "./components/Navigation.js";
 import { useSnackbar } from "./components/ui/feedback/Snackbar.js";
-import { onDemoLimit, onUnreachable, useAccess } from "./lib/access.js";
-import { useAuth } from "./lib/auth.js";
+import { onDemoLimit, onUnreachable, useAccess } from "./access/access.js";
+import { useAuth } from "./access/auth.js";
 import { useDemo } from "./lib/instance.js";
-import { usePets } from "./lib/pets.js";
-import { LoginScreen, SessionExpiredScreen } from "./screens/AccessScreens.js";
-import { ArchivedFoodsScreen } from "./screens/ArchivedFoodsScreen.js";
-import { ArchivedPetsScreen } from "./screens/ArchivedPetsScreen.js";
-import { FoodFormScreen } from "./screens/FoodFormScreen.js";
-import { HistoryScreen } from "./screens/HistoryScreen.js";
-import { PetFormScreen } from "./screens/PetFormScreen.js";
-import { PetsScreen } from "./screens/PetsScreen.js";
-import { SettingsScreen } from "./screens/SettingsScreen.js";
-import { StockScreen } from "./screens/StockScreen.js";
-import { TodayScreen } from "./screens/TodayScreen.js";
-import { TypesScreen } from "./screens/TypesScreen.js";
+import { usePets } from "./pets/pets.js";
+import { LoginScreen, SessionExpiredScreen } from "./access/AccessScreens.js";
+import { ArchivedFoodsScreen } from "./stock/ArchivedFoodsScreen.js";
+import { ArchivedPetsScreen } from "./pets/ArchivedPetsScreen.js";
+import { FoodFormScreen } from "./stock/FoodFormScreen.js";
+import { HistoryScreen } from "./feeds/HistoryScreen.js";
+import { PetFormScreen } from "./pets/PetFormScreen.js";
+import { PetsScreen } from "./pets/PetsScreen.js";
+import { SettingsScreen } from "./settings/SettingsScreen.js";
+import { StockScreen } from "./stock/StockScreen.js";
+import { TodayScreen } from "./feeds/TodayScreen.js";
+import { TypesScreen } from "./settings/TypesScreen.js";
 
 // The charting library only loads with the screen that needs it.
 const InsightsScreen = lazy(() =>
-  import("./screens/InsightsScreen.js").then((module) => ({ default: module.InsightsScreen })),
+  import("./insights/InsightsScreen.js").then((module) => ({ default: module.InsightsScreen })),
 );
 
 // Forms and Settings take the whole phone screen, without the tabs.

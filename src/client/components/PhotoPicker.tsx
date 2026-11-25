@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { uploadPhoto } from "../lib/pets.js";
+import { uploadPhoto } from "../pets/pets.js";
 import { CameraIcon } from "./icons.js";
 import { button } from "./ui/forms/button.js";
 
