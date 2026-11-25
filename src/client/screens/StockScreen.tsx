@@ -5,6 +5,7 @@ import { FoodTypeBadge, FoodTypeTile } from "../components/FoodTypeMark.js";
 import { EmptyState } from "../components/EmptyState.js";
 import { ChevronRightIcon, PlusIcon, SearchIcon, StockIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
+import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageTitle } from "../components/ui/layout/PageHeader.js";
 import { inputClass } from "../components/ui/forms/Field.js";
 import {
@@ -224,13 +225,12 @@ export function StockScreen() {
         {archivedLink}
       </div>
 
-      <Link
-        to="/stock/new"
-        className={`${button.floating} fixed right-5 bottom-[calc(86px+env(safe-area-inset-bottom))] desktop:right-8 desktop:bottom-8`}
-      >
-        <PlusIcon size={20} />
-        {t("stock.add")}
-      </Link>
+      <FloatingActions>
+        <Link to="/stock/new" className={button.floating}>
+          <PlusIcon size={20} />
+          {t("stock.add")}
+        </Link>
+      </FloatingActions>
 
       {restocking && <RestockSheet food={restocking} onClose={() => setRestocking(null)} />}
     </div>

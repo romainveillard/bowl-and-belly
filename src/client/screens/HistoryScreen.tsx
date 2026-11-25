@@ -5,6 +5,7 @@ import { FoodTypeTile } from "../components/FoodTypeMark.js";
 import { EmptyState } from "../components/EmptyState.js";
 import { ChevronDownIcon, HistoryIcon, PlusIcon } from "../components/icons.js";
 import { PetChip } from "../components/PetChip.js";
+import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageHeader } from "../components/ui/layout/PageHeader.js";
 import { button } from "../components/ui/forms/button.js";
 import { dayStatus } from "../lib/dayStatus.js";
@@ -225,7 +226,8 @@ export function HistoryScreen() {
         <div ref={end} />
       </div>
 
-      <div className="fixed right-8 bottom-8 hidden items-center gap-2.5 desktop:flex">
+      {/* On a phone, History has no floating buttons: logging happens on Today. */}
+      <FloatingActions className="hidden desktop:flex">
         <button type="button" className={button.floatingSecondary} onClick={weightSheets.openLog}>
           <PlusIcon size={18} />
           {t("logWeight.button")}
@@ -236,7 +238,7 @@ export function HistoryScreen() {
             {t("feed.logFeed")}
           </button>
         )}
-      </div>
+      </FloatingActions>
       {weightSheets.ui}
       {logFeedSheet}
       {sheets.sheet}

@@ -21,7 +21,7 @@ const actionClass = `${button.primary} mt-1.5 h-12 rounded-full px-[22px]`;
 /** A tab with nothing to show yet: centred on a phone, in a card on desktop. */
 export function EmptyState({ heading, icon, title, body, action, footer }: EmptyStateProps) {
   return (
-    <div className="flex min-h-[calc(100dvh-68px-env(safe-area-inset-bottom))] flex-col desktop:min-h-0 desktop:gap-6">
+    <div className="flex min-h-[calc(100dvh-var(--bottom-bar-height)-env(safe-area-inset-bottom))] flex-col desktop:min-h-0 desktop:gap-6">
       <PageHeader title={heading} />
       <section className="flex flex-1 flex-col items-center justify-center gap-3 px-7 pb-[60px] text-center desktop:flex-none desktop:rounded-[14px] desktop:bg-card desktop:px-8 desktop:py-20 desktop:inset-ring desktop:inset-ring-border">
         <span

@@ -50,6 +50,12 @@
   --text-caption--line-height: 16px;
 }
 
+:root {
+  /* The phone's bottom bar takes its height from its content; this must match
+     it, without the safe area below it. */
+  --bottom-bar-height: 68px;
+}
+
 body {
   background: var(--color-background);
   color: var(--color-foreground);

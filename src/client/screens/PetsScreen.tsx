@@ -4,6 +4,7 @@ import { ChevronRightIcon, PetsIcon, PlusIcon } from "../components/icons.js";
 import { PetAvatar } from "../components/PetAvatar.js";
 import { TargetProgress } from "../components/TargetProgress.js";
 import { button } from "../components/ui/forms/button.js";
+import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageHeader, PageTitle } from "../components/ui/layout/PageHeader.js";
 import { formatAge, formatKg, petTypeLabel } from "../lib/format.js";
 import { usePets } from "../lib/pets.js";
@@ -39,7 +40,7 @@ export function PetsScreen() {
 
   if (data.pets.length === 0) {
     return (
-      <div className="flex min-h-[calc(100dvh-68px-env(safe-area-inset-bottom))] flex-col desktop:min-h-0 desktop:gap-6">
+      <div className="flex min-h-[calc(100dvh-var(--bottom-bar-height)-env(safe-area-inset-bottom))] flex-col desktop:min-h-0 desktop:gap-6">
         <PageHeader title={t("nav.pets")} />
         <section className="flex flex-1 flex-col items-center justify-center gap-3.5 px-8 pb-10 text-center desktop:flex-none desktop:rounded-[14px] desktop:bg-card desktop:px-8 desktop:py-20 desktop:inset-ring desktop:inset-ring-border">
           <span
@@ -135,9 +136,7 @@ export function PetsScreen() {
         )}
       </div>
 
-      <div
-        className={`fixed right-5 bottom-[calc(86px+env(safe-area-inset-bottom))] flex items-center gap-2.5 desktop:right-8 desktop:bottom-8 desktop:flex ${openId ? "hidden" : ""}`}
-      >
+      <FloatingActions className={`desktop:flex ${openId ? "hidden" : ""}`}>
         {selectedId !== undefined && (
           <button
             type="button"
@@ -152,7 +151,7 @@ export function PetsScreen() {
           <PlusIcon size={20} />
           {t("pets.add")}
         </Link>
-      </div>
+      </FloatingActions>
       {weightSheets.ui}
     </div>
   );

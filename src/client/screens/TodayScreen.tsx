@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import { BowlIcon, CheckIcon, LogoMark, PlusIcon, SettingsIcon } from "../components/icons.js";
 import { FeedRow } from "../components/FeedRow.js";
 import { PetChip } from "../components/PetChip.js";
+import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
 import { PageHeader } from "../components/ui/layout/PageHeader.js";
 import { WeightCard } from "../components/WeightCard.js";
 import { button } from "../components/ui/forms/button.js";
@@ -337,7 +338,7 @@ export function TodayScreen() {
       />
       <div className={`px-5 pt-1 desktop:p-0 ${canLog ? "pb-24" : "pb-5"}`}>{content}</div>
       {canLog && (
-        <div className="fixed right-5 bottom-[calc(86px+env(safe-area-inset-bottom))] flex items-center gap-2.5 desktop:right-8 desktop:bottom-8">
+        <FloatingActions>
           <button
             type="button"
             className={`${button.floatingSecondary} hidden desktop:inline-flex`}
@@ -350,7 +351,7 @@ export function TodayScreen() {
             <PlusIcon size={20} />
             {t("feed.logFeed")}
           </button>
-        </div>
+        </FloatingActions>
       )}
       {weightSheets.ui}
       {pet && <AgePrompt petId={pet.id} petName={pet.name} />}
