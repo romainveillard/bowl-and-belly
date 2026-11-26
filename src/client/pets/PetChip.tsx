@@ -11,7 +11,7 @@ import { PetAvatar } from "./PetAvatar.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
 
 const chip =
-  "inline-flex h-11 max-w-full items-center gap-1.5 rounded-full bg-card pr-2.5 pl-1.5 text-sm font-semibold inset-ring inset-ring-border desktop:gap-2 desktop:pr-3 desktop:text-[15px]";
+  "inline-flex h-11 max-w-full flex-none items-center gap-1.5 rounded-full bg-card pr-2.5 pl-1.5 text-sm font-semibold inset-ring inset-ring-border desktop:gap-2 desktop:pr-3 desktop:text-[15px]";
 
 /** The pets to choose from, with today's kcal, and a link to manage them. */
 export function PetOptions({ onChosen }: { onChosen: () => void }) {
