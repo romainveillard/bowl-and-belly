@@ -1,7 +1,6 @@
 import { lazy, Suspense, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
-import { PlusIcon, SettingsIcon } from "../components/icons.js";
+import { PlusIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
 import { Card, CardHeading, cardEdgeRows } from "../components/ui/layout/Card.js";
 import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
@@ -28,8 +27,6 @@ import { useSettings } from "../settings/settings.js";
 const ThisWeekCard = lazy(() =>
   import("../insights/ThisWeekCard.js").then((module) => ({ default: module.ThisWeekCard })),
 );
-
-const card = "bg-card inset-ring inset-ring-border";
 
 function TodayFeeds({ pet, today }: { pet: PetSummary; today: string }) {
   const { t } = useTranslation();
@@ -112,18 +109,7 @@ export function TodayScreen() {
               </span>
             </>
           }
-          extra={
-            <div className="flex items-center gap-2 desktop:gap-3">
-              <PetChip />
-              <Link
-                to="/settings"
-                aria-label={t("today.settings")}
-                className={`${button.icon} ${card} desktop:hidden`}
-              >
-                <SettingsIcon />
-              </Link>
-            </div>
-          }
+          extra={<PetChip />}
         />
         <div className={`px-5 pt-1 desktop:p-0 ${canLog ? "pb-24" : "pb-5"}`}>
           {canLog ? (

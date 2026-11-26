@@ -9,7 +9,7 @@ import { EmptyState } from "../components/EmptyState.js";
 import { PlusIcon, StockIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
 import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
-import { PageTitle } from "../components/ui/layout/PageHeader.js";
+import { PageHeader } from "../components/ui/layout/PageHeader.js";
 import { SearchInput } from "../components/ui/forms/Field.js";
 import {
   isOutOfStock,
@@ -102,9 +102,9 @@ export function StockScreen() {
     });
   return (
     <div className="flex flex-col desktop:gap-6">
-      <header className="flex flex-col gap-3 px-5 pt-5 pb-2 desktop:gap-6 desktop:p-0">
-        <PageTitle>{t("nav.stock")}</PageTitle>
-        <div className="flex flex-col gap-3 desktop:flex-row desktop:flex-wrap desktop:items-center">
+      <div className="flex flex-col gap-3 pb-2 desktop:gap-6 desktop:pb-0">
+        <PageHeader title={t("nav.stock")} spaceBelow={false} />
+        <div className="flex flex-col gap-3 px-5 desktop:flex-row desktop:flex-wrap desktop:items-center desktop:px-0">
           <label htmlFor="stock-search" className="sr-only">
             {t("stock.search")}
           </label>
@@ -124,7 +124,7 @@ export function StockScreen() {
             onSelect={setTypeId}
           />
         </div>
-      </header>
+      </div>
 
       <div className="flex flex-col gap-2.5 px-5 pt-1 pb-24 desktop:gap-6 desktop:p-0 desktop:pb-24">
         {foods.length > 0 && (

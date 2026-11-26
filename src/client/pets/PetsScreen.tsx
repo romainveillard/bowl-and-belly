@@ -8,7 +8,7 @@ import { PetAvatar } from "./PetAvatar.js";
 import { TargetProgress } from "./TargetProgress.js";
 import { button } from "../components/ui/forms/button.js";
 import { FloatingActions } from "../components/ui/layout/FloatingActions.js";
-import { PageTitle } from "../components/ui/layout/PageHeader.js";
+import { PageHeader } from "../components/ui/layout/PageHeader.js";
 import { formatAge, formatKg } from "../lib/format.js";
 import { petTypeLabel, usePets } from "./pets.js";
 import { PetProfile } from "./PetProfile.js";
@@ -65,9 +65,10 @@ export function PetsScreen() {
   return (
     <WeightSheetsProvider petId={selectedId}>
       <div className="flex flex-col desktop:gap-6">
-        <header className={`px-5 pt-5 pb-3 desktop:block desktop:p-0 ${openId ? "hidden" : ""}`}>
-          <PageTitle>{t("nav.pets")}</PageTitle>
-        </header>
+        {/* A phone shows an open pet's profile in the list's place, with a way back instead. */}
+        <div className={openId ? "hidden desktop:block" : ""}>
+          <PageHeader title={t("nav.pets")} />
+        </div>
 
         <div className="desktop:grid desktop:grid-cols-[340px_minmax(0,1fr)] desktop:items-start desktop:gap-6">
           <div

@@ -246,7 +246,6 @@
     "thingsToFix": "{count, plural, one {# thing to fix before saving:} other {# things to fix before saving:}}"
   },
   "today": {
-    "settings": "Settings",
     "welcomeTitle": "Welcome to Bowl & Belly",
     "welcomeBody": "Add your pet first. We’ll work out their daily calorie target, then you log what they eat.",
     "addFirstPet": "Add your first pet",

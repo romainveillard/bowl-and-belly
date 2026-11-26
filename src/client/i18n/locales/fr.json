@@ -246,7 +246,6 @@
     "thingsToFix": "{count, plural, one {# point à corriger avant d’enregistrer :} other {# points à corriger avant d’enregistrer :}}"
   },
   "today": {
-    "settings": "Réglages",
     "welcomeTitle": "Bienvenue dans Bowl & Belly",
     "welcomeBody": "Ajoutez d’abord votre animal. Nous calculerons son objectif calorique quotidien, puis vous noterez ce qu’il mange.",
     "addFirstPet": "Ajouter votre premier animal",

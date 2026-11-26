@@ -1,14 +1,15 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
-import { BackIcon, CloseIcon } from "../../icons.js";
+import { useTranslation } from "react-i18next";
+import { BackIcon, CloseIcon, SettingsIcon } from "../../icons.js";
 import { usePageTitle } from "../../../lib/usePageTitle.js";
 import { button } from "../forms/button.js";
 
 /** A tab's title, which also titles the browser tab. */
-export function PageTitle({ children }: { children: ReactNode }) {
+function PageTitle({ children }: { children: ReactNode }) {
   usePageTitle(typeof children === "string" ? children : null);
   return (
-    <h1 className="font-display text-display font-semibold desktop:text-[34px] desktop:leading-10">
+    <h1 className="truncate font-display text-display font-semibold desktop:text-[34px] desktop:leading-10">
       {children}
     </h1>
   );
@@ -24,17 +25,31 @@ interface PageHeaderProps {
   spaceBelow?: boolean;
 }
 
-/** A tab's header: its title, with the pet chip or other actions beside it. */
+/**
+ * A tab's header: its title, with the pet chip or other actions beside it,
+ * and on a phone the way to Settings, which desktop has in the sidebar.
+ */
 export function PageHeader({ title, subtitle, extra, spaceBelow = true }: PageHeaderProps) {
+  const { t } = useTranslation();
   return (
     <header
       className={`flex items-center justify-between gap-4 px-5 pt-5 desktop:p-0 ${spaceBelow ? "pb-3" : ""}`}
     >
-      <div className="flex flex-col gap-0.5 desktop:gap-1">
+      <div className="flex min-w-0 flex-col gap-0.5 desktop:gap-1">
         <PageTitle>{title}</PageTitle>
         {subtitle}
       </div>
-      {extra}
+      {/* Gives way before the title, as far as the pet chip's name allows. */}
+      <div className="flex shrink-[100] items-center gap-2 desktop:gap-3">
+        {extra}
+        <Link
+          to="/settings"
+          aria-label={t("nav.settings")}
+          className={`${button.icon} flex-none bg-card inset-ring inset-ring-border desktop:hidden`}
+        >
+          <SettingsIcon />
+        </Link>
+      </div>
     </header>
   );
 }
