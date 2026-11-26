@@ -80,11 +80,7 @@ function Shell({ bottomNav = true }: { bottomNav?: boolean }) {
   const demo = useDemo();
 
   return (
-    <div
-      // Room for the bottom bar, which is fixed to the screen: sticky, it
-      // stayed at the end of pages taller than the screen on some phones.
-      className={`flex min-h-dvh flex-col desktop:grid desktop:grid-cols-[var(--sidebar-width)_1fr] desktop:pb-0 ${bottomNav ? "pb-[calc(var(--bottom-bar-height)+env(safe-area-inset-bottom))]" : ""}`}
-    >
+    <div className="flex min-h-dvh flex-col desktop:grid desktop:grid-cols-[var(--sidebar-width)_1fr]">
       <a
         href="#main"
         className="sr-only rounded-lg bg-card px-4 py-2.5 font-semibold inset-ring inset-ring-border focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-40"
