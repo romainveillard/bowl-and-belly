@@ -35,7 +35,6 @@ The file has the options for running behind a tunnel or Cloudflare commented in;
 | `PORT` | `3000` | The port the app listens on inside the container. |
 | `DATA_DIR` | `/data` | Where the database, backups and login secret are kept. The image's volume is there, so leave it unless you mount it elsewhere. |
 | `BOWL_DEMO` | unset | `true` runs the public demo: see [Running a public demo](#running-a-public-demo). |
-| `BOWL_CF_ANALYTICS_TOKEN` | unset | The site token for Cloudflare Web Analytics. Only the public demo uses it; other instances ignore it. |
 
 Everything the app keeps lives in `/data`: the database, backups, and the secret that signs login sessions. The container runs as the `node` user (uid 1000), so a bind-mounted folder must be writable by that user.
 
@@ -88,7 +87,7 @@ Logins are kept, since the session secret isn't part of the database. A backup f
 
 `BOWL_DEMO=true` turns an instance into a demo: three pets with three months of history, replaced with fresh data at start-up and every night at 03:00 (London time), a banner on every screen, and no photo uploads or backups. Visitors can add a handful of pets, foods and feeds between resets. Run it as its own container with its own volume, never on the one holding your real data, and without `BOWL_PASSWORD`. Set `BOWL_HOSTS` to the demo's public hostname.
 
-The demo collects anonymous, cookieless usage analytics: Cloudflare Web Analytics, and counts of which features are used. It stores nothing on your device and keeps no IP addresses. Each API request writes one line to the container's output with the route, the status and a visitor key that changes every day and can't be traced back to an address. Behind Cloudflare, set `BOWL_TRUST_PROXY=cloudflare` so visitors aren't all counted as one, and set `BOWL_CF_ANALYTICS_TOKEN` to add Cloudflare's beacon. Instances that aren't the demo collect nothing.
+The demo collects anonymous, cookieless usage analytics: Cloudflare Web Analytics, and counts of which features are used. It stores nothing on your device and keeps no IP addresses. Each API request writes one line to the container's output with the route, the status and a visitor key that changes every day and can't be traced back to an address. Instances that aren't the demo collect nothing.
 
 To try the same data locally, run `npm run demo` (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
