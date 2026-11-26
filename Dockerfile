@@ -1,6 +1,6 @@
 # Alpine, about 100 MB smaller: sharp and better-sqlite3 both ship musl builds,
 # and the pull request check runs the image and converts a photo to prove it.
-FROM node:24-alpine@sha256:116b800c3754b440ee0aa3ed2f20f5bf3d99a554bfd9adeea09ea8017f6e85f5 AS base
+FROM node:26-alpine@sha256:6bd9ab43c0ec0190ca7b2d193906cb8b7edf6e7f4afa43ddeccd6452710bffb5 AS base
 WORKDIR /app
 COPY package.json package-lock.json .npmrc ./
 
@@ -19,7 +19,7 @@ RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev \
   && find node_modules/better-sqlite3/prebuilds -type f ! -name "$(basename "$keep")" -delete \
   && rm -rf node_modules/better-sqlite3/deps node_modules/better-sqlite3/src
 
-FROM node:24-alpine@sha256:116b800c3754b440ee0aa3ed2f20f5bf3d99a554bfd9adeea09ea8017f6e85f5
+FROM node:26-alpine@sha256:6bd9ab43c0ec0190ca7b2d193906cb8b7edf6e7f4afa43ddeccd6452710bffb5
 ENV NODE_ENV=production PORT=3000 DATA_DIR=/data
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
