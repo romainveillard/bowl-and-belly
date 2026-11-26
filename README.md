@@ -29,6 +29,7 @@ The file has the options for running behind a tunnel or Cloudflare commented in;
 | Variable | Default | What it does |
 | --- | --- | --- |
 | `BOWL_PASSWORD` | unset | The password for the login page, at least 12 characters. Unset means no login at all. |
+| `BOWL_SESSION_DAYS` | `7` | How many days a login lasts on a device that doesn't open the app, from 1 to 365. Using the app renews it. |
 | `BOWL_HOSTS` | unset | Without a password, the app only answers requests addressed to `localhost` or an IP address, so a web page can't reach it through a domain of its own. List any other names it's reached by, separated by commas, for example `nas.home.arpa,pets.example.org`. Not needed with a password. |
 | `BOWL_TRUST_PROXY` | unset | Set to `cloudflare` when the app sits behind Cloudflare, so login attempts are limited per visitor (using `CF-Connecting-IP`) rather than for everyone at once. Only set it if every request really comes through Cloudflare, since the header is easy to fake otherwise. |
 | `TZ` | `UTC` | The time zone the app starts with. You can change it later in Settings. |
@@ -45,7 +46,7 @@ Tags: `latest` and `x.y.z` / `x.y` follow releases; `edge` follows the main bran
 > [!WARNING]
 > Without `BOWL_PASSWORD`, anyone who can reach the app can read and change everything in it. Don't expose an instance without a password, or without something like Cloudflare Access in front of it.
 
-With a password set, the app's data is only served to devices that have logged in. A login lasts a year and is renewed whenever the app is used, so a phone that opens it regularly stays signed in. Changing the password signs every device out. Wrong passwords are slowed down and limited to ten a minute.
+With a password set, the app's data is only served to devices that have logged in. A login lasts 7 days without use (`BOWL_SESSION_DAYS` changes that) and is renewed whenever the app is used, so a phone that opens it regularly stays signed in while a forgotten device is signed out. Changing the password signs every device out. Wrong passwords are slowed down and limited to ten a minute.
 
 <!-- Screenshot: the login page, on a phone and on desktop. The public demo has no password, so this is the only place visitors see it. -->
 

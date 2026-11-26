@@ -1,14 +1,20 @@
 import { serve } from "@hono/node-server";
-import { configuredPasswordProblem, passwordRequired } from "./auth/access.js";
+import {
+  configuredPasswordProblem,
+  configuredSessionDaysProblem,
+  passwordRequired,
+} from "./auth/access.js";
 import { listedHosts } from "./auth/hosts.js";
 import { startBackups } from "./backups/scheduler.js";
 import { demo, startDemoResets } from "./demo/mode.js";
 import { db } from "./db/client.js";
 import { web } from "./web.js";
 
-if (configuredPasswordProblem) {
-  console.error(`Not starting: ${configuredPasswordProblem}`);
-  process.exit(1);
+for (const problem of [configuredPasswordProblem, configuredSessionDaysProblem]) {
+  if (problem) {
+    console.error(`Not starting: ${problem}`);
+    process.exit(1);
+  }
 }
 
 if (!passwordRequired) {

@@ -1,9 +1,23 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 
-export const SESSION_MS = 365 * 86_400_000;
-// A token older than this is reissued, so a session used within the year never ends.
-const REFRESH_AFTER_MS = 86_400_000;
+const DAY_MS = 86_400_000;
+// A token older than this is reissued, so a session in use never ends.
+const REFRESH_AFTER_MS = DAY_MS;
+
+/**
+ * How many days a login lasts without the app being used, from
+ * BOWL_SESSION_DAYS: 7 when unset, otherwise a whole number from 1 to 365,
+ * or null for anything else. A day is the shortest, since tokens are reissued
+ * once a day.
+ */
+export function sessionDays(value: string | undefined): number | null {
+  if (value === undefined || value === "") {
+    return 7;
+  }
+  const days = Number(value);
+  return /^\d+$/.test(value) && days >= 1 && days <= 365 ? days : null;
+}
 
 const sha256 = (text: string) => createHash("sha256").update(text).digest();
 
@@ -33,7 +47,8 @@ interface Sessions {
 }
 
 // The password is part of what is signed, so changing it ends every session.
-export function sessions(secret: Buffer, password: string): Sessions {
+export function sessions(secret: Buffer, password: string, days: number): Sessions {
+  const lifetimeMs = days * DAY_MS;
   const signature = (issuedAt: string) =>
     createHmac("sha256", secret).update(issuedAt).update(sha256(password)).digest();
 
@@ -47,7 +62,7 @@ export function sessions(secret: Buffer, password: string): Sessions {
         return "invalid";
       }
       const age = now - Number(issuedAt);
-      if (!(age >= 0 && age < SESSION_MS)) {
+      if (!(age >= 0 && age < lifetimeMs)) {
         return "invalid";
       }
       return age > REFRESH_AFTER_MS ? "refresh" : "valid";

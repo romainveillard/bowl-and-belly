@@ -3,12 +3,16 @@ import type { Context, MiddlewareHandler } from "hono";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { dataDir } from "../db/client.js";
 import { clientOf, loginLimiter } from "./limiter.js";
-import { loadSecret, passwordMatches, SESSION_MS, sessions } from "./session.js";
+import { loadSecret, passwordMatches, sessionDays, sessions } from "./session.js";
 
 const COOKIE = "bowl_session";
 const password = process.env.BOWL_PASSWORD || null;
 const trustCloudflare = process.env.BOWL_TRUST_PROXY === "cloudflare";
-const current = password && sessions(loadSecret(path.join(dataDir, "session-secret")), password);
+const configuredDays = sessionDays(process.env.BOWL_SESSION_DAYS);
+// The server won't start on a bad value, so this fallback never takes effect.
+const days = configuredDays ?? 7;
+const current =
+  password && sessions(loadSecret(path.join(dataDir, "session-secret")), password, days);
 const limiter = loginLimiter();
 
 export const passwordRequired = password !== null;
@@ -30,6 +34,12 @@ export function passwordProblem(value: string | null): string | null {
 
 export const configuredPasswordProblem = passwordProblem(password);
 
+/** Why the server won't start with this BOWL_SESSION_DAYS, for the log. */
+export const configuredSessionDaysProblem =
+  configuredDays === null
+    ? "BOWL_SESSION_DAYS must be a whole number of days from 1 to 365."
+    : null;
+
 /** The visitor's address from Cloudflare's header, when the operator says it can be trusted. */
 export function cloudflareAddress(c: Context): string | undefined {
   return trustCloudflare ? c.req.header("CF-Connecting-IP") : undefined;
@@ -49,7 +59,7 @@ function startSession(c: Context, token: string) {
     secure:
       new URL(c.req.url).protocol === "https:" || c.req.header("X-Forwarded-Proto") === "https",
     path: "/",
-    maxAge: SESSION_MS / 1000,
+    maxAge: days * 86_400,
   });
 }
 
