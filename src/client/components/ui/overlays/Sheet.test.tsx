@@ -1,4 +1,4 @@
-import { act, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { Sheet } from "./Sheet.js";
 import { reportInOpenSheet } from "./sheetErrors.js";
@@ -90,4 +90,36 @@ it("shows a failed save in the open sheet, where it can be read, instead of behi
 
 it("leaves a failed save to the snackbar when no sheet is open", () => {
   expect(reportInOpenSheet({ message: "Couldn’t save the pet", detail: "Try again." })).toBe(false);
+});
+
+// Parents mostly drop a sheet as soon as they hear it closed, so the sheet
+// shuts itself first and only tells them once its content has gone.
+it("tells its parent it closed once its content has gone", () => {
+  const onOpenChange = vi.fn<(open: boolean) => void>();
+  render(
+    <Sheet open title="Miso’s feed" onOpenChange={onOpenChange}>
+      <span />
+    </Sheet>,
+  );
+
+  fireEvent.click(screen.getByRole("button", { name: "Close" }));
+
+  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(false);
+});
+
+const switcher = (open: boolean) => (
+  <Sheet open={open} title="Switch pet" onOpenChange={() => undefined}>
+    <span />
+  </Sheet>
+);
+
+it("opens again for a parent that keeps it", () => {
+  const { rerender } = render(switcher(true));
+  fireEvent.click(screen.getByRole("button", { name: "Close" }));
+  rerender(switcher(false));
+
+  rerender(switcher(true));
+
+  expect(screen.getByRole("dialog")).toBeTruthy();
 });

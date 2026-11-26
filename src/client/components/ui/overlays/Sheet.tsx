@@ -1,5 +1,5 @@
 import { Dialog } from "radix-ui";
-import { useRef, type PointerEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { BackIcon, CloseIcon } from "../../icons.js";
 import { Notice } from "../feedback/Notice.js";
@@ -66,6 +66,16 @@ function useDragDown(close: () => void) {
   };
 }
 
+/** Runs the latest `run` when it leaves the page, as the sheet's content does once closed. */
+function WhenGone({ run }: { run: () => void }) {
+  const latest = useRef(run);
+  useEffect(() => {
+    latest.current = run;
+  });
+  useEffect(() => () => latest.current(), []);
+  return null;
+}
+
 interface SheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -104,10 +114,22 @@ export function Sheet({
   const error = useSheetError(open);
   const body = useRef<HTMLDivElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
-  const dragDown = useDragDown(() => onOpenChange(false));
+  // Most sheets stay open for as long as their parent shows them, and leave
+  // when it stops, which would cut the closing animation short. Closing from
+  // the sheet itself (Close, Escape, a tap outside, a drag) shuts it here
+  // first, and tells the parent once the animation is over and Radix has
+  // taken the content away.
+  const [closing, setClosing] = useState(false);
+  if (closing && !open) {
+    setClosing(false);
+  }
+  const dragDown = useDragDown(() => setClosing(true));
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root
+      open={open && !closing}
+      onOpenChange={(next) => (next ? onOpenChange(true) : setClosing(true))}
+    >
       <Dialog.Portal>
         <Dialog.Overlay className="overlay-motion fixed inset-0 z-10 bg-overlay" />
         <Dialog.Content
@@ -130,6 +152,13 @@ export function Sheet({
           }}
           className={`sheet-motion fixed inset-x-0 bottom-0 z-20 flex max-h-[calc(100dvh-env(safe-area-inset-top)-16px)] flex-col rounded-t-3xl bg-card pb-[env(safe-area-inset-bottom)] desktop:inset-x-auto desktop:top-24 desktop:bottom-auto desktop:left-1/2 desktop:-translate-x-1/2 desktop:overflow-hidden desktop:rounded-2xl desktop:pb-0 desktop:max-h-[calc(100dvh-128px)] desktop:shadow-[0_20px_48px_rgba(31,42,68,0.3)] ${tall ? "top-9 desktop:w-[min(560px,calc(100%-32px))]" : "desktop:w-[min(460px,calc(100%-32px))]"}`}
         >
+          <WhenGone
+            run={() => {
+              if (closing) {
+                onOpenChange(false);
+              }
+            }}
+          />
           <div
             {...dragDown}
             className="flex-none touch-none px-5 pt-2.5 pb-2 desktop:touch-auto desktop:px-6 desktop:pt-5 desktop:pb-3"
