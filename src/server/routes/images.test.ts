@@ -10,7 +10,9 @@ const { web } = await import("../web.js");
 
 async function upload(bytes: Uint8Array, name: string) {
   const form = new FormData();
-  form.append("photo", new File([bytes], name));
+  // A copy has a plain ArrayBuffer behind it, which File's parts must have in
+  // the DOM's types that CI checks against.
+  form.append("photo", new File([new Uint8Array(bytes)], name));
   const response = await web.request("http://localhost/api/images", {
     method: "POST",
     headers: { origin: "http://localhost" },
