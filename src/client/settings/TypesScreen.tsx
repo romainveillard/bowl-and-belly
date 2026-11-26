@@ -101,6 +101,7 @@ function TypesScreen({ kind, allRows }: { kind: TypeKind; allRows: Row[] | undef
         hint={hint}
         phoneLink={{ to: "/settings", label: t("types.backToSettings") }}
         desktopLink={{ to: "/settings", label: t("nav.settings") }}
+        returns
       />
 
       <div className="flex flex-col gap-3 px-5 pt-1 pb-6 desktop:gap-4 desktop:p-0">

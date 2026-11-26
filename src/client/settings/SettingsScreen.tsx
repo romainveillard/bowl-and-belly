@@ -148,7 +148,11 @@ export function SettingsScreen() {
 
   return (
     <div className="flex flex-col desktop:gap-6">
-      <SubPageHeader title={t("nav.settings")} phoneLink={{ to: "/", label: t("settings.back") }} />
+      <SubPageHeader
+        title={t("nav.settings")}
+        phoneLink={{ to: "/", label: t("settings.back") }}
+        returns
+      />
       {settings && <SettingsForm settings={settings} />}
     </div>
   );

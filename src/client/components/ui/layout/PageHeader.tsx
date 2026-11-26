@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { Link } from "react-router";
+import type { ComponentProps, ReactNode } from "react";
+import { Link, useLocation, useNavigate } from "react-router";
 import { BackIcon, CloseIcon } from "../../icons.js";
 import { usePageTitle } from "../../../lib/usePageTitle.js";
 import { button } from "../forms/button.js";
@@ -51,17 +51,59 @@ interface SubPageHeaderProps {
   phoneLink: { to: string; label: string; close?: boolean };
   /** The labelled link above the title on desktop; none where the sidebar leads back. */
   desktopLink?: { to: string; label: string };
+  /**
+   * For a page opened from several places, such as Settings: the links return
+   * to the screen it was opened from, and only go to `to` when it was opened
+   * on its own.
+   */
+  returns?: boolean;
+}
+
+/** A link that goes back a step instead, when `returns` and the app has a step to go back to. */
+function UpLink({
+  returns,
+  ...link
+}: { returns: boolean; to: string; className: string; children: ReactNode } & Pick<
+  ComponentProps<typeof Link>,
+  "aria-label"
+>) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  // React Router keys the page the app was opened on "default".
+  const canReturn = returns && location.key !== "default";
+  return (
+    <Link
+      {...link}
+      onClick={(event) => {
+        if (canReturn) {
+          event.preventDefault();
+          void navigate(-1);
+        }
+      }}
+    />
+  );
 }
 
 /** The header of a page reached from a tab, such as a form or an archive. */
-export function SubPageHeader({ title, hint, phoneLink, desktopLink }: SubPageHeaderProps) {
+export function SubPageHeader({
+  title,
+  hint,
+  phoneLink,
+  desktopLink,
+  returns = false,
+}: SubPageHeaderProps) {
   usePageTitle(title);
   return (
     <>
       <header className="flex items-center gap-2 px-3 pt-3.5 pb-2.5 desktop:hidden">
-        <Link to={phoneLink.to} aria-label={phoneLink.label} className={button.icon}>
+        <UpLink
+          returns={returns}
+          to={phoneLink.to}
+          aria-label={phoneLink.label}
+          className={button.icon}
+        >
           {phoneLink.close ? <CloseIcon /> : <BackIcon />}
-        </Link>
+        </UpLink>
         <h1
           className={`font-display font-semibold ${phoneLink.close ? "text-title" : "text-[26px]"}`}
         >
@@ -70,13 +112,14 @@ export function SubPageHeader({ title, hint, phoneLink, desktopLink }: SubPageHe
       </header>
       <header className="hidden flex-col gap-1 desktop:flex">
         {desktopLink && (
-          <Link
+          <UpLink
+            returns={returns}
             to={desktopLink.to}
             className="hit-area inline-flex items-center gap-1 self-start text-sm font-semibold"
           >
             <BackIcon size={16} />
             {desktopLink.label}
-          </Link>
+          </UpLink>
         )}
         <h1 className="font-display text-[34px] leading-10 font-semibold tracking-[-0.5px]">
           {title}
