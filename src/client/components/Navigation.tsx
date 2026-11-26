@@ -24,7 +24,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label={t("nav.label")}
-      className="sticky bottom-0 flex border-t border-border bg-card pb-[env(safe-area-inset-bottom)] desktop:hidden"
+      className="fixed inset-x-0 bottom-0 flex border-t border-border bg-card pb-[env(safe-area-inset-bottom)] desktop:hidden"
     >
       {tabs.map(({ to, label, Icon }) => (
         <NavLink
