@@ -10,27 +10,32 @@ export function ChartTable({
   rows: { key: string; cells: string[] }[];
 }) {
   return (
-    <table className="sr-only">
-      <caption>{caption}</caption>
-      <thead>
-        <tr>
-          {columns.map((column) => (
-            <th key={column} scope="col">
-              {column}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map(({ key, cells: [heading, ...values] }) => (
-          <tr key={key}>
-            <th scope="row">{heading}</th>
-            {values.map((value, index) => (
-              <td key={columns[index + 1]}>{value}</td>
+    // A table grows to fit its rows whatever width it is given, so sr-only
+    // on the table itself left it wider than a phone, and the page with it.
+    // The wrapper keeps to sr-only's 1px and clips it.
+    <div className="sr-only">
+      <table>
+        <caption>{caption}</caption>
+        <thead>
+          <tr>
+            {columns.map((column) => (
+              <th key={column} scope="col">
+                {column}
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {rows.map(({ key, cells: [heading, ...values] }) => (
+            <tr key={key}>
+              <th scope="row">{heading}</th>
+              {values.map((value, index) => (
+                <td key={columns[index + 1]}>{value}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
