@@ -1,5 +1,5 @@
 import { Select as RadixSelect } from "radix-ui";
-import { useId } from "react";
+import { useId, useRef } from "react";
 import { CheckIcon, ChevronDownIcon } from "../../icons.js";
 import { inputClass } from "./Field.js";
 
@@ -59,6 +59,11 @@ export function Select<Value extends string>({
 }: SelectProps<Value>) {
   const generatedId = useId();
   const selectId = id ?? generatedId;
+  const trigger = useRef<HTMLButtonElement>(null);
+  // While the list is open the page takes no pointer events, so a tap on the
+  // field lands outside the list and closes it, then the click that follows
+  // reaches the field, which Radix opens again on touch. Such a click is let go.
+  const closedFromField = useRef(false);
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -76,7 +81,18 @@ export function Select<Value extends string>({
         disabled={disabled}
       >
         <RadixSelect.Trigger
+          ref={trigger}
           id={selectId}
+          onPointerDown={() => {
+            closedFromField.current = false;
+          }}
+          onClick={(event) => {
+            if (closedFromField.current) {
+              closedFromField.current = false;
+              // Stops Radix's own handler, which runs after this one.
+              event.preventDefault();
+            }
+          }}
           aria-describedby={hint ? `${selectId}-hint` : undefined}
           className={selectTrigger}
         >
@@ -88,6 +104,16 @@ export function Select<Value extends string>({
         <RadixSelect.Portal>
           {/* Above sheets, which a select may sit in. */}
           <RadixSelect.Content
+            onPointerDownOutside={(event) => {
+              const field = trigger.current?.getBoundingClientRect();
+              const { clientX: x, clientY: y } = event.detail.originalEvent;
+              closedFromField.current =
+                field !== undefined &&
+                x >= field.left &&
+                x <= field.right &&
+                y >= field.top &&
+                y <= field.bottom;
+            }}
             position="popper"
             sideOffset={6}
             className={`z-30 max-h-(--radix-select-content-available-height) w-(--radix-select-trigger-width) ${selectPanel}`}
