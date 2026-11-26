@@ -11,6 +11,7 @@
     "skipToContent": "Skip to content"
   },
   "action": {
+    "back": "Back",
     "close": "Close",
     "cancel": "Cancel",
     "restore": "Restore",

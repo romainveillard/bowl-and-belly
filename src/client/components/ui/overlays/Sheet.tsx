@@ -1,7 +1,7 @@
 import { Dialog } from "radix-ui";
 import { useRef, type PointerEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { CloseIcon } from "../../icons.js";
+import { BackIcon, CloseIcon } from "../../icons.js";
 import { Notice } from "../feedback/Notice.js";
 import { dragCloses } from "./sheetDrag.js";
 import { useSheetError } from "./sheetErrors.js";
@@ -83,6 +83,8 @@ interface SheetProps {
   tall?: boolean;
   /** Rows that run to the sheet's edges, such as a menu. */
   flush?: boolean;
+  /** For a view shown in the sheet's place, returning to what it covers. */
+  onBack?: (() => void) | undefined;
 }
 
 /** A bottom sheet on a phone and a dialog near the top of the page on desktop. */
@@ -96,6 +98,7 @@ export function Sheet({
   headerExtra,
   tall = false,
   flush = false,
+  onBack,
 }: SheetProps) {
   const { t } = useTranslation();
   const error = useSheetError(open);
@@ -136,7 +139,17 @@ export function Sheet({
               className="mx-auto mb-2.5 h-1 w-10 rounded-full bg-border desktop:hidden"
             />
             <div className="flex items-center justify-between gap-3">
-              <div className="flex min-w-0 flex-col gap-0.5">
+              {onBack && (
+                <button
+                  type="button"
+                  aria-label={t("action.back")}
+                  onClick={onBack}
+                  className="-mr-2 -ml-3 flex size-11 flex-none cursor-pointer items-center justify-center rounded-full"
+                >
+                  <BackIcon />
+                </button>
+              )}
+              <div className="mr-auto flex min-w-0 flex-col gap-0.5">
                 <Dialog.Title
                   ref={heading}
                   tabIndex={-1}

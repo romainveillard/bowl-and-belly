@@ -13,7 +13,8 @@ import { Sheet } from "../components/ui/overlays/Sheet.js";
 const chip =
   "inline-flex h-11 max-w-full flex-none items-center gap-1.5 rounded-full bg-card pr-2.5 pl-1.5 text-sm font-semibold inset-ring inset-ring-border desktop:gap-2 desktop:pr-3 desktop:text-[15px]";
 
-function PetOptions({ onChosen }: { onChosen: () => void }) {
+/** The pets to choose from, with today's kcal, and a link to manage them. */
+export function PetOptions({ onChosen }: { onChosen: () => void }) {
   const { t } = useTranslation();
   const { data } = usePets();
   const { pet: selected, select } = useSelectedPet();
@@ -79,7 +80,12 @@ function PetOptions({ onChosen }: { onChosen: () => void }) {
  * The pet that pet-specific screens follow. With two or more pets it opens
  * the switcher: a sheet on a phone, a list under the chip on desktop.
  */
-export function PetChip() {
+export function PetChip({
+  onSwitch,
+}: {
+  /** On a phone, for a sheet that shows the pets in its own place instead. */
+  onSwitch?: () => void;
+} = {}) {
   const { t } = useTranslation();
   const { data } = usePets();
   const { pet } = useSelectedPet();
@@ -102,6 +108,7 @@ export function PetChip() {
   const trigger = (onClick?: () => void) => (
     <button
       type="button"
+      data-pet-chip
       aria-label={t("petChip.label", { name: pet.name })}
       className={`${chip} cursor-pointer`}
       onClick={onClick}
@@ -128,6 +135,9 @@ export function PetChip() {
         </Popover.Portal>
       </Popover.Root>
     );
+  }
+  if (onSwitch) {
+    return trigger(onSwitch);
   }
 
   return (

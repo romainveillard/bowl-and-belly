@@ -11,7 +11,7 @@ export type DaySummary = InferResponseType<typeof feeds.$get, 200>["days"][numbe
 export type FeedEntry = DaySummary["entries"][number];
 export type LogForm = InferResponseType<(typeof feeds)["log-form"]["$get"], 200>;
 export type PickerFood = LogForm["foods"][number];
-type LogBody = InferRequestType<typeof feeds.$post>["json"];
+export type LogBody = InferRequestType<typeof feeds.$post>["json"];
 
 /** History loads this many days at a time as the user scrolls back. */
 const HISTORY_WINDOW_DAYS = 14;

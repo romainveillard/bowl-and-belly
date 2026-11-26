@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { useImperativeHandle, useRef, useState, type Ref } from "react";
 import { useTranslation } from "react-i18next";
 import { kcalIn, leftoverFits } from "../../shared/feeds.js";
 import { FoodPicker } from "./FoodPicker.js";
 import { LeftoverPrompt } from "./LeftoverPrompt.js";
-import { PetChip } from "../pets/PetChip.js";
+import { PetChip, PetOptions } from "../pets/PetChip.js";
 import { ErrorSummary } from "../components/ui/forms/ErrorSummary.js";
 import { Field, inputClass } from "../components/ui/forms/Field.js";
 import { Segmented } from "../components/ui/forms/Segmented.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
 import { SheetActions } from "../components/ui/overlays/SheetActions.js";
-import { useLogFeed, useLogForm, type LogForm, type PickerFood } from "./feeds.js";
+import { useLogFeed, useLogForm, type LogBody, type LogForm, type PickerFood } from "./feeds.js";
 import { formatTime } from "../lib/format.js";
 import { portionPlural, portionUnit } from "../stock/foods.js";
 import {
@@ -20,25 +20,28 @@ import {
   type AmountUnit,
 } from "./logFeed.js";
 import { useSelectedPet } from "../pets/selectedPet.js";
+import { useFocusNext } from "../lib/useFocusNext.js";
 import { useFormErrors } from "../lib/useFormErrors.js";
 import { useSettings } from "../settings/settings.js";
 
 type FieldName = "food" | "amount" | "leftover";
 const FIELD_ORDER: FieldName[] = ["leftover", "food", "amount"];
 
-function LogFeedForm({
+/** The form for one pet, inside the sheet, which saves it through `ref`. */
+function LogFeedFields({
+  ref,
   petId,
   form,
   timeZone,
-  onDone,
+  onLog,
 }: {
+  ref: Ref<{ submit: () => void }>;
   petId: number;
   form: LogForm;
   timeZone: string;
-  onDone: () => void;
+  onLog: (body: LogBody) => void;
 }) {
   const { t, i18n } = useTranslation();
-  const logFeed = useLogFeed();
   const [openedAt] = useState(() => new Date());
   // Recent foods come first, so the most recent one is chosen for the user.
   const [foodId, setFoodId] = useState<number | null>(
@@ -81,35 +84,18 @@ function LogFeedForm({
     if (errors.reject() || !food || servedG === null) {
       return;
     }
-    logFeed.mutate(
-      {
-        petId,
-        foodId: food.id,
-        servedG,
-        time,
-        previousLeftover:
-          previous && leftoverG !== null ? { entryId: previous.id, leftoverG } : null,
-      },
-      { onSuccess: onDone },
-    );
+    onLog({
+      petId,
+      foodId: food.id,
+      servedG,
+      time,
+      previousLeftover: previous && leftoverG !== null ? { entryId: previous.id, leftoverG } : null,
+    });
   };
+  useImperativeHandle(ref, () => ({ submit }));
 
   return (
-    <Sheet
-      open
-      tall
-      onOpenChange={(open) => !open && onDone()}
-      title={t("logFeed.title")}
-      headerExtra={<PetChip />}
-      footer={
-        <SheetActions
-          saveLabel={t("logFeed.save")}
-          pending={logFeed.isPending}
-          onSave={submit}
-          onCancel={onDone}
-        />
-      }
-    >
+    <>
       <ErrorSummary
         inSheet
         names={errors.shown.map((problem) => t(`logFeed.errorNames.${problem}`))}
@@ -178,26 +164,83 @@ function LogFeedForm({
           />
         </label>
       </div>
-    </Sheet>
+    </>
   );
 }
 
-/** Opened from Log feed. Changing the pet in its header changes the selected pet everywhere. */
+/**
+ * Opened from Log feed. Changing the pet in its header changes the selected
+ * pet everywhere. On a phone the pet list takes the sheet's place rather than
+ * opening a sheet of its own on top, and the form waits underneath, so Back
+ * returns to it as it was; another pet gets a form of its own.
+ */
 export function LogFeedSheet({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation();
   const { pet } = useSelectedPet();
   const { data: form } = useLogForm(pet?.id);
   const { data: settings } = useSettings();
+  const logFeed = useLogFeed();
+  const fields = useRef<{ submit: () => void }>(null);
+  const [switching, setSwitching] = useState(false);
+  const focusNext = useFocusNext();
 
-  if (!pet || !form || !settings) {
+  if (!pet || !settings) {
     return null;
   }
+  const backToForm = () => {
+    setSwitching(false);
+    focusNext(() => document.querySelector<HTMLElement>("[role=dialog] [data-pet-chip]"));
+  };
+
   return (
-    <LogFeedForm
-      key={pet.id}
-      petId={pet.id}
-      form={form}
-      timeZone={settings.timeZone}
-      onDone={onClose}
-    />
+    <Sheet
+      open
+      tall
+      flush={switching}
+      onOpenChange={(open) => !open && onClose()}
+      title={t(switching ? "petChip.switchTitle" : "logFeed.title")}
+      onBack={switching ? backToForm : undefined}
+      headerExtra={
+        !switching && (
+          <PetChip
+            onSwitch={() => {
+              setSwitching(true);
+              focusNext(() =>
+                document.querySelector<HTMLElement>("[role=dialog] [aria-current=true]"),
+              );
+            }}
+          />
+        )
+      }
+      footer={
+        !switching &&
+        form && (
+          <SheetActions
+            saveLabel={t("logFeed.save")}
+            pending={logFeed.isPending}
+            onSave={() => fields.current?.submit()}
+            onCancel={onClose}
+          />
+        )
+      }
+    >
+      {switching && (
+        <div className="flex flex-col gap-2 px-3">
+          <PetOptions onChosen={backToForm} />
+        </div>
+      )}
+      {form && (
+        <div hidden={switching} className="contents">
+          <LogFeedFields
+            key={pet.id}
+            ref={fields}
+            petId={pet.id}
+            form={form}
+            timeZone={settings.timeZone}
+            onLog={(body) => logFeed.mutate(body, { onSuccess: onClose })}
+          />
+        </div>
+      )}
+    </Sheet>
   );
 }
