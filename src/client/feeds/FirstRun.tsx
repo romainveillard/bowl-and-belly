@@ -12,9 +12,16 @@ const twoColumns =
 
 function GettingStarted({ petAdded }: { petAdded: boolean }) {
   const { t } = useTranslation();
-  const steps = [
+  const steps: { label: string; state: string; to?: string; hint?: string }[] = [
     { label: t("today.stepPet"), state: petAdded ? "done" : "current" },
     { label: t("today.stepFood"), state: petAdded ? "current" : "next" },
+    // Open at any point, so it never becomes the current step or holds the others up.
+    {
+      label: t("today.stepSettings"),
+      state: "next",
+      to: "/settings",
+      hint: t("today.stepSettingsHint"),
+    },
   ];
 
   return (
@@ -40,12 +47,21 @@ function GettingStarted({ petAdded }: { petAdded: boolean }) {
               {index + 1}
             </span>
           )}
-          <span
-            className={`text-[15px] ${step.state === "current" ? "font-semibold" : "text-muted-foreground"}`}
-          >
-            {step.state === "done" && <span className="sr-only">{t("today.stepDone")} </span>}
-            {step.label}
-          </span>
+          {step.to ? (
+            <span className="flex flex-col gap-0.5">
+              <Link to={step.to} className="text-[15px] underline underline-offset-2">
+                {step.label}
+              </Link>
+              <span className="text-[13px] text-muted-foreground">{step.hint}</span>
+            </span>
+          ) : (
+            <span
+              className={`text-[15px] ${step.state === "current" ? "font-semibold" : "text-muted-foreground"}`}
+            >
+              {step.state === "done" && <span className="sr-only">{t("today.stepDone")} </span>}
+              {step.label}
+            </span>
+          )}
         </li>
       ))}
     </ol>

@@ -6,12 +6,21 @@ import { Link } from "react-router";
 import { petTypeLabel, usePets, type PetSummary } from "./pets.js";
 import { useSelectedPet } from "./selectedPet.js";
 import { useIsDesktop } from "../lib/useIsDesktop.js";
-import { CheckIcon, ChevronDownIcon, ChevronRightIcon } from "../components/icons.js";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  PetsIcon,
+  SettingsIcon,
+} from "../components/icons.js";
 import { PetAvatar } from "./PetAvatar.js";
 import { Sheet } from "../components/ui/overlays/Sheet.js";
 
+const menuLink =
+  "flex min-h-12 items-center justify-between border-t border-border px-3.5 text-[15px] font-semibold desktop:min-h-11 desktop:px-3 desktop:text-sm";
+
 const chip =
-  "inline-flex h-11 max-w-full flex-none items-center gap-1.5 rounded-full bg-card pr-2.5 pl-1.5 text-sm font-semibold inset-ring inset-ring-border desktop:gap-2 desktop:pr-3 desktop:text-[15px]";
+  "inline-flex h-11 max-w-full min-w-0 items-center gap-1.5 rounded-full bg-card pr-2.5 pl-1.5 text-sm font-semibold inset-ring inset-ring-border desktop:gap-2 desktop:pr-3 desktop:text-[15px]";
 
 /** The pets to choose from, with today's kcal, and a link to manage them. */
 export function PetOptions({ onChosen }: { onChosen: () => void }) {
@@ -64,12 +73,23 @@ export function PetOptions({ onChosen }: { onChosen: () => void }) {
           );
         })}
       </div>
-      <Link
-        to="/pets"
-        onClick={onChosen}
-        className="mt-1 flex min-h-12 items-center justify-between border-t border-border px-3.5 text-[15px] font-semibold desktop:min-h-11 desktop:px-3 desktop:text-sm"
-      >
-        {t("petChip.manage")}
+      <Link to="/pets" onClick={onChosen} className={`mt-1 ${menuLink}`}>
+        <span className="flex items-center gap-3">
+          <span aria-hidden="true" className="flex text-muted-foreground">
+            <PetsIcon size={20} />
+          </span>
+          {t("petChip.manage")}
+        </span>
+        <ChevronRightIcon size={18} />
+      </Link>
+      {/* Desktop has Settings in the sidebar. */}
+      <Link to="/settings" onClick={onChosen} className={`${menuLink} desktop:hidden`}>
+        <span className="flex items-center gap-3">
+          <span aria-hidden="true" className="flex text-muted-foreground">
+            <SettingsIcon size={20} />
+          </span>
+          {t("nav.settings")}
+        </span>
         <ChevronRightIcon size={18} />
       </Link>
     </>

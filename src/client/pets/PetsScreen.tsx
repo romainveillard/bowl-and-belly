@@ -3,7 +3,14 @@ import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
 import { ArchivedLink } from "../components/ArchivedLink.js";
 import { EmptyState } from "../components/EmptyState.js";
-import { PetsIcon, PlusIcon } from "../components/icons.js";
+import {
+  ChevronRightIcon,
+  HistoryIcon,
+  PetsIcon,
+  PlusIcon,
+  SettingsIcon,
+} from "../components/icons.js";
+import { List } from "../components/ui/layout/List.js";
 import { PetAvatar } from "./PetAvatar.js";
 import { TargetProgress } from "./TargetProgress.js";
 import { button } from "../components/ui/forms/button.js";
@@ -19,6 +26,51 @@ import { LogWeightButton, WeightSheetsProvider } from "./WeightSheetsProvider.js
  * The Pets tab. A phone shows the list, then a profile as its own page;
  * desktop shows both side by side, with the first pet selected by default.
  */
+/**
+ * Archived pets and Settings, under the pets on a phone. It is the one way to
+ * Settings there that never goes away: the pet chip only opens the switcher,
+ * where Settings also is, with two pets or more.
+ */
+function MoreLinks({ archivedCount }: { archivedCount: number }) {
+  const { t } = useTranslation();
+  const links = [
+    ...(archivedCount > 0
+      ? [
+          {
+            to: "/pets/archived",
+            label: t("pets.archivedLink", { count: archivedCount }),
+            icon: <HistoryIcon size={20} />,
+          },
+        ]
+      : []),
+    { to: "/settings", label: t("nav.settings"), icon: <SettingsIcon size={20} /> },
+  ];
+
+  return (
+    <nav aria-label={t("pets.more")} className="desktop:hidden">
+      <List className="divide-y divide-border">
+        {links.map(({ to, label, icon }) => (
+          <Link
+            key={to}
+            to={to}
+            className="flex min-h-[52px] items-center justify-between gap-3 px-4 text-[15px]"
+          >
+            <span className="flex items-center gap-3">
+              <span aria-hidden="true" className="flex text-muted-foreground">
+                {icon}
+              </span>
+              {label}
+            </span>
+            <span aria-hidden="true" className="flex text-muted-foreground">
+              <ChevronRightIcon size={18} />
+            </span>
+          </Link>
+        ))}
+      </List>
+    </nav>
+  );
+}
+
 export function PetsScreen() {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
@@ -41,11 +93,18 @@ export function PetsScreen() {
     return null;
   }
 
-  const archivedLink = data.archivedCount > 0 && (
-    <ArchivedLink
-      to="/pets/archived"
-      label={t("pets.archivedLink", { count: data.archivedCount })}
-    />
+  const footer = (
+    <>
+      <MoreLinks archivedCount={data.archivedCount} />
+      {data.archivedCount > 0 && (
+        <div className="hidden desktop:block">
+          <ArchivedLink
+            to="/pets/archived"
+            label={t("pets.archivedLink", { count: data.archivedCount })}
+          />
+        </div>
+      )}
+    </>
   );
 
   if (data.pets.length === 0) {
@@ -57,7 +116,7 @@ export function PetsScreen() {
         title={t("pets.emptyTitle")}
         body={t("pets.emptyBody")}
         action={{ label: t("pets.add"), to: "/pets/new" }}
-        footer={archivedLink}
+        footer={footer}
       />
     );
   }
@@ -121,7 +180,7 @@ export function PetsScreen() {
                 </Link>
               );
             })}
-            {archivedLink}
+            {footer}
           </div>
 
           {selectedId !== undefined && (
