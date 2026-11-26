@@ -122,15 +122,13 @@ function PetForm({ pet, today }: { pet: PetDetail | undefined; today: string }) 
               />
               <Select
                 label={t("petForm.type")}
-                value={petTypeId ?? ""}
+                value={petTypeId === null ? "" : String(petTypeId)}
+                options={offeredTypes(petTypes ?? [], pet?.petTypeId).map((type) => ({
+                  value: String(type.id),
+                  label: optionLabel(petTypeLabel(type, t), type, t),
+                }))}
                 onChange={(value) => set("petTypeId", Number(value))}
-              >
-                {offeredTypes(petTypes ?? [], pet?.petTypeId).map((type) => (
-                  <option key={type.id} value={type.id}>
-                    {optionLabel(petTypeLabel(type, t), type, t)}
-                  </option>
-                ))}
-              </Select>
+              />
             </div>
           </Card>
 

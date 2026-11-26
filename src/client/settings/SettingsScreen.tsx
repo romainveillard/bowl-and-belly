@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import { ChevronRightIcon } from "../components/icons.js";
 import { button } from "../components/ui/forms/button.js";
 import { Select } from "../components/ui/forms/Select.js";
+import { TimeZonePicker } from "./TimeZonePicker.js";
 import { Card, CardHeading } from "../components/ui/layout/Card.js";
 import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { Field } from "../components/ui/forms/Field.js";
@@ -41,11 +42,6 @@ function TypeLink({ to, label }: { to: string; label: string }) {
   );
 }
 
-function timeZones(current: string): string[] {
-  const zones = Intl.supportedValuesOf("timeZone");
-  return zones.includes(current) ? zones : [current, ...zones];
-}
-
 function SettingsForm({ settings }: { settings: Settings }) {
   const { t, i18n } = useTranslation();
   const save = useSaveSettings();
@@ -69,6 +65,7 @@ function SettingsForm({ settings }: { settings: Settings }) {
             label={t("settings.language")}
             value={i18n.resolvedLanguage ?? "en-GB"}
             hint={t("settings.languageHint")}
+            options={LANGUAGES.map(({ code, label }) => ({ value: code, label, lang: code }))}
             onChange={(language) => {
               try {
                 localStorage.setItem(LANGUAGE_KEY, language);
@@ -77,27 +74,14 @@ function SettingsForm({ settings }: { settings: Settings }) {
               }
               void i18n.changeLanguage(language);
             }}
-          >
-            {LANGUAGES.map((language) => (
-              <option key={language.code} value={language.code} lang={language.code}>
-                {language.label}
-              </option>
-            ))}
-          </Select>
-          <Select
+          />
+          <TimeZonePicker
             id="settings-time-zone"
-            label={t("settings.timeZone")}
             value={settings.timeZone}
             disabled={demo}
-            {...(demo ? { hint: t("demo.fixed") } : {})}
+            hint={demo ? t("demo.fixed") : undefined}
             onChange={(timeZone) => commit({ timeZone })}
-          >
-            {timeZones(settings.timeZone).map((zone) => (
-              <option key={zone} value={zone}>
-                {zone}
-              </option>
-            ))}
-          </Select>
+          />
           <Field
             id="settings-dayStartsAt"
             type="time"

@@ -128,15 +128,10 @@ export function BackupsCard({
               <Select
                 id="settings-weekday"
                 label={t("settings.backups.day")}
-                value={settings.backupWeekday ?? 7}
+                value={String(settings.backupWeekday ?? 7)}
+                options={weekdays.map((day) => ({ value: String(day.value), label: day.label }))}
                 onChange={(day) => commit({ backupWeekday: Number(day) })}
-              >
-                {weekdays.map((day) => (
-                  <option key={day.value} value={day.value}>
-                    {day.label}
-                  </option>
-                ))}
-              </Select>
+              />
             )}
             <Field
               id="settings-backupTime"

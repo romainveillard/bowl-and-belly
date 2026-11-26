@@ -146,6 +146,12 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
       {t("foodForm.archive")}
     </button>
   );
+  const foodTypeOptions =
+    foodTypes &&
+    offeredTypes(foodTypes, food?.foodTypeId).map((type) => ({
+      value: String(type.id),
+      label: optionLabel(foodTypeLabel(type, t), type, t),
+    }));
   const perUnit = (per: "100g" | "kg") => t(per === "100g" ? "foodForm.per100" : "foodForm.perKg");
   const number = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 1 });
 
@@ -187,29 +193,37 @@ function FoodForm({ food, today }: { food: FoodDetail | undefined; today: string
               value={form.name}
               onChange={(value) => set("name", value)}
             />
-            {foodTypes && foodTypeId !== null && (
-              <Segmented
-                label={t("foodForm.foodType")}
-                value={String(foodTypeId)}
-                onChange={(value) => set("foodTypeId", Number(value))}
-                options={offeredTypes(foodTypes, food?.foodTypeId).map((type) => ({
-                  value: String(type.id),
-                  label: optionLabel(foodTypeLabel(type, t), type, t),
-                }))}
-              />
-            )}
+            {foodTypeOptions &&
+              foodTypeId !== null &&
+              // Two or three types fit as segments; custom ones can make more.
+              (foodTypeOptions.length <= 3 ? (
+                <Segmented
+                  label={t("foodForm.foodType")}
+                  value={String(foodTypeId)}
+                  onChange={(value) => set("foodTypeId", Number(value))}
+                  options={foodTypeOptions}
+                />
+              ) : (
+                <Select
+                  label={t("foodForm.foodType")}
+                  value={String(foodTypeId)}
+                  options={foodTypeOptions}
+                  onChange={(value) => set("foodTypeId", Number(value))}
+                />
+              ))}
             <Select
               label={t("foodForm.for")}
-              value={petTypeId ?? ""}
-              onChange={(value) => set("petTypeId", value === "" ? null : Number(value))}
-            >
-              {offeredTypes(petTypes ?? [], food?.petTypeId).map((type) => (
-                <option key={type.id} value={type.id}>
-                  {optionLabel(petTypeLabel(type, t), type, t)}
-                </option>
-              ))}
-              <option value="">{t("foodForm.anyPet")}</option>
-            </Select>
+              // Radix reads an empty value as nothing chosen, so "any pet" has a word of its own.
+              value={petTypeId === null ? "any" : String(petTypeId)}
+              options={[
+                ...offeredTypes(petTypes ?? [], food?.petTypeId).map((type) => ({
+                  value: String(type.id),
+                  label: optionLabel(petTypeLabel(type, t), type, t),
+                })),
+                { value: "any", label: t("foodForm.anyPet") },
+              ]}
+              onChange={(value) => set("petTypeId", value === "any" ? null : Number(value))}
+            />
           </Card>
 
           <Card>
