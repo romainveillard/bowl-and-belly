@@ -96,6 +96,12 @@ To try the same data locally, run `npm run demo` (see [CONTRIBUTING.md](CONTRIBU
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for setting up, running and testing the app, and [docs/design.md](docs/design.md) for how it's meant to work.
 
+## Support
+
+If Bowl & Belly is useful to you, you can buy me a coffee on Ko-fi.
+
+[![Support me on Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20me-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/romainveillard)
+
 ## Licence
 
 [MIT](LICENSE)
