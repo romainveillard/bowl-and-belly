@@ -8,6 +8,7 @@
     "pets": "Pets",
     "settings": "Settings",
     "version": "Version {version}",
+    "support": "Support",
     "skipToContent": "Skip to content"
   },
   "action": {
@@ -657,7 +658,6 @@
     "dayStartsAt": "Day starts at",
     "dayStartsAtHint": "Feeds before this count towards the previous day.",
     "petsAndFood": "Pets and food",
-    "version": "Bowl & Belly {version}",
     "errors": {
       "time": "Enter a time",
       "keep": "Enter a number from 1 to 999"
@@ -697,6 +697,14 @@
       "hint": "Protected by a password. Logging out signs out this device only.",
       "logOut": "Log out"
     }
+  },
+  "about": {
+    "title": "About",
+    "hint": "Bowl & Belly is free and open source. If it helps you, a coffee helps keep it going.",
+    "version": "Version",
+    "source": "Source code on GitHub",
+    "report": "Report a problem",
+    "support": "Support Bowl & Belly on Ko-fi"
   },
   "types": {
     "backToSettings": "Back to settings",

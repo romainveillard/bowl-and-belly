@@ -63,6 +63,8 @@
   /* Secondary text on the navy snackbar. */
   --color-inverse-muted: #c9cdd6;
   --color-wordmark-accent: #bb6b3a;
+  /* The Ko-fi link: orange dark enough for 4.5:1 text on card and background. */
+  --color-support: #b8541f;
 
   /* From this width the sidebar replaces the bottom bar. */
   --breakpoint-desktop: 860px;

@@ -8,6 +8,7 @@
     "pets": "Animaux",
     "settings": "Réglages",
     "version": "Version {version}",
+    "support": "Soutenir",
     "skipToContent": "Aller au contenu"
   },
   "action": {
@@ -657,7 +658,6 @@
     "dayStartsAt": "La journée commence à",
     "dayStartsAtHint": "Les repas avant cette heure comptent pour la veille.",
     "petsAndFood": "Animaux et nourriture",
-    "version": "Bowl & Belly {version}",
     "errors": {
       "time": "Saisissez une heure",
       "keep": "Saisissez un nombre entre 1 et 999"
@@ -697,6 +697,14 @@
       "hint": "Protégé par un mot de passe. Se déconnecter ne concerne que cet appareil.",
       "logOut": "Se déconnecter"
     }
+  },
+  "about": {
+    "title": "À propos",
+    "hint": "Bowl & Belly est libre et open source. S’il vous est utile, un café aide à le faire vivre.",
+    "version": "Version",
+    "source": "Code source sur GitHub",
+    "report": "Signaler un problème",
+    "support": "Soutenir Bowl & Belly sur Ko-fi"
   },
   "types": {
     "backToSettings": "Retour aux réglages",

@@ -10,6 +10,7 @@ import { SubPageHeader } from "../components/ui/layout/PageHeader.js";
 import { Field } from "../components/ui/forms/Field.js";
 import { useAuth, useLogOut } from "../access/auth.js";
 import { useDemo } from "../lib/instance.js";
+import { AboutCard } from "./AboutCard.js";
 import { BackupsCard } from "./BackupsCard.js";
 import {
   bodyOf,
@@ -118,10 +119,8 @@ function SettingsForm({ settings }: { settings: Settings }) {
             </button>
           </Card>
         )}
+        <AboutCard />
       </div>
-      <span className="self-center text-[13px] text-muted-foreground desktop:hidden">
-        {t("settings.version", { version: APP_VERSION })}
-      </span>
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router";
+import { links } from "../links.js";
 import {
+  HeartIcon,
   HistoryIcon,
   InsightsIcon,
   LogoMark,
@@ -69,8 +71,23 @@ export function Sidebar() {
         <SettingsIcon size={20} />
         {t("nav.settings")}
       </NavLink>
-      <span className="px-3 pt-0.5 text-center text-caption text-muted-foreground">
+      <span className="flex items-center justify-center gap-1.5 px-3 pt-0.5 text-caption text-muted-foreground">
         {t("nav.version", { version: APP_VERSION })}
+        {links.support && (
+          <>
+            <span aria-hidden="true">·</span>
+            <a
+              href={links.support}
+              target="_blank"
+              rel="noopener"
+              aria-label={t("about.support")}
+              className="inline-flex items-center gap-[3px] font-semibold text-support"
+            >
+              <HeartIcon size={13} />
+              {t("nav.support")}
+            </a>
+          </>
+        )}
       </span>
     </aside>
   );
