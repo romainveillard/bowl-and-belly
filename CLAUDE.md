@@ -60,6 +60,11 @@ Check a change where it takes effect, not in isolation.
 - A cross-cutting change isn't done until every consumer is checked. Changing a shared setting (query `staleTime`, chunk groups, global CSS, a shared component's API) means finding every place it takes effect and checking each one.
 - When a change is about the build (bundling, focus styles, contrast), check it in the built chunks and built CSS, not only in source.
 
+## Branches and merging
+
+- `main` is protected: never push to it. Every change goes on its own branch and reaches `main` through a pull request, merged with a merge commit.
+- Push the branch and open the PR when the work is ready for review; I merge it on GitHub once CI is green.
+
 ## Commits and PRs
 
 - One PR per feature is the norm. Only split a PR when a specific change calls for it, decided case by case, not by default.
