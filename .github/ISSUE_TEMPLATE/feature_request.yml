@@ -1,0 +1,27 @@
+name: Feature request
+description: Suggest something new or a change in behaviour
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: Bowl & Belly aims to stay small and simple to run, so the problem behind an idea matters more than the solution. [`docs/design.md`](https://github.com/romainveillard/bowl-and-belly/blob/main/docs/design.md) has the current scope.
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What you're trying to do, and what gets in the way today.
+      placeholder: I feed my cat from two different bags and…
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What you'd like
+      description: How you picture it working. Sketches or screenshots of other apps are welcome.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What you do now
+      description: Any workaround you use, or other ways it could be solved.

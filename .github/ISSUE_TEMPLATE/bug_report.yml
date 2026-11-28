@@ -1,0 +1,80 @@
+name: Bug report
+description: Something doesn't work as it should
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead. Screenshots help.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open Today
+        2. Log a feed of 40 g
+        3. …
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Shown in Settings, under About, or the image tag you run (`latest`, `edge`, `x.y.z`).
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: setup
+    attributes:
+      label: How you run it
+      options:
+        - Docker or Podman, with the compose.yaml from this repository
+        - Docker or Podman, set up another way
+        - From source (npm start)
+        - The public demo
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: arch
+    attributes:
+      label: Server architecture
+      options:
+        - amd64
+        - arm64
+        - Not sure
+  - type: checkboxes
+    id: options
+    attributes:
+      label: Options in use
+      options:
+        - label: "`BOWL_PASSWORD` is set"
+        - label: "`BOWL_HOSTS` is set"
+        - label: "`BOWL_TRUST_PROXY` is set"
+        - label: Behind a reverse proxy, tunnel or Cloudflare Access
+        - label: Scheduled backups are on
+  - type: input
+    id: device
+    attributes:
+      label: Device and browser
+      description: Say if the app is installed on the home screen.
+      placeholder: iPhone 15, Safari, installed on the home screen
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: App language
+      options:
+        - English (UK)
+        - Français
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Anything relevant from `docker compose logs bowl-and-belly`. Remove anything private first.
+      render: text

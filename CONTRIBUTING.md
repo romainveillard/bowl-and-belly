@@ -6,6 +6,7 @@ Thanks for helping out. Bowl & Belly is a small, self-hosted app, so the aim is 
 
 - **Bug fixes and small improvements:** open a PR directly.
 - **New features or behaviour changes:** open an issue first so we can agree on the approach. Scope, the data model and UX decisions live in [`docs/design.md`](docs/design.md); if your change alters one of those decisions, update the doc in the same PR.
+- **Security vulnerabilities:** report them privately, never in an issue. See [`SECURITY.md`](SECURITY.md).
 
 ## Getting set up
 
