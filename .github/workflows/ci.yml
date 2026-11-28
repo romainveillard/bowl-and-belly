@@ -58,7 +58,7 @@ jobs:
 
   # Dockerfile and .dockerignore mistakes show up on the pull request, not on main,
   # on both architectures: the native modules differ, and arm64 is where it's deployed.
-  image:
+  image-build:
     if: github.event_name == 'pull_request'
     strategy:
       fail-fast: false
@@ -117,6 +117,23 @@ jobs:
       - name: Show the app's logs
         if: failure()
         run: docker logs app
+
+  # The ruleset requires a check named "image", which a matrix job never reports
+  # under that name. always() so a failed, cancelled or skipped build fails it
+  # rather than skipping it, which the ruleset would count as passing.
+  image:
+    needs: image-build
+    if: always() && github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Both architectures built and ran
+        env:
+          RESULT: ${{ needs.image-build.result }}
+        run: |
+          if [ "$RESULT" != success ]; then
+            echo "::error::The image builds ended with: $RESULT."
+            exit 1
+          fi
 
   build:
     needs: check
