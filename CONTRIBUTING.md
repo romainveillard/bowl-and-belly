@@ -38,6 +38,10 @@ Test code that has real logic in it: calorie targets, daily totals, stock adjust
 
 Fill in the PR template. Keep the description short and written for a human reviewer. Screenshots help for any UI change, ideally on a phone-width screen too.
 
+Pull requests are merged with a merge commit, so the commits in your
+branch are kept as they are. Keep them small and logical, each building on
+its own, and write messages that explain why the change was made.
+
 ## Licence
 
 By contributing, you agree that your contributions are licensed under the project's [MIT licence](LICENSE).
